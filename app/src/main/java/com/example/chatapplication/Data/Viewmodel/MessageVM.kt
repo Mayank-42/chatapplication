@@ -51,6 +51,10 @@ fun storeMsg(receiverId: String, message: String) {
                 msg = message
             )
 
+        if (response.isSuccessful) {
+            println("STORE MSG: API SUCCESS")
+            gettingmsg.converting()
+        }
             println("STORE MSG: STATUS = ${response.code()}")
             println("STORE MSG: BODY = ${response.body()}")
             println("STORE MSG: ERROR = ${response.errorBody()?.string()}")

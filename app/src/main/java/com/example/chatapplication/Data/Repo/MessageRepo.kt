@@ -13,7 +13,7 @@ class MessageRepo(
     private val getMessage: ApiService,
     private val localWork: operation
 ){
-    suspend fun putMessage(reciver_id:String,msg:String):Response<List<MessageInfoResponse>>{
+    suspend fun putMessage(reciver_id:String,msg:String):Response<Unit>{
         val request= MessageInfoRequest(reciver_id,msg)
         return getMessage.storeMessage(request)
     }

@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("ChatScreen/{userId}") {backstackEntry->
                         val userId=backstackEntry.arguments?.getString("userId")
-                        chatScreen(navControler, viewModel,userId,messageInfoVM)
+                        chatScreen(navControler, viewModel,userId,messageInfoVM,tokenManager)
                     }
                     composable("SearchBarPage"){
                         SearchBarPage(navControler,userInfovm)

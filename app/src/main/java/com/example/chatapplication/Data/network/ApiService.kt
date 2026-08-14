@@ -38,7 +38,8 @@ interface ApiService {
         @POST("message")
         suspend fun storeMessage(
         @Body request: MessageInfoRequest
-        ): Response<List<MessageInfoResponse>>
+//        ): Response<List<MessageInfoResponse>>
+    ): Response<Unit>
 
     @GET("rpc/get_message")
     suspend fun getingMessage():Response<List<WholeMessageResponse>>

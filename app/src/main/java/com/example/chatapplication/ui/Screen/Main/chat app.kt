@@ -49,23 +49,31 @@ import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.databaseVM
+import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.R
+import kotlinx.coroutines.launch
 import kotlin.collections.emptyList
 
 @Composable
-fun chatScreen(navControl: NavController, viewMode: databaseVM, userId:String?,  msg: MsgVM){
+fun chatScreen(navControl: NavController,
+               viewMode: databaseVM,
+               userId:String?,
+               msg: MsgVM,
+               tokenManager: TokenManager
+         ){
 
-    val task by viewMode.getallValue.collectAsState(
-        initial = emptyList()
-    )
+
     LaunchedEffect(Unit) {
-        msg.insertingLocaly()
+       var sender_Id = tokenManager.getUserId() ?: ""
     }
-    println("ROOM MESSAGES = $task")
-//    val task by viewMode.getallValue.collectAsState(initial=emptyList())
+
+    val task by viewMode.getallValue.collectAsState(initial = emptyList())
+
     var textingg by rememberSaveable{mutableStateOf("")}
+
+
     Box(modifier= Modifier.fillMaxSize().background(Color.Black)) {
         Column() {
             Box(
@@ -103,23 +111,45 @@ fun chatScreen(navControl: NavController, viewMode: databaseVM, userId:String?, 
                     reverseLayout = true
                 ) {
                     items(task.reversed()) { ele ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Surface(
-                                color = Color.White,
-                                shape = RoundedCornerShape(
-                                    topStart = 10.dp,
-                                    topEnd = 10.dp,
-                                    bottomStart = 8.dp
-                                ),
-                                modifier = Modifier.padding(10.dp).combinedClickable(
-                                    onClick = {},
-                                    onLongClick = { viewMode.delete(ele) }
-                                )
+                        if (ele.sender_Id != userId) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
                             ) {
-                                Text(text = ele.message, modifier = Modifier.padding(10.dp))
+                                Surface(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(
+                                        topStart = 10.dp,
+                                        topEnd = 10.dp,
+                                        bottomStart = 8.dp
+                                    ),
+                                    modifier = Modifier.padding(10.dp).combinedClickable(
+                                        onClick = {},
+                                        onLongClick = { viewMode.delete(ele) }
+                                    )
+                                ) {
+                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
+                                }
+                            }
+                        }else{
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                Surface(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(
+                                        topStart = 10.dp,
+                                        topEnd = 10.dp,
+                                        bottomStart = 8.dp
+                                    ),
+                                    modifier = Modifier.padding(10.dp).combinedClickable(
+                                        onClick = {},
+                                        onLongClick = { viewMode.delete(ele) }
+                                    )
+                                ) {
+                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
+                                }
                             }
                         }
                     }
@@ -152,17 +182,20 @@ fun chatScreen(navControl: NavController, viewMode: databaseVM, userId:String?, 
                             modifier = Modifier.weight(1f)
                         )
                         Button(onClick = {
-//                            if(textingg.length!=0){
+                            if(textingg.length!=0){
 //                            viewMode.insert(
 //                                MessageInfo(
-//                                    0,
+//                                      0,
+//                                    "",
 //                                    "mayank",
 //                                    textingg,
 //                                    10,
 //                                    false
 //                                )
 //
-//                            )};
+//                            )
+                                msg.storeMsg(userId ?:"",textingg)
+                                                          };
                             textingg="";
                         }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
                         ) {
