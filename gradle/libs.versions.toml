@@ -1,4 +1,5 @@
 [versions]
+ktor = "3.3.0"
 supabase = "3.2.6"
 ksp = "2.2.10-2.0.2"
 agp = "9.3.1"
@@ -16,10 +17,10 @@ room3CommonJvm = "3.0.1"
 room3Runtime = "3.0.1"
 
 [libraries]
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabase" }
-
 supabase-auth = { group = "io.github.jan-tennert.supabase", name = "auth-kt" }
-
 supabase-postgrest = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt" }
 
 supabase-compose-auth = { group = "io.github.jan-tennert.supabase", name = "compose-auth" }

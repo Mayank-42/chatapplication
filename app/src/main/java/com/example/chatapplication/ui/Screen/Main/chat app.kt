@@ -64,12 +64,15 @@ fun chatScreen(navControl: NavController,
                tokenManager: TokenManager
          ){
 
+    var currentUserId by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-       var sender_Id = tokenManager.getUserId() ?: ""
+        currentUserId = tokenManager.getUserId() ?: ""
+        msg.startRealtime()
     }
 
-    val task by viewMode.getallValue.collectAsState(initial = emptyList())
+//    val task by viewMode.getallValue.collectAsState(initial = emptyList())
+    val task by viewMode.getConversation(currentUserId, userId ?: "").collectAsState(initial = emptyList())
 
     var textingg by rememberSaveable{mutableStateOf("")}
 
@@ -111,7 +114,7 @@ fun chatScreen(navControl: NavController,
                     reverseLayout = true
                 ) {
                     items(task.reversed()) { ele ->
-                        if (ele.sender_Id != userId) {
+                        if (ele.sender_Id == currentUserId) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
@@ -182,7 +185,8 @@ fun chatScreen(navControl: NavController,
                             modifier = Modifier.weight(1f)
                         )
                         Button(onClick = {
-                            if(textingg.length!=0){
+//                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
+                                if (textingg.isNotBlank()){
 //                            viewMode.insert(
 //                                MessageInfo(
 //                                      0,

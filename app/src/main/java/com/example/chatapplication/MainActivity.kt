@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapplication.Data.Repo.AuthReposatory
 import com.example.chatapplication.Data.Repo.MessageRepo
+import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
 import com.example.chatapplication.Data.Viewmodel.dataBaseVMfacrory
 import com.example.chatapplication.Data.Viewmodel.databaseVM
@@ -33,6 +34,7 @@ import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.operation
 import com.example.chatapplication.Data.network.clients.AuthRetroFitClient
+import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.clients.retroFitClient
 import com.example.chatapplication.ui.Screen.Auth.ShowShinUp
 import com.example.chatapplication.ui.Screen.Auth.ShowSignIn
@@ -45,10 +47,11 @@ import com.example.chatapplication.ui.theme.ChatApplicationTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+            val tokenManager = TokenManager(this)
+        SupaBaseClient.initialize(tokenManager)
         enableEdgeToEdge()
         setContent {
             var application = application as dataBaseBuilder
-            val tokenManager = TokenManager(this)
             retroFitClient.initialize(applicationContext)
 
             var repo = reposatory(application.database.dataBaseCall())
@@ -65,9 +68,10 @@ class MainActivity : ComponentActivity() {
             var userInfovm: UserInfo =viewModel(
                 factory = UserInfoFactory(userInfoRepo)
             )
-            var messageInfoRepo= MessageRepo(retroFitClient.apiService, application.database.dataBaseCall())
+            val realtimeRepo = RealTimeRepo(tokenManager)
+            var messageInfoRepo= MessageRepo(retroFitClient.apiService, application.database.dataBaseCall(),)
             var messageInfoVM: MsgVM=viewModel(
-                factory= MsgVMFactory(messageInfoRepo)
+                factory= MsgVMFactory(messageInfoRepo, realtimeRepo,repo,tokenManager)
             )
 
 
