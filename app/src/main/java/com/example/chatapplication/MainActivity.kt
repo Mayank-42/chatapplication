@@ -27,7 +27,7 @@ import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.AuthViewModelFactory
 import com.example.chatapplication.Data.Viewmodel.MsgVM
-import com.example.chatapplication.Data.Viewmodel.MsgVMFactory
+//import com.example.chatapplication.Data.Viewmodel.MsgVMFactory
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.UserInfoFactory
 import com.example.chatapplication.Data.Viewmodel.loginVM
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
             val realtimeRepo = RealTimeRepo(tokenManager)
             var messageInfoRepo= MessageRepo(retroFitClient.apiService, application.database.dataBaseCall(),)
             var messageInfoVM: MsgVM=viewModel(
-                factory= MsgVMFactory(messageInfoRepo, realtimeRepo,repo,tokenManager)
+                factory= MsgVM.MsgVMFactory(messageInfoRepo, realtimeRepo, repo, tokenManager)
             )
 
 

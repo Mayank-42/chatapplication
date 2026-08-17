@@ -57,7 +57,7 @@ fun getConversation(
     LIMIT 1
     
         """)
-fun getTimeId(
+suspend fun getTimeId(
     myId: String,
     userId: String
 ): MessageInfo?

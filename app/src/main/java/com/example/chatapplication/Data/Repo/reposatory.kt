@@ -10,7 +10,7 @@ class reposatory( private val work: operation) {
 
     val getAllValue=work.getAllTheValue()
 
-    fun getTimeId(myId: String, userId: String): MessageInfo? {
+    suspend fun getTimeId(myId: String, userId: String): MessageInfo? {
         return work.getTimeId(myId, userId)
     }
 
