@@ -22,6 +22,20 @@ class RealTimeRepo( private val tokenManager: TokenManager) {
             table = "message"
         }
     }
+    /*
+     This block establishes the listener for new messages.
+
+ messageInsertFlow() returns a Flow of PostgreSQL INSERT events.
+ We specifically listen to INSERT events because we only want to
+ know when a new row is inserted into the message table.
+
+ schema = "public" -> PostgreSQL schema
+ table = "message" -> table we want to listen to
+        below this
+ subscribe() actually activates the Realtime channel.
+ blockUntilSubscribed = true means the suspend call waits until
+the channel has successfully become subscribed.
+     */
 
     suspend fun subscribe() {
         channel.subscribe(blockUntilSubscribed = true)

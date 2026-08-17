@@ -67,6 +67,10 @@ fun chatScreen(navControl: NavController,
     var currentUserId by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
+        msg.insertingLocaly()
+    }
+
+    LaunchedEffect(Unit) {
         currentUserId = tokenManager.getUserId() ?: ""
         msg.startRealtime()
     }

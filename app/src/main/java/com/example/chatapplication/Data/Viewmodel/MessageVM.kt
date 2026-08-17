@@ -29,19 +29,12 @@ class MsgVM(
     private val tokenManager: TokenManager
 ): ViewModel() {
     private var realtimeStarted = false
-    var msgList by mutableStateOf<List<MessageInfoResponse>>(emptyList())
+
     var localmsgList by mutableStateOf<List<WholeMessageResponse>>(emptyList())
 
-//    fun storeMsg(request_id:String,message:String){
-//        viewModelScope.launch{
-//          var response=  gettingmsg.putMessage(reciver_id=request_id,msg=message)
-//            if(response.isSuccessful){
-//                msgList = response.body() ?:emptyList()
-//            }
-//        }
-//    }
 
-    fun startRealtime() {
+
+    fun startRealtime() { // every new inserted row will come to local db
 
         if (realtimeStarted) {
             println("REALTIME: Already started")
@@ -53,11 +46,11 @@ class MsgVM(
         viewModelScope.launch {
             val currentUserId = tokenManager.getUserId() ?: ""
 
-            val flow = realtimeRepo.messageInsertFlow()
+            val flow = realtimeRepo.messageInsertFlow() //geting all the event flow in variable flow so ya
 
             launch {
 
-                flow.collectLatest { event ->
+                flow.collectLatest { event -> //tells that if any new event happaned execute this block
 
                     println("REALTIME: NEW MESSAGE RECEIVED")
 
@@ -70,7 +63,7 @@ class MsgVM(
                         receiverId != currentUserId
                     ) {
                         println("REALTIME: IGNORING UNRELATED MESSAGE")
-                        return@collectLatest
+                        return@collectLatest  //if senderId(user) is not involved then ignore the event
                     }
 
                     val messageInfo = MessageInfo(
@@ -94,12 +87,12 @@ class MsgVM(
 
 
 
-    fun insertingLocaly(){
+    fun insertingLocaly(){ //whole postgress db comes to localDB but we have to call
         viewModelScope.launch{
             gettingmsg.converting()
         }
     }
-fun storeMsg(receiverId: String, message: String) {
+fun storeMsg(receiverId: String, message: String) {  //send the message
 
     println("STORE MSG: FUNCTION CALLED")
     println("STORE MSG: receiverId = $receiverId")
@@ -128,7 +121,7 @@ fun storeMsg(receiverId: String, message: String) {
         }
     }
 }
-    fun getingmsg(){
+    fun getingmsg(){  //taking the response from post respose (Not use full)
         viewModelScope.launch{
             try {
 
