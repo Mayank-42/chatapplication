@@ -50,6 +50,18 @@ fun getConversation(
     userId: String
 ): Flow<List<MessageInfo>>
 
+@Query("""SELECT * FROM MessageInfo
+     WHERE (sender_Id = :myId AND reciver_Id = :userId)
+       OR (sender_Id = :userId AND reciver_Id = :myId)
+    ORDER BY date DESC, id DESC
+    LIMIT 1
+    
+        """)
+fun getTimeId(
+    myId: String,
+    userId: String
+): MessageInfo?
+
 //    @Query("select*from MessageInfo where sender_id=")
 
 

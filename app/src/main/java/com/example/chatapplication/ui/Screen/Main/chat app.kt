@@ -66,9 +66,6 @@ fun chatScreen(navControl: NavController,
 
     var currentUserId by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        msg.insertingLocaly()
-    }
 
     LaunchedEffect(Unit) {
         currentUserId = tokenManager.getUserId() ?: ""
@@ -77,6 +74,9 @@ fun chatScreen(navControl: NavController,
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
     val task by viewMode.getConversation(currentUserId, userId ?: "").collectAsState(initial = emptyList())
+    LaunchedEffect(Unit) {
+        msg.insertingLocaly(currentUserId,userId?:"")
+    }
 
     var textingg by rememberSaveable{mutableStateOf("")}
 

@@ -87,9 +87,10 @@ class MsgVM(
 
 
 
-    fun insertingLocaly(time:String,id:String){ //whole postgress db comes to localDB but we have to call
+    fun insertingLocaly(myId:String,userId:String){ //whole postgress db comes to localDB but we have to call
         viewModelScope.launch{
-            gettingmsg.converting(time,id)
+            var time=dbrepo.getTimeId(myId,userId)
+            gettingmsg.converting(time?.date?:"",time?.id?:"")
         }
     }
 fun storeMsg(receiverId: String, message: String) {  //send the message
