@@ -5,8 +5,7 @@ import androidx.room3.PrimaryKey
 
 @Entity
 data class MessageInfo(
-    @PrimaryKey(autoGenerate = true)
-    var tid:Int=0,
+    @PrimaryKey
     var id:String,
     var sender_Id:String,
     var reciver_Id:String,
