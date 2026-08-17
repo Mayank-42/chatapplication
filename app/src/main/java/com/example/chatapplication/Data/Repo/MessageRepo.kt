@@ -20,7 +20,7 @@ class MessageRepo(
     suspend fun getingmessage(): Response<List<WholeMessageResponse>>{
         return getMessage.getingMessage()
     }
-    suspend fun converting(){
+    suspend fun converting(time:String,id:String){
         val response=getMessage.getingMessage()
         var serverList= response.body()
         var localMsgList=serverList?.map{
