@@ -3,6 +3,7 @@ package com.example.chatapplication.Data.Repo
 import com.example.chatapplication.Data.local.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
@@ -17,11 +18,15 @@ class MessageRepo(
         val request= MessageInfoRequest(reciver_id,msg)
         return getMessage.storeMessage(request)
     }
-    suspend fun getingmessage(): Response<List<WholeMessageResponse>>{
-        return getMessage.getingMessage()
-    }
+//    suspend fun getingmessage(): Response<List<WholeMessageResponse>>{
+//        return getMessage.getingMessage()
+//    }
     suspend fun converting(time:String,id:String){
-        val response=getMessage.getingMessage()
+    val request = GetMessageRequest(
+        last_timestamp = if (time.isBlank()) null else time,
+        last_id = if (id.isBlank()) null else id
+    )
+        val response=getMessage.getingMessage(request)
         var serverList= response.body()
         var localMsgList=serverList?.map{
             MessageInfo(

@@ -1,5 +1,6 @@
 package com.example.chatapplication.Data.network
 
+import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.loginRequest
