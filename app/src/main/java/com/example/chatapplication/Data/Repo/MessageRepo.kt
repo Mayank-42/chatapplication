@@ -27,6 +27,9 @@ class MessageRepo(
         last_id = if (id.isBlank()) null else id
     )
         val response=getMessage.getingMessage(request)
+    println("SYNC: STATUS = ${response.code()}")
+    println("SYNC: BODY = ${response.body()}")
+    println("SYNC: ERROR = ${response.errorBody()?.string()}")
         var serverList= response.body()
         var localMsgList=serverList?.map{
             MessageInfo(

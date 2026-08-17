@@ -91,8 +91,12 @@ class MsgVM(
         userId: String
     ) { //whole postgress db comes to localDB but we have to call
         viewModelScope.launch {
+            println("SYNC: insertingLocaly CALLED")
             var time = dbrepo.getTimeId(myId, userId)
+            println("SYNC: latest message = $time")
             gettingmsg.converting(time?.date ?: "", time?.id ?: "")
+
+            println("SYNC: converting CALLED")
         }
     }
 

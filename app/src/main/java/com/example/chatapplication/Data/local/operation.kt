@@ -3,6 +3,7 @@ package com.example.chatapplication.Data.local
 import androidx.room3.Dao
 import androidx.room3.Delete
 import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
 import com.example.chatapplication.Data.local.tables.MessageInfo
@@ -16,8 +17,9 @@ interface operation {
     @Insert
     suspend fun insert(task: MessageInfo)
 
-    @Insert
-    suspend fun localInsert(msg:List<MessageInfo>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun localInsert(msg: List<MessageInfo>)
 
     @Insert
     suspend fun logininsert(cred: userLoginInfo)
