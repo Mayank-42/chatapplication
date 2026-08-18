@@ -121,37 +121,68 @@ class TokenManager(
     private val userIdKey =
         stringPreferencesKey("user_id")
 
+//    suspend fun saveTokens(
+//        accessToken: String,
+//        refreshToken: String
+//    ) {
+//        val payload = accessToken.split(".")[1]
+//
+//        val decoded = Base64.decode(
+//            payload,
+//            Base64.URL_SAFE
+//        )
+//
+//        val json = String(decoded)
+//
+////        val userId =
+////            JSONObject(json).getString("sub")
+//
+//        appContext.authDataStore.edit { preferences ->
+//            preferences[accessTokenKey] = accessToken
+//            preferences[refreshTokenKey] = refreshToken
+////            preferences[userIdKey] = userId
+//        }
+//    }
+
     suspend fun saveTokens(
         accessToken: String,
         refreshToken: String
     ) {
-        val payload = accessToken.split(".")[1]
-
-        val decoded = Base64.decode(
-            payload,
-            Base64.URL_SAFE
-        )
-
-        val json = String(decoded)
-
-        val userId =
-            JSONObject(json).getString("sub")
-
         appContext.authDataStore.edit { preferences ->
             preferences[accessTokenKey] = accessToken
             preferences[refreshTokenKey] = refreshToken
-            preferences[userIdKey] = userId
         }
     }
-
     suspend fun getAccessToken(): String? =
         appContext.authDataStore.data.first()[accessTokenKey]
 
     suspend fun getRefreshToken(): String? =
         appContext.authDataStore.data.first()[refreshTokenKey]
 
-    suspend fun getUserId(): String? =
-        appContext.authDataStore.data.first()[userIdKey]
+    suspend fun getUserId(): String? {
+
+        val accessToken = getAccessToken() ?: return null
+
+        return try {
+
+            val payload = accessToken.split(".")[1]
+
+            val decoded = Base64.decode(
+                payload,
+                Base64.URL_SAFE
+            )
+
+            val json = String(decoded)
+
+            JSONObject(json).getString("sub")
+
+        } catch (e: Exception) {
+
+            println("TOKEN MANAGER: FAILED TO GET USER ID = ${e.message}")
+
+            null
+        }
+    }
 
     suspend fun clearTokens() {
         appContext.authDataStore.edit { preferences ->

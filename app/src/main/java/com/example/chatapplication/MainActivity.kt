@@ -55,6 +55,10 @@ class MainActivity : ComponentActivity() {
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
 
+            var currentUserId by rememberSaveable {
+                mutableStateOf<String?>(null)
+            }
+
 
 
             var repo = reposatory(application.database.dataBaseCall())

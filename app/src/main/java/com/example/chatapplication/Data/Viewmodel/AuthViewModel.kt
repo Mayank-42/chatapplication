@@ -29,8 +29,19 @@ class loginVM( private val reposatory: AuthReposatory,
 
     var userLoggedIn by mutableStateOf(false)
 
+    private fun getUserIdFromToken(accessToken: String): String {
+        val payload = accessToken.split(".")[1]
 
-    fun login(email:String,password:String,onResult: (Response<loginResponse>) -> Unit){
+        val decoded = android.util.Base64.decode(
+            payload,
+            android.util.Base64.URL_SAFE
+        )
+
+        val json = String(decoded)
+
+        return org.json.JSONObject(json).getString("sub")
+    }
+    fun login(email:String,password:String,onResult: (Response<loginResponse>,String?) -> Unit){
     viewModelScope.launch{
         println("LOGIN: calling API")
         val response = reposatory.login(
@@ -38,7 +49,7 @@ class loginVM( private val reposatory: AuthReposatory,
             password
         )
 //        println("LOGIN STATUS: ${response.code()}")
-
+        var userId: String? = null
         if (response.isSuccessful) {
 //            userLoggedIn = true
             val data=response.body()
@@ -50,20 +61,23 @@ class loginVM( private val reposatory: AuthReposatory,
                 SupaBaseClient.initialize(
                     data.access_token
                 )
+                val payload = data.access_token.split(".")[1]
+
+                val decoded = android.util.Base64.decode(
+                    payload,
+                    android.util.Base64.URL_SAFE
+                )
+
+                val json = String(decoded)
+
+                userId =
+                    org.json.JSONObject(json).getString("sub")
             }
+            }
+        onResult(response,userId)
 
-//        val data = response.body()
 
-//        println("LOGIN SUCCESS")
-//        println("ACCESS TOKEN: ${data?.access_token}")
-//        println("REFRESH TOKEN: ${data?.refresh_token}")
 
-    } else {
-
-//        println("LOGIN FAILED")
-//        println("ERROR: ${response.errorBody()?.string()}")
-    }
-        onResult(response)
     }
 
     }

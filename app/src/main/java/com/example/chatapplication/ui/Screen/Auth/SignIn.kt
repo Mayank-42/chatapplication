@@ -72,11 +72,15 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                 "",{},
                 onButtonClick = {
 
-                    authVM.login(email, pass){ response ->
+                    authVM.login(email, pass){ response,userId ->
 
                         if (response.isSuccessful) {
 
-                            onLoginSuccess()
+                            navControler.navigate("Home") {
+                                popUpTo("SignIn") {
+                                    inclusive = true
+                                }
+                            }
 
                         } else {
 
