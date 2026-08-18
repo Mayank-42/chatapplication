@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
@@ -114,12 +115,12 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
 
                     Spacer(modifier=Modifier.width(100.dp))
                     Icon(
-                        imageVector = Icons.Default.Logout,
+                        imageVector = Icons.Default.AccountBox,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp).clickable {
                             scope.launch {
                                 tokenManager.clearTokens()
-                                navControl.navigate("SignIn")
+                                navControl.navigate("profileScreen")
                             }
                         }
                     )

@@ -42,6 +42,7 @@ import com.example.chatapplication.ui.Screen.Auth.UserInfo
 import com.example.chatapplication.ui.Screen.Main.HomeScreen
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
+import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -118,6 +119,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("SearchBarPage"){
                         SearchBarPage(navControler,userInfovm)
+                    }
+                    composable("profileScreen"){
+                        profileScreen(navControler)
                     }
 
                 }

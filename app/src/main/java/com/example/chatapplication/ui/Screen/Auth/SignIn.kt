@@ -61,7 +61,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
             )
 //            Spacer(modifier=Modifier.height(30.dp))
             Text(text="YOKOSU",color=Color.White,fontSize=36.sp, fontWeight = FontWeight.SemiBold, modifier=Modifier.padding(25.dp))
-            surface(navControl=navControler,task="Enter your name", viewMode = viewMode,words=email, onWordsChange = {email=it})
+            surface(navControl=navControler,task="Enter your Email", viewMode = viewMode,words=email, onWordsChange = {email=it})
             Spacer(modifier=Modifier.height(30.dp))
             surface(navControl=navControler,task="Enter your pasword ", viewMode = viewMode,words=pass, onWordsChange = {pass=it})
             Spacer(modifier=Modifier.height(30.dp))
