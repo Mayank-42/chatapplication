@@ -25,9 +25,14 @@ object retroFitClient {
             val request= chain.request()
                 .newBuilder()
                 .addHeader("apikey",constant.supaBaseKey)
-                .addHeader("Authorization" ,"Bearer ${accessToken} ")
-                .build()
-            chain.proceed(request)
+                if (!accessToken.isNullOrBlank()) {
+                    request.addHeader(
+                    "Authorization",
+                    "Bearer $accessToken"
+                )
+            }
+
+            chain.proceed(request.build())
         }
         .build()
     private val retrofit= Retrofit.Builder()
