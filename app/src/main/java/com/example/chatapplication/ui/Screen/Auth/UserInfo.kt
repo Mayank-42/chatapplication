@@ -51,8 +51,11 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLo
             onWordsChange = {username=it},
             onButtonClick={
                 viewMode.userinsert(userInfo(0,name,username))
-                authVM.sigUp(authVM.email ,authVM.password,name,username)
-               onLoginSuccess()
+                authVM.sigUp(authVM.email ,authVM.password,name,username){
+                    succses->if(succses){
+                   onLoginSuccess()
+                  }
+                }
             },
             )
         }

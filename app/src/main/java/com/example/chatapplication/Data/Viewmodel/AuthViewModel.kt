@@ -67,52 +67,70 @@ class loginVM( private val reposatory: AuthReposatory,
     }
 
     }
-    fun sigUp(email:String,password: String,name:String,username:String){
-        viewModelScope.launch{
-            val givingInfo=reposatory.signUp(email=email,password=password,name=name,
-                username=username)
-            if (givingInfo.isSuccessful) {
+    fun sigUp(
+        email: String,
+        password: String,
+        name: String,
+        username: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
 
-                // Login immediately to obtain access + refresh tokens
-                val login = reposatory.login(email, password)
+            val signupResponse = reposatory.signUp(
+                email = email,
+                password = password,
+                name = name,
+                username = username
+            )
 
+            if (!signupResponse.isSuccessful) {
 
-                if (givingInfo.isSuccessful) {
+                println("SIGNUP FAILED: ${signupResponse.code()}")
+                println(
+                    "ERROR: ${signupResponse.errorBody()?.string()}"
+                )
 
-                    // Signup successful → login immediately
-                    // so we get access_token + refresh_token
-                    val login = reposatory.login(email, password)
-
-                    if (login.isSuccessful) {
-
-                        login.body()?.let {
-                            tokenManager.saveTokens(
-                                it.access_token,
-                                it.refresh_token
-                            )
-                            SupaBaseClient.initialize(
-                                it.access_token
-                            )
-                        }
-
-                    }else {
-                        println("LOGIN AFTER SIGNUP FAILED: ${login.code()}")
-                        println(
-                            "ERROR: ${login.errorBody()?.string()}"
-                        )
-                    }
-
-                } else {
-
-                    println("SIGNUP FAILED: ${givingInfo.code()}")
-                    println(
-                        "ERROR: ${givingInfo.errorBody()?.string()}"
-                    )
-                }
+                onResult(false)
+                return@launch
             }
-            println("STATUS: ${givingInfo.code()}")
-            println("BODY: ${givingInfo.body()}")
-            println("ERROR: ${givingInfo.errorBody()?.string()}")
+
+            // Signup successful.
+            // Now login to obtain access + refresh tokens.
+            val loginResponse = reposatory.login(
+                email,
+                password
+            )
+
+            if (!loginResponse.isSuccessful) {
+
+                println("LOGIN AFTER SIGNUP FAILED: ${loginResponse.code()}")
+                println(
+                    "ERROR: ${loginResponse.errorBody()?.string()}"
+                )
+
+                onResult(false)
+                return@launch
+            }
+
+            loginResponse.body()?.let {
+
+                tokenManager.saveTokens(
+                    it.access_token,
+                    it.refresh_token
+                )
+
+                // IMPORTANT:
+                // Supabase must be initialized BEFORE
+                // MainActivity creates RealTimeRepo.
+                SupaBaseClient.initialize(
+                    it.access_token
+                )
+            }
+
+            println("SIGNUP + LOGIN SUCCESS")
+
+            // Only now tell MainActivity that authentication is ready.
+            onResult(true)
         }
     }
     fun refreshSession() {
