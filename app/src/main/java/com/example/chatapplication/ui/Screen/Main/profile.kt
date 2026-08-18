@@ -49,22 +49,22 @@ import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.R
 
 @Composable
-fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager){
+fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:String){
 
-    var userId by rememberSaveable { mutableStateOf("") }
-
-    LaunchedEffect(Unit) {
-
-        val id = token.getUserId()
-
-        println("PROFILE USER ID = $id")
-
-        userId = id ?: ""
-    }
-
-    LaunchedEffect(Unit) {
-     userId=token.getUserId()?:""
-    }
+//    var userId by rememberSaveable { mutableStateOf("") }
+//
+//    LaunchedEffect(Unit) {
+//
+//        val id = token.getUserId()
+//
+//        println("PROFILE USER ID = $id")
+//
+//        userId = id ?: ""
+//    }
+//
+//    LaunchedEffect(Unit) {
+//     userId=token.getUserId()?:""
+//    }
 
     val context= LocalContext.current
     val imagePicker = rememberLauncherForActivityResult(
@@ -77,7 +77,7 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager){
             val bytes =
                 inputStream?.readBytes()
             if (bytes != null) {
-                user.uploadImg(userId, bytes)
+                user.uploadImg(id, bytes)
             }
 
             println("Image bytes: ${bytes?.size}")

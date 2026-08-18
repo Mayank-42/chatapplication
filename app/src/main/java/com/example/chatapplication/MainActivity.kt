@@ -1,5 +1,6 @@
 package com.example.chatapplication
 
+import android.app.LauncherActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,14 +53,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
 
+
+            var userId by rememberSaveable { mutableStateOf("") }
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
 
-            var currentUserId by rememberSaveable {
-                mutableStateOf<String?>(null)
+            LaunchedEffect(Unit){
+            userId=tokenManager.getUserId()?:""
             }
-
-
 
             var repo = reposatory(application.database.dataBaseCall())
             var viewModel: databaseVM = viewModel(
@@ -185,12 +186,17 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable("profileScreen") {
-                            profileScreen(
-                                navController,
-                                userInfovm,
-                                tokenManager
-                            )
+                        composable("profileScreen/{userId}") { backStackEntry ->
+
+                            val profileUserId =
+                                backStackEntry.arguments?.getString("userId")
+                            if (profileUserId != null) {
+                                profileScreen(
+                                    navController,
+                                    userInfovm,
+                                    tokenManager
+                                )
+                            }
                         }
                     }
 
@@ -215,7 +221,8 @@ class MainActivity : ComponentActivity() {
                         composable("register") {
                             ShowShinUp(
                                 navController,
-                                authVM
+                                authVM,
+
                             )
                         }
 
