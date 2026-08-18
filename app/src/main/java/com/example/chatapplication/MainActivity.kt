@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
             val tokenManager = TokenManager(this)
-        SupaBaseClient.initialize(tokenManager)
         enableEdgeToEdge()
         setContent {
 
@@ -92,6 +91,9 @@ class MainActivity : ComponentActivity() {
                             tokenManager.saveTokens(
                                 it.access_token,
                                 it.refresh_token
+                            )
+                            SupaBaseClient.initialize(
+                                it.access_token
                             )
                         }
                         firstPage = "Home"

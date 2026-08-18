@@ -1,5 +1,6 @@
 package com.example.chatapplication.Data.Viewmodel
 
+import android.R.attr.data
 import android.R.attr.password
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatapplication.Data.Repo.AuthReposatory
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.response.loginResponse
 
 import kotlinx.coroutines.launch
@@ -44,6 +46,9 @@ class loginVM( private val reposatory: AuthReposatory,
                 tokenManager.saveTokens(
                     data.access_token,
                     data.refresh_token
+                )
+                SupaBaseClient.initialize(
+                    data.access_token
                 )
             }
 
@@ -85,6 +90,9 @@ class loginVM( private val reposatory: AuthReposatory,
                                 it.access_token,
                                 it.refresh_token
                             )
+                            SupaBaseClient.initialize(
+                                it.access_token
+                            )
                         }
 
                     }else {
@@ -119,6 +127,7 @@ class loginVM( private val reposatory: AuthReposatory,
                         it.access_token,
                         it.refresh_token
                     )
+
                 }
             } else {
                 println("REFRESH FAILED: ${response.code()}")

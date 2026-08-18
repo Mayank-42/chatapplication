@@ -14,7 +14,8 @@ object SupaBaseClient {
     lateinit var supabase: SupabaseClient
         private set
 
-    fun initialize(tokenManager: TokenManager) {
+//    fun initialize(tokenManager: TokenManager) {
+fun initialize(accessToken: String) {
 
         supabase = createSupabaseClient(
             supabaseUrl = constant.Supabase_url,
@@ -22,9 +23,10 @@ object SupaBaseClient {
         ) {
             httpEngine = OkHttp.create()
 
-            accessToken = {
-                tokenManager.getAccessToken() ?: ""
+            this.accessToken = {
+                accessToken
             }
+
 
             install(Realtime)
             install(Storage)
