@@ -23,6 +23,6 @@ class UserInfoReposatory(
     }
     suspend fun uploadIma(id:String,byte:ByteArray){
         supabase.storage.from("Profile_pic")
-            .upload(id="$id/profile.jpg",byte=byte)
+            .upload("$id/profile.jpg",byte)
     }
 }

@@ -84,11 +84,21 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-
-                val token = tokenManager.getAccessToken()
-
-                if (token != null) {
-                    firstPage = "Home"
+                val refreshToken = tokenManager.getRefreshToken()
+                if (refreshToken != null) {
+                    val response = authRepo.refreshToken(refreshToken)
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            tokenManager.saveTokens(
+                                it.access_token,
+                                it.refresh_token
+                            )
+                        }
+                        firstPage = "Home"
+                    } else {
+                        tokenManager.clearTokens()
+                        firstPage = "SignIn"
+                    }
                 } else {
                     firstPage = "SignIn"
                 }

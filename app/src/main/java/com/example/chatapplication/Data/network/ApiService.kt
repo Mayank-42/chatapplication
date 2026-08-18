@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.network
 
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
+import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.loginRequest
 import com.example.chatapplication.Data.network.request.signUpRequest
@@ -23,6 +24,10 @@ interface ApiService {
         @Body request: loginRequest
     ): Response<loginResponse>
 
+    @POST("token?grant_type=refresh_token")
+    suspend fun refreshToken(
+        @Body request: RefreshTokenRequest
+    ): Response<loginResponse>
     @POST("signup")
         suspend fun signUp(
             @Body request: signUpRequest

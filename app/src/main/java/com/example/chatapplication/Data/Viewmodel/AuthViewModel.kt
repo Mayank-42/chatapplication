@@ -66,9 +66,64 @@ class loginVM( private val reposatory: AuthReposatory,
         viewModelScope.launch{
             val givingInfo=reposatory.signUp(email=email,password=password,name=name,
                 username=username)
+            if (givingInfo.isSuccessful) {
+
+                // Login immediately to obtain access + refresh tokens
+                val login = reposatory.login(email, password)
+
+
+                if (givingInfo.isSuccessful) {
+
+                    // Signup successful → login immediately
+                    // so we get access_token + refresh_token
+                    val login = reposatory.login(email, password)
+
+                    if (login.isSuccessful) {
+
+                        login.body()?.let {
+                            tokenManager.saveTokens(
+                                it.access_token,
+                                it.refresh_token
+                            )
+                        }
+
+                    }else {
+                        println("LOGIN AFTER SIGNUP FAILED: ${login.code()}")
+                        println(
+                            "ERROR: ${login.errorBody()?.string()}"
+                        )
+                    }
+
+                } else {
+
+                    println("SIGNUP FAILED: ${givingInfo.code()}")
+                    println(
+                        "ERROR: ${givingInfo.errorBody()?.string()}"
+                    )
+                }
+            }
             println("STATUS: ${givingInfo.code()}")
             println("BODY: ${givingInfo.body()}")
             println("ERROR: ${givingInfo.errorBody()?.string()}")
+        }
+    }
+    fun refreshSession() {
+        viewModelScope.launch {
+            val refreshToken = tokenManager.getRefreshToken() ?: return@launch
+
+            val response = reposatory.refreshToken(refreshToken)
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    tokenManager.saveTokens(
+                        it.access_token,
+                        it.refresh_token
+                    )
+                }
+            } else {
+                println("REFRESH FAILED: ${response.code()}")
+                println("ERROR: ${response.errorBody()?.string()}")
+            }
         }
     }
 }
