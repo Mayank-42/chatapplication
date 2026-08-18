@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: UserInfo){
+fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: UserInfo,onLoginSuccess: () -> Unit){
     val scope=rememberCoroutineScope()
 //    var userName by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
@@ -97,7 +97,8 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                         .clickable {
                         scope.launch {
                             tokenManager.clearTokens()
-                            navControl.navigate("SignIn")
+//                            navControl.navigate("SignIn")
+                            onLoginSuccess()
                         }
                     }
                 )
@@ -108,7 +109,8 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                             modifier = Modifier.size(40.dp).clickable {
                                 scope.launch {
                                     tokenManager.clearTokens()
-                                    navControl.navigate("SignIn")
+//                                    navControl.navigate("SignIn")
+                                    onLoginSuccess()
                                 }
                             }
                         )

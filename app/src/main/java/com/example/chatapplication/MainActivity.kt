@@ -153,7 +153,10 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(
                                 navController,
                                 tokenManager,
-                                userInfovm
+                                userInfovm,
+                                onLoginSuccess = {
+                                    isAuthenticated = false
+                                }
                             )
                         }
 
