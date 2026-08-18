@@ -161,7 +161,8 @@ class MainActivity : ComponentActivity() {
                                 userInfovm,
                                 onLoginSuccess = {
                                     isAuthenticated = false
-                                }
+                                },
+                                UserId
                             )
                         }
 
@@ -194,7 +195,8 @@ class MainActivity : ComponentActivity() {
                                 profileScreen(
                                     navController,
                                     userInfovm,
-                                    tokenManager
+                                    tokenManager,
+                                    userId
                                 )
                             }
                         }
