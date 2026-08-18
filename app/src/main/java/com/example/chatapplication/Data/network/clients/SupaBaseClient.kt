@@ -6,6 +6,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.engine.okhttp.OkHttp
+import io.github.jan.supabase.storage.Storage
 //import io.ktor.client.engine.android.Android
 
 object SupaBaseClient {
@@ -26,6 +27,7 @@ object SupaBaseClient {
             }
 
             install(Realtime)
+            install(Storage)
         }
     }
 }

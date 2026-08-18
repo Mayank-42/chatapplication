@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.supabase.storage)
+//    implementation("io.github.jan-tennert.supabase:storage-kt:3.2.6")
 
     implementation(libs.ktor.client.okhttp)
 

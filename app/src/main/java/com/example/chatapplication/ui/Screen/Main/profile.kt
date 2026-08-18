@@ -25,6 +25,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,19 +38,41 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.ModifierLocalProvider
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.R
 
 @Composable
-fun profileScreen(nav: NavController){
+fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager){
+
+    var userId by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+     userId=token.getUserId()?:""
+    }
+
+    val context= LocalContext.current
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
-            println("Selected image: $uri")
+            val inputStream =
+                context.contentResolver.openInputStream(uri)
+
+            val bytes =
+                inputStream?.readBytes()
+            if (bytes != null) {
+                user.uploadImg(userId, bytes)
+            }
+
+            println("Image bytes: ${bytes?.size}")
+
         }
     }
     Box(modifier = Modifier.background(Color.Black).fillMaxSize()){
@@ -58,7 +85,7 @@ fun profileScreen(nav: NavController){
                 modifier = Modifier
 //                    .padding(bottom = 60.dp)
                     .size(180.dp).clip(CircleShape)
-                    .fillMaxSize()
+//                    .fillMaxSize()
                     .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
             IconButton(onClick = {
@@ -72,7 +99,7 @@ fun profileScreen(nav: NavController){
                     imageVector = Icons.Default.Add,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier=Modifier.size(270.dp)
+                    modifier=Modifier.size(100.dp)
                 )
             }
         }

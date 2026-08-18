@@ -52,8 +52,11 @@ class MainActivity : ComponentActivity() {
         SupaBaseClient.initialize(tokenManager)
         enableEdgeToEdge()
         setContent {
+
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
+
+            val supa= SupaBaseClient.supabase
 
             var repo = reposatory(application.database.dataBaseCall())
             var viewModel: databaseVM = viewModel(
@@ -65,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 factory = AuthViewModelFactory(authRepo, tokenManager)
             )
 
-            var userInfoRepo= UserInfoReposatory(retroFitClient.apiService)
+            var userInfoRepo= UserInfoReposatory(retroFitClient.apiService,supa)
             var userInfovm: UserInfo =viewModel(
                 factory = UserInfoFactory(userInfoRepo)
             )
@@ -121,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         SearchBarPage(navControler,userInfovm)
                     }
                     composable("profileScreen"){
-                        profileScreen(navControler)
+                        profileScreen(navControler,userInfovm,tokenManager)
                     }
 
                 }

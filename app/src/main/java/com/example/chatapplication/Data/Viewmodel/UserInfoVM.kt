@@ -27,14 +27,6 @@ var userInfo by mutableStateOf<List<TakingUsernameResponse>>(emptyList())
     private set
     var UserExsist by mutableStateOf<UserNameExistResponse?>(null)
 
-//    fun getinfo(){
-//        viewModelScope.launch{
-//            var response =infovm.takingUserName()
-//            if(response.isSuccessful){
-//                userInfo =response.body()?:emptyList()
-//            }
-//        }
-//    }
 fun getinfo() {
     viewModelScope.launch {
         try {
@@ -75,6 +67,11 @@ fun getinfo() {
             } catch (e: Exception) {
                 println("SEARCH: EXCEPTION = ${e.message}")
             }
+        }
+    }
+    fun uploadImg(id:String,bytes:ByteArray){
+        viewModelScope.launch{
+        infovm.uploadIma(id,bytes)
         }
     }
 
