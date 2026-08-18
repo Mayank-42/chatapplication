@@ -54,6 +54,15 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager){
     var userId by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
+
+        val id = token.getUserId()
+
+        println("PROFILE USER ID = $id")
+
+        userId = id ?: ""
+    }
+
+    LaunchedEffect(Unit) {
      userId=token.getUserId()?:""
     }
 
