@@ -37,7 +37,7 @@ import com.example.chatapplication.Data.local.tables.userInfo
 
 
 @Composable
-fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM){
+fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLoginSuccess: () -> Unit){
     var name by rememberSaveable{mutableStateOf("")}
     var username by rememberSaveable{mutableStateOf("")}
     Box(modifier=Modifier.fillMaxSize().background(Color.Black)){
@@ -52,7 +52,7 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM){
             onButtonClick={
                 viewMode.userinsert(userInfo(0,name,username))
                 authVM.sigUp(authVM.email ,authVM.password,name,username)
-               navControl.navigate("Home")
+               onLoginSuccess()
             },
             )
         }

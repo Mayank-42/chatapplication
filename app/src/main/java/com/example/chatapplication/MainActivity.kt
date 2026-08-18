@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
 
-            val supa= SupaBaseClient.supabase
+
 
             var repo = reposatory(application.database.dataBaseCall())
             var viewModel: databaseVM = viewModel(
@@ -67,19 +67,19 @@ class MainActivity : ComponentActivity() {
                 factory = AuthViewModelFactory(authRepo, tokenManager)
             )
 
-            var userInfoRepo= UserInfoReposatory(retroFitClient.apiService,supa)
-            var userInfovm: UserInfo =viewModel(
-                factory = UserInfoFactory(userInfoRepo)
-            )
-            val realtimeRepo = RealTimeRepo(tokenManager)
-            var messageInfoRepo= MessageRepo(retroFitClient.apiService, application.database.dataBaseCall(),)
-            var messageInfoVM: MsgVM=viewModel(
-                factory= MsgVM.MsgVMFactory(messageInfoRepo, realtimeRepo, repo, tokenManager)
-            )
+//            var userInfoRepo= UserInfoReposatory(retroFitClient.apiService,supa)
+//            var userInfovm: UserInfo =viewModel(
+//                factory = UserInfoFactory(userInfoRepo)
+//            )
+
+
 
 
             var firstPage by rememberSaveable {
                 mutableStateOf<String?>(null)
+            }
+            var isAuthenticated by rememberSaveable {
+                mutableStateOf(false)
             }
 
             LaunchedEffect(Unit) {
@@ -96,12 +96,15 @@ class MainActivity : ComponentActivity() {
                                 it.access_token
                             )
                         }
+                        isAuthenticated = true
                         firstPage = "Home"
                     } else {
                         tokenManager.clearTokens()
+                        isAuthenticated = false
                         firstPage = "SignIn"
                     }
                 } else {
+                    isAuthenticated = false
                     firstPage = "SignIn"
                 }
             }
@@ -111,34 +114,115 @@ class MainActivity : ComponentActivity() {
 //            var temp=if(!authVM.userLoggedIn) "SignIn" else "Home";
             if (firstPage != null) {
 
-                val navControler = rememberNavController()
-                NavHost(
-                    navController = navControler,
-                    startDestination = "$firstPage"
-                ) {
-                    composable("SignIn") {
-                        ShowSignIn(navControler, viewModel, authVM)
-                    }
-                    composable("register") {
-                        ShowShinUp(navControler, authVM)
-                    }
-                    composable("UserInfo") {
-                        UserInfo(navControler, viewModel, authVM)
-                    }
-                    composable("Home") {
-                        HomeScreen(navControler,tokenManager,userInfovm)
-                    }
-                    composable("ChatScreen/{userId}") {backstackEntry->
-                        val userId=backstackEntry.arguments?.getString("userId")
-                        chatScreen(navControler, viewModel,userId,messageInfoVM,tokenManager)
-                    }
-                    composable("SearchBarPage"){
-                        SearchBarPage(navControler,userInfovm)
-                    }
-                    composable("profileScreen"){
-                        profileScreen(navControler,userInfovm,tokenManager)
+                val navController = rememberNavController()
+
+                if (isAuthenticated) {
+
+                    // These are created ONLY after SupabaseClient is initialized
+                    val realtimeRepo = RealTimeRepo(tokenManager)
+
+                    val messageInfoRepo = MessageRepo(
+                        retroFitClient.apiService,
+                        application.database.dataBaseCall()
+                    )
+
+                    val messageInfoVM: MsgVM = viewModel(
+                        factory = MsgVM.MsgVMFactory(
+                            messageInfoRepo,
+                            realtimeRepo,
+                            repo,
+                            tokenManager
+                        )
+                    )
+
+                    val userInfoRepo = UserInfoReposatory(
+                        retroFitClient.apiService,
+                        SupaBaseClient.supabase
+                    )
+
+                    val userInfovm: UserInfo = viewModel(
+                        factory = UserInfoFactory(userInfoRepo)
+                    )
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "Home"
+                    ) {
+
+                        composable("Home") {
+                            HomeScreen(
+                                navController,
+                                tokenManager,
+                                userInfovm
+                            )
+                        }
+
+                        composable("ChatScreen/{userId}") { backStackEntry ->
+
+                            val userId =
+                                backStackEntry.arguments?.getString("userId")
+
+                            chatScreen(
+                                navController,
+                                viewModel,
+                                userId,
+                                messageInfoVM,
+                                tokenManager
+                            )
+                        }
+
+                        composable("SearchBarPage") {
+                            SearchBarPage(
+                                navController,
+                                userInfovm
+                            )
+                        }
+
+                        composable("profileScreen") {
+                            profileScreen(
+                                navController,
+                                userInfovm,
+                                tokenManager
+                            )
+                        }
                     }
 
+                } else {
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "SignIn"
+                    ) {
+
+                        composable("SignIn") {
+                            ShowSignIn(
+                                navController,
+                                viewModel,
+                                authVM,
+                                onLoginSuccess = {
+                                    isAuthenticated = true
+                                }
+                            )
+                        }
+
+                        composable("register") {
+                            ShowShinUp(
+                                navController,
+                                authVM
+                            )
+                        }
+
+                        composable("UserInfo") {
+                            UserInfo(
+                                navController,
+                                viewModel,
+                                authVM,
+                                onLoginSuccess = {
+                                    isAuthenticated = true
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

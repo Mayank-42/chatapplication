@@ -18,14 +18,29 @@ class TokenManager(private val context: Context) {
     private val refreshTokenKey =
         stringPreferencesKey("refresh_token")
 
+    private val userIdKey =
+        stringPreferencesKey("user_id")
+
     suspend fun saveTokens(
         accessToken: String,
         refreshToken: String
     ) {
-        context.dataStore.edit { preferences ->
+        val payload = accessToken.split(".")[1]
 
+        val decoded = android.util.Base64.decode(
+            payload,
+            android.util.Base64.URL_SAFE
+        )
+
+        val json = String(decoded)
+
+        val userId =
+            org.json.JSONObject(json).getString("sub")
+
+        context.dataStore.edit { preferences ->
             preferences[accessTokenKey] = accessToken
             preferences[refreshTokenKey] = refreshToken
+            preferences[userIdKey] = userId
         }
     }
 
@@ -40,20 +55,14 @@ class TokenManager(private val context: Context) {
     }
 
     suspend fun getUserId(): String? {
-        val token = getAccessToken() ?: return null
-        val payload = token.split(".")[1]
-        // decode payload
-        val decoded = android.util.Base64.decode(
-            payload,
-            android.util.Base64.URL_SAFE
-        )
-        val json = String(decoded)
-        return org.json.JSONObject(json).getString("sub")
+        val preferences = context.dataStore.data.first()
+        return preferences[userIdKey]
     }
     suspend fun clearTokens() {
         context.dataStore.edit { preferences ->
             preferences.remove(accessTokenKey)
             preferences.remove(refreshTokenKey)
+            preferences.remove(userIdKey)
         }
     }
 }
