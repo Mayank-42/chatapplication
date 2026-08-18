@@ -161,8 +161,7 @@ class MainActivity : ComponentActivity() {
                                 userInfovm,
                                 onLoginSuccess = {
                                     isAuthenticated = false
-                                },
-                                UserId
+                                }
                             )
                         }
 
