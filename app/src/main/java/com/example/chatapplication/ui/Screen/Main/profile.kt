@@ -51,6 +51,9 @@ import com.example.chatapplication.R
 @Composable
 fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:String){
 
+//    var idd by rememberSaveable {mutableStateOf("") }
+//    LaunchedEffect(Unit) { idd=token.getUserId()?:""}
+
 //    var userId by rememberSaveable { mutableStateOf("") }
 //
 //    LaunchedEffect(Unit) {

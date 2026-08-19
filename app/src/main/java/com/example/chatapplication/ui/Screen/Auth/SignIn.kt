@@ -40,7 +40,7 @@ import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.tables.userLoginInfo
 
 @Composable
-fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM,onLoginSuccess: () -> Unit){
+fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM,onLoginSuccess: (String) -> Unit){
     var email by rememberSaveable{mutableStateOf("")}
     var pass by rememberSaveable{mutableStateOf("")}
     var showErrorBox by rememberSaveable { mutableStateOf(false)}
@@ -75,7 +75,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                     authVM.login(email, pass){ response,userId ->
 
                         if (response.isSuccessful && userId != null) {
-                            onLoginSuccess()
+                            onLoginSuccess(userId)
                         } else {
 
                             showErrorBox = true

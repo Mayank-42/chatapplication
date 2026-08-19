@@ -58,9 +58,6 @@ class MainActivity : ComponentActivity() {
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
 
-            LaunchedEffect(Unit){
-            userId=tokenManager.getUserId()?:""
-            }
 
             var repo = reposatory(application.database.dataBaseCall())
             var viewModel: databaseVM = viewModel(
@@ -100,6 +97,7 @@ class MainActivity : ComponentActivity() {
                             SupaBaseClient.initialize(
                                 it.access_token
                             )
+                            userId=tokenManager.getUserId()?:""
                         }
                         isAuthenticated = true
                         firstPage = "Home"
@@ -141,11 +139,13 @@ class MainActivity : ComponentActivity() {
                     )
 
                     val userInfoRepo = UserInfoReposatory(
+
                         retroFitClient.apiService,
                         SupaBaseClient.supabase
                     )
 
                     val userInfovm: UserInfo = viewModel(
+                        key = "UserInfo-$userId",
                         factory = UserInfoFactory(userInfoRepo)
                     )
 
@@ -162,6 +162,7 @@ class MainActivity : ComponentActivity() {
                                 tokenManager,
                                 userInfovm,
                                 onLoginSuccess = {
+                                    userId=""
                                     isAuthenticated = false
                                 }
 
@@ -216,7 +217,8 @@ class MainActivity : ComponentActivity() {
                                 navController,
                                 viewModel,
                                 authVM,
-                                onLoginSuccess = {
+                                onLoginSuccess = {id ->
+                                    userId=id
                                     isAuthenticated = true
                                 }
                             )

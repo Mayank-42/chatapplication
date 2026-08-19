@@ -1,6 +1,7 @@
 package com.example.chatapplication.ui.Screen.Main
 
-import android.R.attr.top
+
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -99,6 +100,7 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                         .clickable {
                         scope.launch {
 //                            navControl.navigate("SignIn")
+                            tokenManager.clearTokens()
                             onLoginSuccess()
                         }
                     }
@@ -109,7 +111,7 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                             contentDescription = null,
                             modifier = Modifier.size(40.dp).clickable {
                                 scope.launch {
-
+                                    tokenManager.clearTokens()
 //                                    navControl.navigate("SignIn")
                                     onLoginSuccess()
                                 }
@@ -122,7 +124,7 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                         contentDescription = null,
                         modifier = Modifier.size(40.dp).clickable {
                             scope.launch {
-                                if (id != null) {
+                                if (id.length != 0) {
                                     navControl.navigate("profileScreen/$id")
                                 }
                             }

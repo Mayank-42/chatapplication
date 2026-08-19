@@ -1,6 +1,7 @@
 package com.example.chatapplication.Data.Repo
 
-import android.R.attr.path
+
+import com.example.chatapplication.Data.local.operation
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
@@ -23,6 +24,8 @@ class UserInfoReposatory(
     }
     suspend fun uploadIma(id:String,byte:ByteArray){
         supabase.storage.from("Profile_pic")
-            .upload("$id/profile.jpg",byte)
+            .upload("$id/profile.jpg",byte){
+                upsert=true
+            }
     }
 }
