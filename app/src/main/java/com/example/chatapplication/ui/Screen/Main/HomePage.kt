@@ -68,6 +68,8 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
     LaunchedEffect(Unit) {
         userinfoo.getinfo()
     }
+    var id by rememberSaveable {mutableStateOf("") }
+    LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
         Scaffold(topBar = {
                 TopAppBar(
 
@@ -96,7 +98,6 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                         .size(40.dp)
                         .clickable {
                         scope.launch {
-                            tokenManager.clearTokens()
 //                            navControl.navigate("SignIn")
                             onLoginSuccess()
                         }
@@ -108,7 +109,7 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                             contentDescription = null,
                             modifier = Modifier.size(40.dp).clickable {
                                 scope.launch {
-                                    tokenManager.clearTokens()
+
 //                                    navControl.navigate("SignIn")
                                     onLoginSuccess()
                                 }
@@ -121,7 +122,9 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                         contentDescription = null,
                         modifier = Modifier.size(40.dp).clickable {
                             scope.launch {
-                                navControl.navigate("profileScreen")
+                                if (id != null) {
+                                    navControl.navigate("profileScreen/$id")
+                                }
                             }
                         }
                     )

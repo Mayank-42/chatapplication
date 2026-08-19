@@ -155,6 +155,8 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         composable("Home") {
+
+
                             HomeScreen(
                                 navController,
                                 tokenManager,
@@ -162,6 +164,7 @@ class MainActivity : ComponentActivity() {
                                 onLoginSuccess = {
                                     isAuthenticated = false
                                 }
+
                             )
                         }
 
@@ -195,7 +198,7 @@ class MainActivity : ComponentActivity() {
                                     navController,
                                     userInfovm,
                                     tokenManager,
-                                    userId
+                                    profileUserId
                                 )
                             }
                         }
