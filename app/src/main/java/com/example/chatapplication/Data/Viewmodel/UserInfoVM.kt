@@ -71,7 +71,19 @@ fun getinfo() {
     }
     fun uploadImg(id:String,bytes:ByteArray){
         viewModelScope.launch{
-        infovm.uploadIma(id,bytes)
+//        infovm.uploadIma(id,bytes)
+            try {
+                println("UPLOAD: ID = $id")
+                println("UPLOAD: BYTES = ${bytes.size}")
+
+                infovm.uploadIma(id, bytes)
+
+                println("UPLOAD: SUCCESS")
+            } catch (e: Exception) {
+                println("UPLOAD: FAILED")
+                println("UPLOAD: ERROR = ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 

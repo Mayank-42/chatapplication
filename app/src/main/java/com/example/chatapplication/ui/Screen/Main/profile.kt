@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
@@ -50,6 +51,9 @@ import com.example.chatapplication.R
 
 @Composable
 fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:String){
+
+
+    val currentUser = user.userInfo.firstOrNull { it.id == id }
 
 //    var idd by rememberSaveable {mutableStateOf("") }
 //    LaunchedEffect(Unit) { idd=token.getUserId()?:""}
@@ -90,16 +94,29 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:Strin
     Box(modifier = Modifier.background(Color.Black).fillMaxSize()){
         Column(modifier=Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment =Alignment.CenterHorizontally) {
             Box() {
-            Image(
-                painter = painterResource(R.drawable.example),
-                contentDescription = "profile image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-//                    .padding(bottom = 60.dp)
-                    .size(180.dp).clip(CircleShape)
-//                    .fillMaxSize()
-                    .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            )
+//            Image(
+//                painter = painterResource(currentUser?.photo_url),
+//                contentDescription = "profile image",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+////                    .padding(bottom = 60.dp)
+//                    .size(180.dp).clip(CircleShape)
+////                    .fillMaxSize()
+//                    .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+//            )
+                AsyncImage(
+                    model = currentUser?.photo_url,
+                    contentDescription = "profile image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(180.dp)
+                        .clip(CircleShape)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.primary,
+                            CircleShape
+                        )
+                )
             IconButton(onClick = {
                 imagePicker.launch(
                     PickVisualMediaRequest(
@@ -115,23 +132,25 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:Strin
                 )
             }
         }
-            tile()
-            tile()
-            tile()
+
+            tile(currentUser?.name)
+            tile(currentUser?.username)
+            tile(currentUser?.email)
 
         }
 
     }
 }
 @Composable
-fun tile(){
+fun tile(content:String?){
+
     Surface(modifier = Modifier.fillMaxWidth()
         .height(60.dp)
         .padding(start=10.dp,end=10.dp,top=10.dp)
         .clip(shape= RoundedCornerShape(10.dp))
     ){
         Box(contentAlignment = Alignment.Center) {
-            Text(text = "text will share over here ")
+            Text(text = content?:"something is wrong")
         }
     }
 }
