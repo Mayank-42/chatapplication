@@ -4,6 +4,7 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.network.constant
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.ktor.client.engine.okhttp.OkHttp
 import io.github.jan.supabase.storage.Storage
@@ -30,6 +31,7 @@ fun initialize(accessToken: String) {
 
             install(Realtime)
             install(Storage)
+            install(Postgrest)
         }
     }
 }

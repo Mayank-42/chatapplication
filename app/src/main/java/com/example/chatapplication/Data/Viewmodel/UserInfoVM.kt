@@ -79,6 +79,7 @@ fun getinfo() {
                 infovm.uploadIma(id, bytes)
 
                 println("UPLOAD: SUCCESS")
+                 getinfo()
             } catch (e: Exception) {
                 println("UPLOAD: FAILED")
                 println("UPLOAD: ERROR = ${e.message}")

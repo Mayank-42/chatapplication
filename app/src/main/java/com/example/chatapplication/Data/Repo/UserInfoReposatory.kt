@@ -30,10 +30,16 @@ class UserInfoReposatory(
             .upload("$id/profile.jpg",byte){
                 upsert=true
             }
-        supabase.from("PROFILE")
+        val publicUrl = supabase.storage
+            .from("Profile_pic")
+            .publicUrl(path)
+
+        println("PROFILE IMAGE URL = $publicUrl")
+
+        supabase.from("profile")
             .update(
                 mapOf(
-                    "photo_url" to path
+                    "photo_url" to publicUrl
                 )
             ) {
                 filter {
