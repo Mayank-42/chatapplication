@@ -1,5 +1,6 @@
 package com.example.chatapplication
 
+import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -40,6 +41,8 @@ import com.example.chatapplication.Data.network.clients.retroFitClient
 import com.example.chatapplication.ui.Screen.Auth.ShowShinUp
 import com.example.chatapplication.ui.Screen.Auth.ShowSignIn
 import com.example.chatapplication.ui.Screen.Auth.UserInfo
+import com.example.chatapplication.ui.Screen.GroupChat.GroupChatSearch
+import com.example.chatapplication.ui.Screen.GroupChat.GroupPage
 import com.example.chatapplication.ui.Screen.Main.HomeScreen
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
@@ -47,6 +50,7 @@ import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
             val tokenManager = TokenManager(this)
@@ -201,6 +205,12 @@ class MainActivity : ComponentActivity() {
                                     tokenManager,
                                     profileUserId
                                 )
+                            }
+                            composable("GroupPage"){
+                                GroupPage(navController)
+                            }
+                            composable("GropChatSearch"){
+                                GroupChatSearch(navController,userInfovm)
                             }
                         }
                     }

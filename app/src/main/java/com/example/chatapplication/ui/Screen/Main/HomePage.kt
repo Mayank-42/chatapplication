@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
@@ -92,17 +93,16 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                 ) {
                     Spacer(modifier=Modifier.width(40.dp))
                 Icon(
-                    imageVector = Icons.Default.Logout,
+                    imageVector = Icons.Default.Groups,
                     contentDescription = null,
                     modifier = Modifier
 //                        .padding(end=170.dp)
                         .size(40.dp)
                         .clickable {
-                        scope.launch {
-//                            navControl.navigate("SignIn")
-                            tokenManager.clearTokens()
-                            onLoginSuccess()
-                        }
+                            navControl.navigate("GroupPage")
+//                            tokenManager.clearTokens()
+//                            onLoginSuccess()
+
                     }
                 )
                 Spacer(modifier=Modifier.width(100.dp))
