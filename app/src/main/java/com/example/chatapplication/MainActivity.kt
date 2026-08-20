@@ -42,6 +42,7 @@ import com.example.chatapplication.ui.Screen.Auth.ShowShinUp
 import com.example.chatapplication.ui.Screen.Auth.ShowSignIn
 import com.example.chatapplication.ui.Screen.Auth.UserInfo
 import com.example.chatapplication.ui.Screen.GroupChat.GroupChatSearch
+import com.example.chatapplication.ui.Screen.GroupChat.GroupName
 import com.example.chatapplication.ui.Screen.GroupChat.GroupPage
 import com.example.chatapplication.ui.Screen.Main.HomeScreen
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
@@ -206,13 +207,18 @@ class MainActivity : ComponentActivity() {
                                     profileUserId
                                 )
                             }
+                        }
                             composable("GroupPage"){
                                 GroupPage(navController)
                             }
                             composable("GropChatSearch"){
                                 GroupChatSearch(navController,userInfovm)
                             }
+                        composable("GroupName"){
+                            GroupName(navController)
                         }
+
+
                     }
 
                 } else {
