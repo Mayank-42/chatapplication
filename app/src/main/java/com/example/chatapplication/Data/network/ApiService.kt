@@ -1,11 +1,13 @@
 package com.example.chatapplication.Data.network
 
+import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.loginRequest
 import com.example.chatapplication.Data.network.request.signUpRequest
+import com.example.chatapplication.Data.network.response.ConversationResponse
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
@@ -53,5 +55,10 @@ interface ApiService {
       suspend fun getingMessage(
           @Body request: GetMessageRequest
       ): Response<List<WholeMessageResponse>>
+
+    @POST("rpc/get_or_create_conversation")
+    suspend fun getOrCreateConversation(
+        @Body request: ConversationRequest
+    ): Response<List<ConversationResponse>>
 
 }

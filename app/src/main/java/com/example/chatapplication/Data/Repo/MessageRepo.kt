@@ -3,8 +3,10 @@ package com.example.chatapplication.Data.Repo
 import com.example.chatapplication.Data.local.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
+import com.example.chatapplication.Data.network.response.ConversationResponse
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
 import com.example.chatapplication.Data.network.response.loginResponse
@@ -18,9 +20,7 @@ class MessageRepo(
         val request= MessageInfoRequest(reciver_id,msg)
         return getMessage.storeMessage(request)
     }
-//    suspend fun getingmessage(): Response<List<WholeMessageResponse>>{
-//        return getMessage.getingMessage()
-//    }
+
     suspend fun converting(time:String,id:String){
     val request = GetMessageRequest(
         last_timestamp = if (time.isBlank()) null else time,
@@ -44,5 +44,15 @@ class MessageRepo(
     if (localMsgList != null) {
         localWork.localInsert(localMsgList)
     }
+    }
+    suspend fun getOrCreateConversation(
+        otherUserId: String
+    ): Response<List<ConversationResponse>> {
+
+        val request = ConversationRequest(
+            other_user_id = otherUserId
+        )
+
+        return getMessage.getOrCreateConversation(request)
     }
 }

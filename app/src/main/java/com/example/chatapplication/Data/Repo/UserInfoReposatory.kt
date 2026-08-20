@@ -32,7 +32,7 @@ class UserInfoReposatory(
             }
         val publicUrl = supabase.storage
             .from("Profile_pic")
-            .publicUrl(path)
+            .publicUrl(path)+ "?v=${System.currentTimeMillis()}"
 
         println("PROFILE IMAGE URL = $publicUrl")
 
