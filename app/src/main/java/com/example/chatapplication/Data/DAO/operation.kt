@@ -41,28 +41,48 @@ interface operation {
 
     @Query("SELECT * FROM MessageInfo" )
     fun getAllTheValue() : Flow<List<MessageInfo>>
-@Query("""
+
+
+    @Query("""
     SELECT * FROM MessageInfo
-    WHERE (sender_Id = :myId AND reciver_Id = :userId)
-       OR (sender_Id = :userId AND reciver_Id = :myId)
+    WHERE conversationId = :conversationId
     ORDER BY date ASC
 """)
-fun getConversation(
-    myId: String,
-    userId: String
-): Flow<List<MessageInfo>>
+    fun getConversation(
+        conversationId: String
+    ): Flow<List<MessageInfo>>
+//@Query("""
+//    SELECT * FROM MessageInfo
+//    WHERE (sender_Id = :myId AND reciver_Id = :userId)
+//       OR (sender_Id = :userId AND reciver_Id = :myId)
+//    ORDER BY date ASC
+//""")
+//fun getConversation(
+//    myId: String,
+//    userId: String
+//): Flow<List<MessageInfo>>
 
-@Query("""SELECT * FROM MessageInfo
-     WHERE (sender_Id = :myId AND reciver_Id = :userId)
-       OR (sender_Id = :userId AND reciver_Id = :myId)
+
+    @Query("""
+    SELECT * FROM MessageInfo
+    WHERE conversationId = :conversationId
     ORDER BY date DESC, id DESC
     LIMIT 1
-    
-        """)
-suspend fun getTimeId(
-    myId: String,
-    userId: String
-): MessageInfo?
+""")
+    suspend fun getTimeId(
+        conversationId: String
+    ): MessageInfo?
+//@Query("""SELECT * FROM MessageInfo
+//     WHERE (sender_Id = :myId AND reciver_Id = :userId)
+//       OR (sender_Id = :userId AND reciver_Id = :myId)
+//    ORDER BY date DESC, id DESC
+//    LIMIT 1
+//
+//        """)
+//suspend fun getTimeId(
+//    myId: String,
+//    userId: String
+//): MessageInfo?
 
 //    @Query("select*from MessageInfo where sender_id=")
 

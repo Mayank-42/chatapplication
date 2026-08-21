@@ -29,11 +29,12 @@ class MsgVM(
     private val tokenManager: TokenManager
 ): ViewModel() {
     private var realtimeStarted = false
+    private var activeConversationId: String? = null
 
     var localmsgList by mutableStateOf<List<WholeMessageResponse>>(emptyList())
 
 
-    fun startRealtime() { // every new inserted row will come to local db
+    fun startRealtime(conversationId: String) { // every new inserted row will come to local db
 
         if (realtimeStarted) {
             println("REALTIME: Already started")
@@ -41,6 +42,7 @@ class MsgVM(
         }
 
         realtimeStarted = true
+        activeConversationId = conversationId
 
         viewModelScope.launch {
             val currentUserId = tokenManager.getUserId() ?: ""
@@ -55,19 +57,27 @@ class MsgVM(
                     println("REALTIME: NEW MESSAGE RECEIVED")
 
                     val record = event.record
-                    val senderId = record["sender_id"]!!.jsonPrimitive.content
-                    val receiverId = record["receiver_id"]!!.jsonPrimitive.content
+                    val conversationIdFromEvent = record["conversation_id"]?.jsonPrimitive?.content
 
-                    if (
-                        senderId != currentUserId &&
-                        receiverId != currentUserId
-                    ) {
-                        println("REALTIME: IGNORING UNRELATED MESSAGE")
-                        return@collectLatest  //if senderId(user) is not involved then ignore the event
+                    if (conversationIdFromEvent != activeConversationId) {
+                        println("REALTIME: IGNORING OTHER CONVERSATION")
+                        return@collectLatest
                     }
+
+//                    val senderId = record["sender_id"]!!.jsonPrimitive.content
+//                    val receiverId = record["receiver_id"]!!.jsonPrimitive.content
+//
+//                    if (
+//                        senderId != currentUserId &&
+//                        receiverId != currentUserId
+//                    ) {
+//                        println("REALTIME: IGNORING UNRELATED MESSAGE")
+//                        return@collectLatest  //if senderId(user) is not involved then ignore the event
+//                    }
 
                     val messageInfo = MessageInfo(
                         id = record["id"]!!.jsonPrimitive.content,
+                        conversationId = record["conversationId"]!!.jsonPrimitive.content,
                         sender_Id = record["sender_id"]!!.jsonPrimitive.content,
                         reciver_Id = record["receiver_id"]!!.jsonPrimitive.content,
                         message = record["message"]!!.jsonPrimitive.content,
@@ -85,25 +95,39 @@ class MsgVM(
         }
     }
 
-
     fun insertingLocaly(
-        myId: String,
-        userId: String
-    ) { //whole postgress db comes to localDB but we have to call
+        conversationId: String
+    ) {
         viewModelScope.launch {
-            println("SYNC: insertingLocaly CALLED")
-            var time = dbrepo.getTimeId(myId, userId)
-            println("SYNC: latest message = $time")
-            gettingmsg.converting(time?.date ?: "", time?.id ?: "")
 
-            println("SYNC: converting CALLED")
+            val time = dbrepo.getTimeId(conversationId)
+
+            gettingmsg.converting(
+                conversationId = conversationId,
+                time = time?.date ?: "",
+                id = time?.id ?: ""
+            )
         }
     }
 
-    fun storeMsg(receiverId: String, message: String) {  //send the message
+//    fun insertingLocaly(
+//        myId: String,
+//        userId: String
+//    ) { //whole postgress db comes to localDB but we have to call
+//        viewModelScope.launch {
+//            println("SYNC: insertingLocaly CALLED")
+//            var time = dbrepo.getTimeId(myId, userId)
+//            println("SYNC: latest message = $time")
+//            gettingmsg.converting(time?.date ?: "", time?.id ?: "")
+//
+//            println("SYNC: converting CALLED")
+//        }
+//    }
+
+    fun storeMsg(conversationId: String, message: String) {  //send the message
 
         println("STORE MSG: FUNCTION CALLED")
-        println("STORE MSG: receiverId = $receiverId")
+        println("STORE MSG: receiverId = $conversationId")
         println("STORE MSG: message = $message")
 
         viewModelScope.launch {
@@ -112,7 +136,7 @@ class MsgVM(
                 println("STORE MSG: CALLING API")
 
                 val response = gettingmsg.putMessage(
-                    reciver_id = receiverId,
+                    conversationId = conversationId,
                     msg = message
                 )
 

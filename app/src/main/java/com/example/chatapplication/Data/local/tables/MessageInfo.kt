@@ -7,6 +7,7 @@ import androidx.room3.PrimaryKey
 data class MessageInfo(
     @PrimaryKey
     var id:String,
+    var conversationId: String,
     var sender_Id:String,
     var reciver_Id:String,
     var message:String,

@@ -13,13 +13,14 @@ class MessageRepo(
     private val getMessage: ApiService,
     private val localWork: operation
 ){
-    suspend fun putMessage(reciver_id:String,msg:String):Response<Unit>{
-        val request= MessageInfoRequest(reciver_id,msg)
+    suspend fun putMessage(conversationId:String,msg:String):Response<Unit>{
+        val request= MessageInfoRequest(conversationId,msg)
         return getMessage.storeMessage(request)
     }
 
-    suspend fun converting(time:String,id:String){
+    suspend fun converting(conversationId: String,time:String,id:String){
     val request = GetMessageRequest(
+        conversation_id = conversationId,
         last_timestamp = if (time.isBlank()) null else time,
         last_id = if (id.isBlank()) null else id
     )
@@ -31,6 +32,7 @@ class MessageRepo(
         var localMsgList=serverList?.map{
             MessageInfo(
                 id = it.id,
+                conversationId = it.conversationId,
                 sender_Id = it.senderId,
                 reciver_Id = it.receiverId,
                 message = it.message,

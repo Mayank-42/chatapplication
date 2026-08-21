@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class WholeMessageResponse(
     val id: String,
+    @SerializedName("conversation_id")
+    val conversationId: String,
     @SerializedName("sender_id") // to avoid conflict from the sql
     val senderId: String,
     @SerializedName("receiver_id")
