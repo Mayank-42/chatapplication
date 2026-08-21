@@ -9,6 +9,6 @@ data class GroupInfo(
     var GroupId:Int=0,
     var GropName:String,
     var bio:String,
-    var memeber:List<String>
+//    var memeber:List<String>
 ) {
 }
