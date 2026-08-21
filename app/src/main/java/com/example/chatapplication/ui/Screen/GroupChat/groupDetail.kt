@@ -42,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
+import com.example.chatapplication.Data.local.tables.GroupInfo
 import com.example.chatapplication.R
 import com.example.chatapplication.ui.Screen.Auth.surface
 import io.ktor.websocket.Frame
@@ -64,6 +66,8 @@ import io.ktor.websocket.Frame
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupName(nav: NavController,save: GroupChatVM){
+    var Gname by rememberSaveable {mutableStateOf("") }
+    var Gbio by rememberSaveable {mutableStateOf("") }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,8 +105,8 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                         )
                     Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp)) {
                         TextField(
-                            value = "",
-                            onValueChange = {},
+                            value = Gname,
+                            onValueChange = {Gname=it},
                             placeholder = {
                                 Text(text = "Enter grop name ",color=Color.White)
                             },
@@ -120,8 +124,8 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                 Spacer(modifier=Modifier.height(20.dp))
                     Surface(modifier = Modifier.fillMaxWidth().clip(shape=RoundedCornerShape(10.dp))){
                         TextField(
-                            value="",
-                            onValueChange={},
+                            value=Gbio,
+                            onValueChange={Gbio=it},
                             placeholder = {
                                 Text(text="Describe the purpse of This group ",color=Color.White)
                             },
@@ -136,7 +140,15 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                         )
                     }
                 Box(modifier=Modifier.fillMaxWidth().padding(end=30.dp), contentAlignment = Alignment.TopEnd){
-                Button(onClick={nav.popBackStack("GroupPage",inclusive = false)}){ Text(text="Create")}
+                Button(onClick={
+                    nav.popBackStack("GroupPage",
+                        inclusive = false,
+                    );
+                        save.insertGroupInfo(GroupInfo(0,Gname,Gbio,save.selectedUserId))
+                })
+                  {
+                    Text(text="Create")
+                  }
                 }
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth()

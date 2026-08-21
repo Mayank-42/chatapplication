@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.local
 
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
+import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.Data.local.tables.userLoginInfo

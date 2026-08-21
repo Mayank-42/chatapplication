@@ -1,15 +1,12 @@
 package com.example.chatapplication.Data.Repo
 
-import com.example.chatapplication.Data.local.operation
+import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
-import com.example.chatapplication.Data.network.response.MessageInfoResponse
-import com.example.chatapplication.Data.network.response.WholeMessageResponse
-import com.example.chatapplication.Data.network.response.loginResponse
 import retrofit2.Response
 
 class MessageRepo(

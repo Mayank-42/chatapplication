@@ -1,4 +1,4 @@
-package com.example.chatapplication.Data.local
+package com.example.chatapplication.Data.DAO
 
 import androidx.room3.Dao
 import androidx.room3.Delete

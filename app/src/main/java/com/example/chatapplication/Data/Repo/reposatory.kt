@@ -1,6 +1,6 @@
 package com.example.chatapplication.Data.Repo
 
-import com.example.chatapplication.Data.local.operation
+import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.Data.local.tables.userLoginInfo

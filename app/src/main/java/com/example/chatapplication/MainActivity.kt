@@ -1,7 +1,6 @@
 package com.example.chatapplication
 
 import android.annotation.SuppressLint
-import android.app.LauncherActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -35,7 +33,6 @@ import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.UserInfoFactory
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.TokenManager
-import com.example.chatapplication.Data.local.operation
 import com.example.chatapplication.Data.network.clients.AuthRetroFitClient
 import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.clients.retroFitClient
@@ -210,7 +207,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                             composable("GroupPage"){
-                                GroupPage(navController)
+                                GroupPage(navController,save)
                             }
                             composable("GropChatSearch"){
                                 GroupChatSearch(navController,userInfovm,save)
