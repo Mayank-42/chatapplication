@@ -108,7 +108,7 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                             value = Gname,
                             onValueChange = {Gname=it},
                             placeholder = {
-                                Text(text = "Enter grop name ",color=Color.White)
+                                Text(text = "Enter group name ",color=Color.White)
                             },
                             colors= TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
@@ -127,7 +127,7 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                             value=Gbio,
                             onValueChange={Gbio=it},
                             placeholder = {
-                                Text(text="Describe the purpse of This group ",color=Color.White)
+                                Text(text="Describe the purpose of This group ",color=Color.White)
                             },
                             colors= TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = Color.Transparent,
@@ -140,11 +140,15 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                         )
                     }
                 Box(modifier=Modifier.fillMaxWidth().padding(end=30.dp), contentAlignment = Alignment.TopEnd){
-                Button(onClick={
-                    nav.popBackStack("GroupPage",
-                        inclusive = false,
-                    );
-                        save.insertGroupInfo(GroupInfo("f",Gname,Gbio))
+                Button(onClick= {
+                    if (save.groupCreated) {
+                        nav.popBackStack(
+                            "GroupPage",
+                            inclusive = false,
+                        );
+//                        save.insertGroupInfo(GroupInfo("f",Gname,Gbio))
+                        save.createGroup(Gname, Gbio)
+                    }
                 })
                   {
                     Text(text="Create")

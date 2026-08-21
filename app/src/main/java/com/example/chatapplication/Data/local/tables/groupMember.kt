@@ -4,7 +4,7 @@ import androidx.room3.Entity
 
 @Entity(
 
-    primaryKeys = ["groupId", "groupMemberId"]
+    primaryKeys = ["GroupId", "GroupMemberId"]
 )
 data class groupMember(
     var GroupId:String,

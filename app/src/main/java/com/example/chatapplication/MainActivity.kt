@@ -50,6 +50,7 @@ import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
+import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("ComposableDestinationInComposeScope")
@@ -126,7 +127,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 if (isAuthenticated) {
-                    var GroupRepo= GroupRepo(application.database.Groupcall())
+                    var GroupRepo= GroupRepo(application.database.Groupcall(), retroFitClient.apiService )
                     var save: GroupChatVM= viewModel(factory = GroupChatVMfacrory(GroupRepo))
                     // These are created ONLY after SupabaseClient is initialized
                     val realtimeRepo = RealTimeRepo(tokenManager)
