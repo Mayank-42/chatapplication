@@ -144,7 +144,7 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                     nav.popBackStack("GroupPage",
                         inclusive = false,
                     );
-                        save.insertGroupInfo(GroupInfo(0,Gname,Gbio))
+                        save.insertGroupInfo(GroupInfo("f",Gname,Gbio))
                 })
                   {
                     Text(text="Create")

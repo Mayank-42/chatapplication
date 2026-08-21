@@ -5,8 +5,8 @@ import androidx.room3.PrimaryKey
 
 @Entity
 data class GroupInfo(
-    @PrimaryKey(autoGenerate = true)
-    var GroupId:Int=0,
+    @PrimaryKey
+    var GroupId:String,
     var GropName:String,
     var bio:String,
 //    var memeber:List<String>

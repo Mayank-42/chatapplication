@@ -1,6 +1,7 @@
 package com.example.chatapplication.Data.network
 
 import com.example.chatapplication.Data.network.request.ConversationRequest
+import com.example.chatapplication.Data.network.request.CreateGroupRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
@@ -60,5 +61,10 @@ interface ApiService {
     suspend fun getOrCreateConversation(
         @Body request: ConversationRequest
     ): Response<List<ConversationResponse>>
+
+    @POST("rpc/create_group")
+    suspend fun createGroup(
+        @Body request: CreateGroupRequest
+    ): Response<String>
 
 }
