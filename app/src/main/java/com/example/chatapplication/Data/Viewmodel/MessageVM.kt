@@ -77,7 +77,7 @@ class MsgVM(
 
                     val messageInfo = MessageInfo(
                         id = record["id"]!!.jsonPrimitive.content,
-                        conversationId = record["conversationId"]!!.jsonPrimitive.content,
+                        conversationId = conversationIdFromEvent!! ,
                         sender_Id = record["sender_id"]!!.jsonPrimitive.content,
                         reciver_Id = record["receiver_id"]!!.jsonPrimitive.content,
                         message = record["message"]!!.jsonPrimitive.content,
