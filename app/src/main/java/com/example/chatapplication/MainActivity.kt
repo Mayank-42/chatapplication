@@ -28,6 +28,7 @@ import com.example.chatapplication.Data.Viewmodel.dataBaseVMfacrory
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.AuthViewModelFactory
+import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 //import com.example.chatapplication.Data.Viewmodel.MsgVMFactory
 import com.example.chatapplication.Data.Viewmodel.UserInfo
@@ -125,7 +126,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 if (isAuthenticated) {
-
+                    var save= GroupChatVM()
                     // These are created ONLY after SupabaseClient is initialized
                     val realtimeRepo = RealTimeRepo(tokenManager)
 
@@ -212,10 +213,10 @@ class MainActivity : ComponentActivity() {
                                 GroupPage(navController)
                             }
                             composable("GropChatSearch"){
-                                GroupChatSearch(navController,userInfovm)
+                                GroupChatSearch(navController,userInfovm,save)
                             }
                         composable("GroupName"){
-                            GroupName(navController)
+                            GroupName(navController,save)
                         }
 
 

@@ -64,17 +64,24 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.datastore.preferences.protobuf.LazyStringArrayList.emptyList
+import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import kotlin.collections.emptyList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupChatSearch(nav: NavController,infoo: UserInfo) {
+fun GroupChatSearch(nav: NavController,infoo: UserInfo,save: GroupChatVM) {
 
     var username by rememberSaveable { mutableStateOf("") }
     var showIcon by remember { mutableStateOf(false) }
+
+
+//    var checked by remember { mutableStateOf(false) }
 // var  selectedId=rememberSaveable {mutableStateOf<List<String>>(emptyList())}
     var selectedId by rememberSaveable {
         mutableStateOf(emptyList<String>())
+    }
+    for(i in selectedId){
+        println("the id sar {$i}")
     }
     Scaffold(
 
@@ -137,8 +144,9 @@ fun GroupChatSearch(nav: NavController,infoo: UserInfo) {
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            officeCoWorker(infoo,selectedId, onChecked = {id ->
-                selectedId = selectedId + id;showIcon=true})
+            officeCoWorker(infoo,save.selectedUserId, onChecked = {id,checked ->
+                 if(checked)  save.addUser(id) else  save.removeUser(id);
+                showIcon=true})
 //            infoo
         }
         if(showIcon) {
@@ -162,7 +170,7 @@ fun GroupChatSearch(nav: NavController,infoo: UserInfo) {
 }
 
 @Composable
-fun officeCoWorker(userinfoo: UserInfo, list:List<String>,onChecked:(String)->Unit) {
+fun officeCoWorker(userinfoo: UserInfo, list:List<String>,onChecked:(String,Boolean)->Unit) {
     LazyColumn() {
         items(userinfoo.userInfo) { ele ->
             var checked by remember { mutableStateOf(false) }
@@ -202,7 +210,7 @@ fun officeCoWorker(userinfoo: UserInfo, list:List<String>,onChecked:(String)->Un
                     }
                     Checkbox(
                         checked = ele.id in list,
-                        onCheckedChange = { onChecked(ele.id) }
+                        onCheckedChange = {checked ->onChecked(ele.id,checked)}
                     )
                 }
                 Box(
