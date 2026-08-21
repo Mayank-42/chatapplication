@@ -1,13 +1,14 @@
 package com.example.chatapplication.Data.network.request
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateGroupRequest(
-    @SerialName("p_name")
+    @SerializedName("p_name")
     val name: String,
 
-    @SerialName("p_member_ids")
+    @SerializedName("p_member_ids")
     val memberIds: List<String>
 )
