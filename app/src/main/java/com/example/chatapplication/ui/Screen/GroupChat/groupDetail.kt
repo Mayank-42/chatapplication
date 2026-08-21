@@ -39,6 +39,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,14 @@ import io.ktor.websocket.Frame
 fun GroupName(nav: NavController,save: GroupChatVM){
     var Gname by rememberSaveable {mutableStateOf("") }
     var Gbio by rememberSaveable {mutableStateOf("") }
+    LaunchedEffect(save.groupCreated) {
+        if (save.groupCreated) {
+            nav.popBackStack(
+                "GroupPage",
+                inclusive = false
+            )
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -141,14 +150,8 @@ fun GroupName(nav: NavController,save: GroupChatVM){
                     }
                 Box(modifier=Modifier.fillMaxWidth().padding(end=30.dp), contentAlignment = Alignment.TopEnd){
                 Button(onClick= {
-                    if (save.groupCreated) {
-                        nav.popBackStack(
-                            "GroupPage",
-                            inclusive = false,
-                        );
 //                        save.insertGroupInfo(GroupInfo("f",Gname,Gbio))
-                        save.createGroup(Gname, Gbio)
-                    }
+                            save.createGroup(Gname, Gbio)
                 })
                   {
                     Text(text="Create")

@@ -56,7 +56,9 @@ class GroupChatVM(
                             GropName = name,
                             bio = bio
                         )
+
                     )
+                groupCreated=true;
                 }
                 // We will use this ID to save the group in Room
                 // after we confirm the backend response.
