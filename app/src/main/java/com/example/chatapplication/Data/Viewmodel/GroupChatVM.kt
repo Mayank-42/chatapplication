@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chatapplication.Data.Repo.GroupRepo
 import com.example.chatapplication.Data.Repo.reposatory
@@ -29,4 +30,18 @@ class GroupChatVM(
         }
     }
 
+}
+class GroupChatVMfacrory(
+    private val repository: GroupRepo
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+        if (modelClass.isAssignableFrom(GroupChatVM::class.java)) {
+            return GroupChatVM(repository) as T
+        }
+
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

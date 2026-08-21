@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapplication.Data.Repo.AuthReposatory
+import com.example.chatapplication.Data.Repo.GroupRepo
 import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
@@ -27,6 +28,7 @@ import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.AuthViewModelFactory
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
+import com.example.chatapplication.Data.Viewmodel.GroupChatVMfacrory
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 //import com.example.chatapplication.Data.Viewmodel.MsgVMFactory
 import com.example.chatapplication.Data.Viewmodel.UserInfo
@@ -123,7 +125,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 if (isAuthenticated) {
-                    var save= GroupChatVM()
+                    var GroupRepo= GroupRepo(application.database.Groupcall())
+                    var save: GroupChatVM= viewModel(factory = GroupChatVMfacrory(GroupRepo))
                     // These are created ONLY after SupabaseClient is initialized
                     val realtimeRepo = RealTimeRepo(tokenManager)
 

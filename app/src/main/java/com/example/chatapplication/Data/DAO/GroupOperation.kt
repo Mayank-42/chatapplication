@@ -13,6 +13,6 @@ interface GroupOperation {
     suspend fun  GroupInfoInsert(Info: GroupInfo)
 
     @Query("select*from GroupInfo")
-    fun getAllInfo(): Flow<List<String>>
+    fun getAllInfo(): Flow<List<GroupInfo>>
 
 }

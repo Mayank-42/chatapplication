@@ -93,7 +93,7 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
                 LazyColumn() {
                     items(groups) { ele ->
 
-                GropChatTile(ele.)
+                GropChatTile(ele.GropName)
                     }
                 }
             Box(modifier=Modifier.fillMaxSize()
@@ -115,7 +115,7 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
     }
 }
 @Composable
-fun GropChatTile(){
+fun GropChatTile(Gname:String){
     Surface(modifier=Modifier.fillMaxWidth().height(70.dp)){
         Row(verticalAlignment = Alignment.CenterVertically){
             Image(
@@ -129,7 +129,7 @@ fun GropChatTile(){
 
             )
             Column(modifier = Modifier.padding(start=10.dp)){
-             Text(text="example", fontSize = 25.sp)
+             Text(text=Gname, fontSize = 25.sp)
                 Text(text="this is goup is created by somone",modifier=Modifier.padding(start=10.dp))
             }
 
