@@ -10,14 +10,23 @@ class reposatory( private val work: operation) {
 
     val getAllValue=work.getAllTheValue()
 
-    suspend fun getTimeId(myId: String, userId: String): MessageInfo? {
-        return work.getTimeId(myId, userId)
+    suspend fun getTimeId(conversationId: String): MessageInfo? {
+        return work.getTimeId(conversationId)
     }
 
-    fun getConversation(myId: String, userId: String
+    fun getConversation(
+        conversationId: String
     ): Flow<List<MessageInfo>> {
-        return work.getConversation(myId, userId)
+        return work.getConversation(conversationId)
     }
+//    suspend fun getTimeId(myId: String, userId: String): MessageInfo? {
+//        return work.getTimeId(myId, userId)
+//    }
+
+//    fun getConversation(myId: String, userId: String
+//    ): Flow<List<MessageInfo>> {
+//        return work.getConversation(myId, userId)
+//    }
 
     suspend fun insert(task: MessageInfo){
         work.insert(task)

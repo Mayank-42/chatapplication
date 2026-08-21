@@ -154,7 +154,7 @@ class MainActivity : ComponentActivity() {
 
                     val userInfovm: UserInfo = viewModel(
                         key = "UserInfo-$userId",
-                        factory = UserInfoFactory(userInfoRepo)
+                        factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
                     )
 
                     NavHost(
@@ -177,18 +177,20 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable("ChatScreen/{userId}") { backStackEntry ->
+                        composable("ChatScreen/{conversationId}") { backStackEntry ->
 
-                            val userId =
-                                backStackEntry.arguments?.getString("userId")
-
-                            chatScreen(
-                                navController,
-                                viewModel,
-                                userId,
-                                messageInfoVM,
-                                tokenManager
-                            )
+                            val conversationId =
+                                backStackEntry.arguments?.getString("conversationId")
+                            if (conversationId != null) {
+                                chatScreen(
+                                    navController,
+                                    viewModel,
+//                                    userId,
+                                    conversationId = conversationId,
+                                    messageInfoVM,
+                                    tokenManager
+                                )
+                            }
                         }
 
                         composable("SearchBarPage") {

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapplication.Data.Repo.AuthReposatory
+import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
@@ -18,7 +19,8 @@ import kotlin.collections.emptyList
 import kotlin.jvm.java
 
 class UserInfo(
-    private val infovm: UserInfoReposatory
+    private val infovm: UserInfoReposatory,
+    private val messageRepo: MessageRepo
 ): ViewModel() {
 
 //    var userInfo:List<TakingUsernameResponse> = emptyList()
@@ -69,6 +71,35 @@ fun getinfo() {
             }
         }
     }
+    fun openConversation(
+        otherUserId: String,
+        onConversationReady: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                println("CONVERSATION: Other user = $otherUserId")
+                val response =
+                    messageRepo.getOrCreateConversation(otherUserId)
+                println("CONVERSATION: STATUS = ${response.code()}")
+                println("CONVERSATION: BODY = ${response.body()}")
+                println("CONVERSATION: ERROR = ${response.errorBody()?.string()}")
+                if (response.isSuccessful) {
+                    val conversationId =
+                        response.body()
+                            ?.firstOrNull()
+                            ?.conversation_id
+                    if (conversationId != null) {
+                        println("CONVERSATION: ID = $conversationId")
+                        onConversationReady(conversationId)
+                    } else {
+                        println("CONVERSATION: No conversation ID returned")
+                    }
+                }
+            } catch (e: Exception) {
+                println("CONVERSATION: ERROR = ${e.message}")
+            }
+        }
+    }
     fun uploadImg(id:String,bytes:ByteArray){
         viewModelScope.launch{
 //        infovm.uploadIma(id,bytes)
@@ -90,7 +121,8 @@ fun getinfo() {
 
 }
 class UserInfoFactory(
-    private val repository: UserInfoReposatory
+    private val repository: UserInfoReposatory,
+    private val messageRepo: MessageRepo
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(
@@ -100,7 +132,11 @@ class UserInfoFactory(
         if (modelClass == UserInfo::class.java) {
 
             @Suppress("UNCHECKED_CAST")
-            return UserInfo(repository) as T
+
+            return UserInfo(
+                repository,
+                messageRepo
+            ) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel")

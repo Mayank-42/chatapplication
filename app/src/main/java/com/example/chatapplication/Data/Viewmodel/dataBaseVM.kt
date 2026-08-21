@@ -15,9 +15,9 @@ class databaseVM( var reposatory: reposatory): ViewModel() {
 
     var getallValue: Flow<List<MessageInfo>> = reposatory.getAllValue
 
-    fun getConversation(myId: String, userId: String
+    fun getConversation(conversationId: String
     ): Flow<List<MessageInfo>> {
-        return reposatory.getConversation(myId, userId)
+        return reposatory.getConversation(conversationId)
     }
 
     fun insert(ele: MessageInfo){

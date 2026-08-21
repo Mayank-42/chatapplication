@@ -59,7 +59,8 @@ import kotlin.collections.emptyList
 @Composable
 fun chatScreen(navControl: NavController,
                viewMode: databaseVM,
-               userId:String?,
+//               userId:String?,
+               conversationId:String,
                msg: MsgVM,
                tokenManager: TokenManager
          ){
@@ -69,13 +70,13 @@ fun chatScreen(navControl: NavController,
 
     LaunchedEffect(Unit) {
         currentUserId = tokenManager.getUserId() ?: ""
-        msg.startRealtime()
+        msg.startRealtime(conversationId)
     }
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
-    val task by viewMode.getConversation(currentUserId, userId ?: "").collectAsState(initial = emptyList())
+    val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
     LaunchedEffect(Unit) {
-        msg.insertingLocaly(currentUserId,userId?:"")
+        msg.insertingLocaly(conversationId)
     }
 
     var textingg by rememberSaveable{mutableStateOf("")}
@@ -202,7 +203,7 @@ fun chatScreen(navControl: NavController,
 //                                )
 //
 //                            )
-                                msg.storeMsg(userId ?:"",textingg)
+                                msg.storeMsg(conversationId,textingg)
                                                           };
                             textingg="";
                         }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
