@@ -41,6 +41,7 @@ import com.example.chatapplication.Data.network.clients.retroFitClient
 import com.example.chatapplication.ui.Screen.Auth.ShowShinUp
 import com.example.chatapplication.ui.Screen.Auth.ShowSignIn
 import com.example.chatapplication.ui.Screen.Auth.UserInfo
+import com.example.chatapplication.ui.Screen.GroupChat.GroupChatScreen
 import com.example.chatapplication.ui.Screen.GroupChat.GroupChatSearch
 import com.example.chatapplication.ui.Screen.GroupChat.GroupName
 import com.example.chatapplication.ui.Screen.GroupChat.GroupPage
@@ -217,6 +218,16 @@ class MainActivity : ComponentActivity() {
                             }
                         composable("GroupName"){
                             GroupName(navController,save)
+                        }
+                        composable("GroupChatScreen"){
+                            GroupChatScreen(
+                                navController,
+                                viewModel,
+                                userId,
+                                messageInfoVM,
+                                tokenManager,
+                                save
+                            )
                         }
 
 

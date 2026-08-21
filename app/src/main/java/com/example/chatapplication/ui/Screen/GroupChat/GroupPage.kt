@@ -4,6 +4,7 @@ import android.R.attr.contentDescription
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -93,7 +94,7 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
                 LazyColumn() {
                     items(groups) { ele ->
 
-                GropChatTile(ele.GropName)
+                GropChatTile(ele.GropName,nav)
                     }
                 }
             Box(modifier=Modifier.fillMaxSize()
@@ -115,8 +116,8 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
     }
 }
 @Composable
-fun GropChatTile(Gname:String){
-    Surface(modifier=Modifier.fillMaxWidth().height(70.dp)){
+fun GropChatTile(Gname:String,nav: NavController){
+    Surface(modifier=Modifier.fillMaxWidth().height(70.dp).clickable(onClick = {nav.navigate("GroupChatScreen")})){
         Row(verticalAlignment = Alignment.CenterVertically){
             Image(
                 painter= painterResource(R.drawable.example),
