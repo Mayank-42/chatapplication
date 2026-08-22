@@ -68,16 +68,31 @@ fun chatScreen(navControl: NavController,
     var currentUserId by rememberSaveable { mutableStateOf("") }
 
 
-    LaunchedEffect(Unit) {
-        currentUserId = tokenManager.getUserId() ?: ""
-        msg.startRealtime(conversationId)
+//    LaunchedEffect(conversationId) {
+//        currentUserId = tokenManager.getUserId() ?: ""
+//        msg.startRealtime(conversationId)
+//        msg.insertingLocaly(conversationId)
+//    }
+    LaunchedEffect(conversationId) {
+        println("CHAT SCREEN: conversationId = $conversationId")
+        try {
+            currentUserId = tokenManager.getUserId() ?: ""
+            println("CHAT SCREEN: currentUserId = $currentUserId")
+            msg.startRealtime(conversationId)
+            println("CHAT SCREEN: realtime started")
+            msg.insertingLocaly(conversationId)
+            println("CHAT SCREEN: local sync started")
+        } catch (e: Exception) {
+            println("CHAT SCREEN ERROR: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
     val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
-    LaunchedEffect(Unit) {
-        msg.insertingLocaly(conversationId)
-    }
+//    LaunchedEffect(conversationId) {
+//        msg.insertingLocaly(conversationId)
+//    }
 
     var textingg by rememberSaveable{mutableStateOf("")}
 

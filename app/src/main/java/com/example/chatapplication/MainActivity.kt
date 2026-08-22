@@ -181,6 +181,7 @@ class MainActivity : ComponentActivity() {
 
                             val conversationId =
                                 backStackEntry.arguments?.getString("conversationId")
+                            println("NAVIGATION: conversationId = $conversationId")
                             if (conversationId != null) {
                                 chatScreen(
                                     navController,

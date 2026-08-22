@@ -61,182 +61,182 @@ fun GroupChatScreen(navControl: NavController,
                     viewMode: databaseVM,
                     userId:String?,
                     msg: MsgVM,
-                    tokenManager: TokenManager, save: GroupChatVM){
-    val showInfo by save.gettingGroupinfo.collectAsState(initial=emptyList())
-    var currentUserId by rememberSaveable { mutableStateOf("") }
-
-
-    LaunchedEffect(Unit) {
-        currentUserId = tokenManager.getUserId() ?: ""
-        msg.startRealtime()
-    }
-
-//    val task by viewMode.getallValue.collectAsState(initial = emptyList())
-    val task by viewMode.getConversation(currentUserId, userId ?: "").collectAsState(initial = emptyList())
-    LaunchedEffect(Unit) {
-        msg.insertingLocaly(currentUserId,userId?:"")
-    }
-
-    var textingg by rememberSaveable{mutableStateOf("")}
-
-
-    Box(modifier= Modifier.fillMaxSize().background(Color.Black)) {
-        Column() {
-            Box(
-                modifier = Modifier.fillMaxWidth().background(Color.White).height(100.dp),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Image(
-                        painter = painterResource(R.drawable.example),
-                        contentDescription = null,
-                        modifier = Modifier.size(50.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.primary)
-                    )
-                    Spacer(modifier = Modifier.width(30.dp),)
-
-
-                    Text(text = "Mayank", color = Color.Black,
-                        fontSize = 25.sp,
-                        modifier=Modifier.clickable(onClick = {})
-                    )
-
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-
-                        Text(text = "online", color = Color.Green, fontSize = 25.sp)
-                    }
-
-                }
-            }
-            Box(
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(end = 4.dp),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                LazyColumn(
-                    reverseLayout = true
-                ) {
-                    items(task.reversed()) { ele ->
-                        if (ele.sender_Id == currentUserId) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                Image(
-                                    painter = painterResource(R.drawable.example),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clip(shape = CircleShape)
-                                        .border(1.dp, Color.Green, CircleShape)
-                                )
-                                Column() {
-                                Surface(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 10.dp,
-                                        topEnd = 10.dp,
-                                        bottomStart = 8.dp
-                                    ),
-                                    modifier = Modifier.padding(10.dp).combinedClickable(
-                                        onClick = {},
-                                        onLongClick = { viewMode.delete(ele) }
-                                    )
-                                ) {
-                                    Column(){
-                                     Text(text= "Name",fontsize=4.sp)
-                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
-                                    }
-                                }
-                                    Text(text=ele.date)
-                             }
-                            }
-                        } else {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Surface(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 10.dp,
-                                        topEnd = 10.dp,
-                                        bottomStart = 8.dp
-                                    ),
-                                    modifier = Modifier.padding(10.dp).combinedClickable(
-                                        onClick = {},
-                                        onLongClick = { viewMode.delete(ele) }
-                                    )
-                                ) {
-                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, bottom = 40.dp)
-                    .imePadding(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(18.dp))
-                ) {
-                    Row() {
-                        Text(text = "jdbsvsdhvsb", color = Color.Black)
-                        TextField(
-                            value = textingg,
-                            onValueChange = { textingg = it },
-                            placeholder = { Text(text = "enter the text yooo") },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.Black,
-                                focusedContainerColor = Color.Transparent,
-                                focusedPlaceholderColor = Color.Gray,
-                                unfocusedTextColor = Color.Black,
-//                        unfocusedContainerColor = Color.Transparent
-
-                            ),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Button(
-                            onClick = {
-//                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
-                                if (textingg.isNotBlank()) {
-//                            viewMode.insert(
-//                                MessageInfo(
-//                                      0,
-//                                    "",
-//                                    "mayank",
-//                                    textingg,
-//                                    10,
-//                                    false
+                  tokenManager: TokenManager, save: GroupChatVM){
+//    val showInfo by save.gettingGroupinfo.collectAsState(initial=emptyList())
+//    var currentUserId by rememberSaveable { mutableStateOf("") }
+//
+//
+//    LaunchedEffect(Unit) {
+//        currentUserId = tokenManager.getUserId() ?: ""
+//        msg.startRealtime()
+//    }
+//
+////    val task by viewMode.getallValue.collectAsState(initial = emptyList())
+//    val task by viewMode.getConversation(currentUserId, userId ?: "").collectAsState(initial = emptyList())
+//    LaunchedEffect(Unit) {
+//        msg.insertingLocaly(currentUserId,userId?:"")
+//    }
+//
+//    var textingg by rememberSaveable{mutableStateOf("")}
+//
+//
+//    Box(modifier= Modifier.fillMaxSize().background(Color.Black)) {
+//        Column() {
+//            Box(
+//                modifier = Modifier.fillMaxWidth().background(Color.White).height(100.dp),
+//                contentAlignment = Alignment.BottomEnd
+//            ) {
+//                Row(verticalAlignment = Alignment.Bottom) {
+//                    Image(
+//                        painter = painterResource(R.drawable.example),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(50.dp)
+//                            .border(1.dp, MaterialTheme.colorScheme.primary)
+//                    )
+//                    Spacer(modifier = Modifier.width(30.dp),)
+//
+//
+//                    Text(text = "Mayank", color = Color.Black,
+//                        fontSize = 25.sp,
+//                        modifier=Modifier.clickable(onClick = {})
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(30.dp))
+//                    Box(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        contentAlignment = Alignment.BottomEnd
+//                    ) {
+//
+//                        Text(text = "online", color = Color.Green, fontSize = 25.sp)
+//                    }
+//
+//                }
+//            }
+//            Box(
+//                modifier = Modifier.fillMaxWidth().weight(1f).padding(end = 4.dp),
+//                contentAlignment = Alignment.BottomEnd
+//            ) {
+//                LazyColumn(
+//                    reverseLayout = true
+//                ) {
+//                    items(task.reversed()) { ele ->
+//                        if (ele.sender_Id == currentUserId) {
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                horizontalArrangement = Arrangement.End
+//                            ) {
+//                                Image(
+//                                    painter = painterResource(R.drawable.example),
+//                                    contentDescription = null,
+//                                    modifier = Modifier
+//                                        .size(20.dp)
+//                                        .clip(shape = CircleShape)
+//                                        .border(1.dp, Color.Green, CircleShape)
 //                                )
+//                                Column() {
+//                                Surface(
+//                                    color = Color.White,
+//                                    shape = RoundedCornerShape(
+//                                        topStart = 10.dp,
+//                                        topEnd = 10.dp,
+//                                        bottomStart = 8.dp
+//                                    ),
+//                                    modifier = Modifier.padding(10.dp).combinedClickable(
+//                                        onClick = {},
+//                                        onLongClick = { viewMode.delete(ele) }
+//                                    )
+//                                ) {
+//                                    Column(){
+//                                     Text(text= "Name",fontsize=4.sp)
+//                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
+//                                    }
+//                                }
+//                                    Text(text=ele.date)
+//                             }
+//                            }
+//                        } else {
+//                            Row(
+//                                modifier = Modifier.fillMaxWidth(),
+//                                horizontalArrangement = Arrangement.Start
+//                            ) {
+//                                Surface(
+//                                    color = Color.White,
+//                                    shape = RoundedCornerShape(
+//                                        topStart = 10.dp,
+//                                        topEnd = 10.dp,
+//                                        bottomStart = 8.dp
+//                                    ),
+//                                    modifier = Modifier.padding(10.dp).combinedClickable(
+//                                        onClick = {},
+//                                        onLongClick = { viewMode.delete(ele) }
+//                                    )
+//                                ) {
+//                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//
+//
+//            Box(
+//                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, bottom = 40.dp)
+//                    .imePadding(),
+//                contentAlignment = Alignment.BottomCenter
+//            ) {
+//                Surface(
+//                    modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(18.dp))
+//                ) {
+//                    Row() {
+//                        Text(text = "jdbsvsdhvsb", color = Color.Black)
+//                        TextField(
+//                            value = textingg,
+//                            onValueChange = { textingg = it },
+//                            placeholder = { Text(text = "enter the text yooo") },
+//                            colors = TextFieldDefaults.colors(
+//                                focusedTextColor = Color.Black,
+//                                focusedContainerColor = Color.Transparent,
+//                                focusedPlaceholderColor = Color.Gray,
+//                                unfocusedTextColor = Color.Black,
+////                        unfocusedContainerColor = Color.Transparent
+//
+//                            ),
+//                            modifier = Modifier.weight(1f)
+//                        )
+//                        Button(
+//                            onClick = {
+////                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
+//                                if (textingg.isNotBlank()) {
+////                            viewMode.insert(
+////                                MessageInfo(
+////                                      0,
+////                                    "",
+////                                    "mayank",
+////                                    textingg,
+////                                    10,
+////                                    false
+////                                )
+////
+////                            )
+//                                    msg.storeMsg(userId ?: "", textingg)
+//                                };
+//                                textingg = "";
+//                            }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Default.Send,
+//                                contentDescription = null,
+//                                tint = Color.White
 //
 //                            )
-                                    msg.storeMsg(userId ?: "", textingg)
-                                };
-                                textingg = "";
-                            }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Send,
-                                contentDescription = null,
-                                tint = Color.White
-
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 
 //@Preview (showBackground = true, showSystemUi = true)

@@ -9,7 +9,7 @@ data class MessageInfo(
     var id:String,
     var conversationId: String,
     var sender_Id:String,
-    var reciver_Id:String,
+    var reciver_Id:String?,
     var message:String,
     var date:String,
 //    var isSeen:Boolean
