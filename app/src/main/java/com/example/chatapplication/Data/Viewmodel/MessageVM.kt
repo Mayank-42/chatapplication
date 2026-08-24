@@ -45,15 +45,10 @@ class MsgVM(
         activeConversationId = conversationId
 
         viewModelScope.launch {
-            val currentUserId = tokenManager.getUserId() ?: ""
-
-            val flow =
-                realtimeRepo.messageInsertFlow() //geting all the event flow in variable flow so ya
-
+//            val currentUserId = tokenManager.getUserId() ?: ""
+            val flow =realtimeRepo.messageInsertFlow() //geting all the event flow in variable flow so ya
             launch {
-
                 flow.collectLatest { event -> //tells that if any new event happaned execute this block
-
                     println("REALTIME: NEW MESSAGE RECEIVED")
 
                     val record = event.record
@@ -63,18 +58,13 @@ class MsgVM(
                         println("REALTIME: IGNORING OTHER CONVERSATION")
                         return@collectLatest
                     }
-
 //                    val senderId = record["sender_id"]!!.jsonPrimitive.content
 //                    val receiverId = record["receiver_id"]!!.jsonPrimitive.content
-//
-//                    if (
-//                        senderId != currentUserId &&
-//                        receiverId != currentUserId
+//                    if ( senderId != currentUserId && receiverId != currentUserId
 //                    ) {
 //                        println("REALTIME: IGNORING UNRELATED MESSAGE")
 //                        return@collectLatest  //if senderId(user) is not involved then ignore the event
 //                    }
-
                     val messageInfo = MessageInfo(
                         id = record["id"]!!.jsonPrimitive.content,
                         conversationId = conversationIdFromEvent!! ,
@@ -83,14 +73,11 @@ class MsgVM(
                         message = record["message"]!!.jsonPrimitive.content,
                         date = record["message_timestamp"]!!.jsonPrimitive.content
                     )
-
                     println("ROOM MESSAGE = $messageInfo")
                     dbrepo.insert(messageInfo)
-
                 }
             }
 //         realtimeRepo.UnSubscriber()
-
             realtimeRepo.subscribe()
         }
     }
@@ -99,9 +86,7 @@ class MsgVM(
         conversationId: String
     ) {
         viewModelScope.launch {
-
             val time = dbrepo.getTimeId(conversationId)
-
             gettingmsg.converting(
                 conversationId = conversationId,
                 time = time?.date ?: "",
@@ -129,17 +114,13 @@ class MsgVM(
         println("STORE MSG: FUNCTION CALLED")
         println("STORE MSG: receiverId = $conversationId")
         println("STORE MSG: message = $message")
-
         viewModelScope.launch {
             try {
-
                 println("STORE MSG: CALLING API")
-
                 val response = gettingmsg.putMessage(
                     conversationId = conversationId,
                     msg = message
                 )
-
                 if (response.isSuccessful) {
                     println("STORE MSG: API SUCCESS")
 //            gettingmsg.converting()
@@ -179,9 +160,7 @@ class MsgVM(
         private val roomRepo: reposatory,
         private val tokenManager: TokenManager
     ) : ViewModelProvider.Factory {
-
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
             if (modelClass.isAssignableFrom(MsgVM::class.java)) {
                 return MsgVM(
                     messageRepo,
@@ -190,7 +169,6 @@ class MsgVM(
                     tokenManager
                 ) as T
             }
-
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }

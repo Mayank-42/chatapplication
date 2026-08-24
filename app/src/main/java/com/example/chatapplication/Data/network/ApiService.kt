@@ -67,4 +67,7 @@ interface ApiService {
         @Body request: CreateGroupRequest
     ): Response<String>
 
+    @GET("rpc/getConvoInfo")
+    suspend fun getConvoInfo(): Response<List<ConversationResponse>>
+
 }
