@@ -1,6 +1,7 @@
 package com.example.chatapplication.Data.Viewmodel
 
 
+import android.R.id.message
 import kotlinx.serialization.json.jsonPrimitive
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,9 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Repo.AuthReposatory
 import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.RealTimeRepo
+import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
@@ -26,7 +29,8 @@ class MsgVM(
     private val gettingmsg: MessageRepo,
     private val realtimeRepo: RealTimeRepo,
     private val dbrepo: reposatory,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val convoRepo: convoInfoRepo
 ): ViewModel() {
     private var realtimeStarted = false
     private var activeConversationId: String? = null
@@ -34,8 +38,8 @@ class MsgVM(
     var localmsgList by mutableStateOf<List<WholeMessageResponse>>(emptyList())
 
 
-    fun startRealtime(conversationId: String) { // every new inserted row will come to local db
-        activeConversationId = conversationId
+    fun startRealtime() { // every new inserted row will come to local db
+//        activeConversationId = conversationId
         if (realtimeStarted) {
             println("REALTIME: Already started")
             return
@@ -52,10 +56,10 @@ class MsgVM(
                     val record = event.record
                     val conversationIdFromEvent = record["conversation_id"]?.jsonPrimitive?.content
 
-                    if (conversationIdFromEvent != activeConversationId) {
-                        println("REALTIME: IGNORING OTHER CONVERSATION")
-                        return@collectLatest
-                    }
+//                    if (conversationIdFromEvent != activeConversationId) {
+//                        println("REALTIME: IGNORING OTHER CONVERSATION")
+//                        return@collectLatest
+//                    }
 //                    val senderId = record["sender_id"]!!.jsonPrimitive.content
 //                    val receiverId = record["receiver_id"]!!.jsonPrimitive.content
 //                    if ( senderId != currentUserId && receiverId != currentUserId
@@ -73,6 +77,12 @@ class MsgVM(
                     )
                     println("ROOM MESSAGE = $messageInfo")
                     dbrepo.insert(messageInfo)
+                    convoRepo.updateLastMessage(
+                        conversationId = messageInfo.conversationId,
+                        messageId = messageInfo.id,
+                        message = messageInfo.message,
+                        time = messageInfo.date
+                    )
                 }
             }
 //         realtimeRepo.UnSubscriber()
@@ -92,20 +102,6 @@ class MsgVM(
             )
         }
     }
-
-//    fun insertingLocaly(
-//        myId: String,
-//        userId: String
-//    ) { //whole postgress db comes to localDB but we have to call
-//        viewModelScope.launch {
-//            println("SYNC: insertingLocaly CALLED")
-//            var time = dbrepo.getTimeId(myId, userId)
-//            println("SYNC: latest message = $time")
-//            gettingmsg.converting(time?.date ?: "", time?.id ?: "")
-//
-//            println("SYNC: converting CALLED")
-//        }
-//    }
 
     fun storeMsg(conversationId: String, message: String) {  //send the message
 
@@ -156,7 +152,8 @@ class MsgVM(
         private val messageRepo: MessageRepo,
         private val realtimeRepo: RealTimeRepo,
         private val roomRepo: reposatory,
-        private val tokenManager: TokenManager
+        private val tokenManager: TokenManager,
+        private val convoRepo: convoInfoRepo
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MsgVM::class.java)) {
@@ -164,7 +161,8 @@ class MsgVM(
                     messageRepo,
                     realtimeRepo,
                     roomRepo,
-                    tokenManager
+                    tokenManager,
+                    convoRepo
                 ) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")

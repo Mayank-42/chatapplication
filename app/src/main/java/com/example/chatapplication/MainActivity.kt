@@ -135,6 +135,10 @@ class MainActivity : ComponentActivity() {
                     // These are created ONLY after SupabaseClient is initialized
                     val realtimeRepo = RealTimeRepo(tokenManager)
 
+                    val convoRepo= convoInfoRepo(application.database.ConvoInfo(), retroFitClient.apiService)
+                    val convoInfoVM: convoVM=viewModel(
+                        factory= ConvoVMFactory(convoRepo,tokenManager)
+                    )
                     val messageInfoRepo = MessageRepo(
                         retroFitClient.apiService,
                         application.database.dataBaseCall()
@@ -145,7 +149,8 @@ class MainActivity : ComponentActivity() {
                             messageInfoRepo,
                             realtimeRepo,
                             repo,
-                            tokenManager
+                            tokenManager,
+                            convoRepo
                         )
                     )
 
@@ -160,12 +165,9 @@ class MainActivity : ComponentActivity() {
                         factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
                     )
 
-                    val convoRepo= convoInfoRepo(application.database.ConvoInfo(), retroFitClient.apiService)
-                    val convoInfoVM: convoVM=viewModel(
-                        factory= ConvoVMFactory(convoRepo,tokenManager)
-                    )
                     LaunchedEffect(Unit) {
                         convoInfoVM.syncConversations()
+                        messageInfoVM.startRealtime()
                     }
 
                     NavHost(

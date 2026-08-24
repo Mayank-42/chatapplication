@@ -78,7 +78,7 @@ fun chatScreen(navControl: NavController,
         try {
             currentUserId = tokenManager.getUserId() ?: ""
             println("CHAT SCREEN: currentUserId = $currentUserId")
-            msg.startRealtime(conversationId)
+//            msg.startRealtime(conversationId)
             println("CHAT SCREEN: realtime started")
             msg.insertingLocaly(conversationId)
             println("CHAT SCREEN: local sync started")

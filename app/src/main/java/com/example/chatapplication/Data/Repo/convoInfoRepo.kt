@@ -31,7 +31,7 @@ class convoInfoRepo(
                         lastMessage = convo.lastMessage,
                         lastTime = convo.lastTime,
                         Image = convo.Image,
-                        lastMessageId = convo.last_message_id
+                        last_message_id  = convo.last_message_id
                     )
                 }
                 work.putingInfo(localConversation)
@@ -40,5 +40,18 @@ class convoInfoRepo(
             println("CONVERSATION SYNC ERROR = ${response.errorBody()?.string()}")
         }
     }
+        suspend fun updateLastMessage(
+            conversationId: String,
+            messageId: String,
+            message: String,
+            time: String
+        ) {
+            work.updateLastMessage(
+                conversationId = conversationId,
+                messageId = messageId,
+                message = message,
+                time = time
+            )
+        }
 
 }

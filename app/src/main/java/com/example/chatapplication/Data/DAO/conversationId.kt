@@ -15,6 +15,29 @@ interface conversationId {
     @Query("select*from CinversationId")
     fun getAllConvoInfo(): Flow<List<CinversationId>>
 
+    @Query("""
+        SELECT * FROM CinversationId
+        WHERE conversationId = :conversationId
+        LIMIT 1
+    """)
+    suspend fun getConversation(
+        conversationId: String
+    ): CinversationId?
+
+    @Query("""
+        UPDATE CinversationId
+        SET lastMessage = :message,
+            lastTime = :time,
+            last_message_id = :messageId
+        WHERE conversationId = :conversationId
+    """)
+    suspend fun updateLastMessage(
+        conversationId: String,
+        messageId: String,
+        message: String,
+        time: String
+    )
+
 }
 
 
