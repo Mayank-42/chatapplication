@@ -35,14 +35,12 @@ class MsgVM(
 
 
     fun startRealtime(conversationId: String) { // every new inserted row will come to local db
-
+        activeConversationId = conversationId
         if (realtimeStarted) {
             println("REALTIME: Already started")
             return
         }
-
         realtimeStarted = true
-        activeConversationId = conversationId
 
         viewModelScope.launch {
 //            val currentUserId = tokenManager.getUserId() ?: ""

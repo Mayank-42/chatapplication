@@ -23,16 +23,19 @@ import com.example.chatapplication.Data.Repo.GroupRepo
 import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
+import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Viewmodel.dataBaseVMfacrory
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.AuthViewModelFactory
+import com.example.chatapplication.Data.Viewmodel.ConvoVMFactory
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.GroupChatVMfacrory
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 //import com.example.chatapplication.Data.Viewmodel.MsgVMFactory
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.UserInfoFactory
+import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.network.clients.AuthRetroFitClient
@@ -157,6 +160,14 @@ class MainActivity : ComponentActivity() {
                         factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
                     )
 
+                    val convoRepo= convoInfoRepo(application.database.ConvoInfo(), retroFitClient.apiService)
+                    val convoInfoVM: convoVM=viewModel(
+                        factory= ConvoVMFactory(convoRepo)
+                    )
+                    LaunchedEffect(Unit) {
+                        convoInfoVM.syncConversations()
+                    }
+
                     NavHost(
                         navController = navController,
                         startDestination = "Home"
@@ -202,7 +213,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("profileScreen/{userId}") { backStackEntry ->
-
                             val profileUserId =
                                 backStackEntry.arguments?.getString("userId")
                             if (profileUserId != null) {
@@ -233,8 +243,6 @@ class MainActivity : ComponentActivity() {
                                 save
                             )
                         }
-
-
                     }
 
                 } else {

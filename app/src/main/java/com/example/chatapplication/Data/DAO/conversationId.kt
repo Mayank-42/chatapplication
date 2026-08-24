@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface conversationId {
     @Insert
-    suspend fun putingInfo(convoInfo: CinversationId)
+    suspend fun putingInfo(convoInfo: List<CinversationId>)
 
     @Query("select*from CinversationId")
     fun getAllConvoInfo(): Flow<List<CinversationId>>
