@@ -13,7 +13,7 @@ import com.example.chatapplication.Data.local.tables.userLoginInfo
 
 @Database(
     entities=[MessageInfo::class,userLoginInfo::class, userInfo::class, GroupInfo::class, groupMember::class],
-    version = 13
+    version = 14
 )
  abstract class dataBaseLocal: RoomDatabase() {
 
