@@ -30,7 +30,8 @@ class convoInfoRepo(
                         name = convo.name,
                         lastMessage = convo.lastMessage,
                         lastTime = convo.lastTime,
-                        Image = convo.Image
+                        Image = convo.Image,
+                        lastMessageId = convo.last_message_id
                     )
                 }
                 work.putingInfo(localConversation)

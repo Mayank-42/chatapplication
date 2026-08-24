@@ -11,6 +11,7 @@ data class CinversationId(
     var name:String?,
     var lastMessage:String?,
     var lastTime:String?,
-    var Image:String?
+    var Image:String?,
+    var last_message_id: String?
 ) {
 }

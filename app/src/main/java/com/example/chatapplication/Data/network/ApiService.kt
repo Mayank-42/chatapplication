@@ -71,7 +71,7 @@ interface ApiService {
 //    @GET("rpc/getConvoInfo")
 //    suspend fun getConvoInfo(): Response<List<ConversationResponse>>
     //problem we ahve to send them the loged user id to runn the condition so we will use post
-@POST("rpc/getConvoInfo")
+@POST("rpc/getconvoinfo")
 suspend fun getConvoInfo(
     @Body request: conversationIdRequest
 ): Response<List<ConversationResponse>>
