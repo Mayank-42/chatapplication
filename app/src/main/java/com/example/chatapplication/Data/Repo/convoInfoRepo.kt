@@ -3,6 +3,7 @@ package com.example.chatapplication.Data.Repo
 import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.local.tables.CinversationId
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.request.ConversationRequest
 
 class convoInfoRepo(
     private var work: conversationId,
@@ -14,8 +15,11 @@ class convoInfoRepo(
 //        work.putingInfo()
 //    }
 
-    suspend fun syncConversations() {
-        val response = api.getConvoInfo()
+    suspend fun syncConversations(id:String) {
+        val request = ConversationRequest(
+            p_user_id = id
+        )
+        val response = api.getConvoInfo(request)
         if (response.isSuccessful) {
             val conversations = response.body() ?: emptyList()
                 val localConversation = conversations.map{convo->

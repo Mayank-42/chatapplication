@@ -162,7 +162,7 @@ class MainActivity : ComponentActivity() {
 
                     val convoRepo= convoInfoRepo(application.database.ConvoInfo(), retroFitClient.apiService)
                     val convoInfoVM: convoVM=viewModel(
-                        factory= ConvoVMFactory(convoRepo)
+                        factory= ConvoVMFactory(convoRepo,tokenManager)
                     )
                     LaunchedEffect(Unit) {
                         convoInfoVM.syncConversations()
@@ -183,7 +183,8 @@ class MainActivity : ComponentActivity() {
                                 onLoginSuccess = {
                                     userId=""
                                     isAuthenticated = false
-                                }
+                                },
+                                convoInfoVM
 
                             )
                         }

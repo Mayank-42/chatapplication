@@ -39,6 +39,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,20 +59,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: UserInfo,onLoginSuccess: () -> Unit){
+fun HomeScreen(navControl: NavController,
+               tokenManager: TokenManager,
+               userinfoo: UserInfo,
+               onLoginSuccess: () -> Unit,
+               conversationInfo: convoVM
+){
     val scope=rememberCoroutineScope()
 //    var userName by rememberSaveable { mutableStateOf("") }
     LaunchedEffect(Unit) {
         userinfoo.getinfo()
     }
+
     var id by rememberSaveable {mutableStateOf("") }
     LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
+
+    val conversations by conversationInfo.gettingConvoInfo.collectAsState(initial = emptyList())
+
         Scaffold(topBar = {
                 TopAppBar(
 
@@ -161,10 +172,11 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
 
 
                LazyColumn() {
-                   items(userinfoo.userInfo) { ele ->
+//                   items(userinfoo.userInfo) { ele ->
+                       items(conversations) { ele ->
                        Surface(
                            modifier = Modifier.fillMaxWidth().padding(start = 10.dp, 10.dp).height(80.dp)
-                               .clickable {navControl.navigate("chatScreen/${ele.id}")},
+                               .clickable {navControl.navigate("chatScreen/${ele.conversationId}")},
                            color = Color.White,
                            shape = RoundedCornerShape(35)
 
@@ -183,12 +195,12 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                                Box(contentAlignment = Alignment.CenterStart) {
                                    Column() {
                                        Text(
-                                           text =ele.name,
+                                           text =ele.name?:"",
                                            fontSize = 25.sp,
                                            fontWeight = FontWeight.SemiBold
                                        )
                                        Text(
-                                           text = "this the part which will shouw beloww name",
+                                           text = ele.lastMessage?:"",
                                            fontSize = 16.sp
                                        )
                                    }
@@ -199,7 +211,7 @@ fun HomeScreen(navControl: NavController,tokenManager: TokenManager,userinfoo: U
                                contentAlignment = Alignment.TopEnd
                            ) {
 
-                               Text(text = ele.created_at.toString(), fontStyle = FontStyle.Italic)
+                               Text(text = ele.lastTime?:"", fontStyle = FontStyle.Italic)
                            }
                        }
                    }

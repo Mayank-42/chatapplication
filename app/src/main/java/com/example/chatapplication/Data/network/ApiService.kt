@@ -67,7 +67,12 @@ interface ApiService {
         @Body request: CreateGroupRequest
     ): Response<String>
 
-    @GET("rpc/getConvoInfo")
-    suspend fun getConvoInfo(): Response<List<ConversationResponse>>
+//    @GET("rpc/getConvoInfo")
+//    suspend fun getConvoInfo(): Response<List<ConversationResponse>>
+    //problem we ahve to send them the loged user id to runn the condition so we will use post
+@POST("rpc/getConvoInfo")
+suspend fun getConvoInfo(
+    @Body request: ConversationRequest
+): Response<List<ConversationResponse>>
 
 }
