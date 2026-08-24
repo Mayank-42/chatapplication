@@ -4,6 +4,7 @@ import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.local.tables.CinversationId
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.ConversationRequest
+import com.example.chatapplication.Data.network.request.conversationIdRequest
 
 class convoInfoRepo(
     private var work: conversationId,
@@ -16,7 +17,7 @@ class convoInfoRepo(
 //    }
 
     suspend fun syncConversations(id:String) {
-        val request = ConversationRequest(
+        val request = conversationIdRequest(
             p_user_id = id
         )
         val response = api.getConvoInfo(request)

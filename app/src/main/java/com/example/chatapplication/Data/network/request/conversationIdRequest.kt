@@ -1,6 +1,6 @@
 package com.example.chatapplication.Data.network.request
 
-data class ConversationRequest(
-    val other_user_id: String
+data class conversationIdRequest(
+var p_user_id:String
 ) {
 }

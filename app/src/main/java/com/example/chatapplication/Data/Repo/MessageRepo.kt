@@ -49,7 +49,7 @@ class MessageRepo(
     ): Response<List<ConversationResponse>> {
 
         val request = ConversationRequest(
-            p_user_id = otherUserId
+            other_user_id = otherUserId
         )
 
         return getMessage.getOrCreateConversation(request)

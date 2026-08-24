@@ -6,6 +6,7 @@ import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
+import com.example.chatapplication.Data.network.request.conversationIdRequest
 import com.example.chatapplication.Data.network.request.loginRequest
 import com.example.chatapplication.Data.network.request.signUpRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
@@ -72,7 +73,7 @@ interface ApiService {
     //problem we ahve to send them the loged user id to runn the condition so we will use post
 @POST("rpc/getConvoInfo")
 suspend fun getConvoInfo(
-    @Body request: ConversationRequest
+    @Body request: conversationIdRequest
 ): Response<List<ConversationResponse>>
 
 }
