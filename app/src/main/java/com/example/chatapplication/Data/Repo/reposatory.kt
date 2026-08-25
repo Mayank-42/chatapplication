@@ -17,6 +17,10 @@ class reposatory( private val work: operation) {
         )
     }
 
+    suspend fun realtimeInsert(message: MessageInfo) {
+        work.realtimeInsert(message)
+    }
+
     suspend fun markMessagesAsRead(conversationId: String, myUserId: String) {
         work.markMessagesAsRead(
             conversationId = conversationId,
@@ -30,6 +34,14 @@ class reposatory( private val work: operation) {
     fun getConversation(conversationId: String): Flow<List<MessageInfo>> {
         return work.getConversation(conversationId)
     }
+
+    suspend fun updateMessageStatus(messageId: String, status: String) {
+        work.updateMessageStatus(messageId = messageId, status = status)
+    }
+
+
+
+
 //    suspend fun getTimeId(myId: String, userId: String): MessageInfo? {
 //        return work.getTimeId(myId, userId)
 //    }

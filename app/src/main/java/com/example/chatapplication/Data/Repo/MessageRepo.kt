@@ -1,5 +1,6 @@
 package com.example.chatapplication.Data.Repo
 
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
@@ -7,14 +8,15 @@ import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
+import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import retrofit2.Response
 
 class MessageRepo(
     private val getMessage: ApiService,
     private val localWork: operation
 ){
-    suspend fun putMessage(conversationId:String,msg:String):Response<Unit>{
-        val request= MessageInfoRequest(conversationId,msg)
+    suspend fun putMessage(id:String ,conversationId:String,msg:String):Response<Unit>{
+        val request= MessageInfoRequest(id, conversationId,msg)
         return getMessage.storeMessage(request)
     }
 

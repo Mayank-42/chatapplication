@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.Viewmodel
 
 
 import android.R.id.message
+import java.util.UUID
 import kotlinx.serialization.json.jsonPrimitive
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,7 +78,7 @@ class MsgVM(
                         date = record["message_timestamp"]!!.jsonPrimitive.content
                     )
                     println("ROOM MESSAGE = $messageInfo")
-                    dbrepo.insert(messageInfo)
+                    dbrepo.realtimeInsert(messageInfo)
                     convoRepo.updateLastMessage(
                         conversationId = messageInfo.conversationId,
                         messageId = messageInfo.id,
@@ -105,33 +106,58 @@ class MsgVM(
     }
     fun markMessagesAsRead(conversationId: String, myUserId: String) {
         viewModelScope.launch {
-            dbrepo.markMessagesAsRead(
-                conversationId = conversationId,
-                myUserId = myUserId
-            )
+            dbrepo.markMessagesAsRead(conversationId = conversationId, myUserId = myUserId)
         }
     }
 
-    fun storeMsg(conversationId: String, message: String) {  //send the message
+    fun storeMsg(conversationId: String, message: String) {
 
         println("STORE MSG: FUNCTION CALLED")
-        println("STORE MSG: receiverId = $conversationId")
+        println("STORE MSG: conversationId = $conversationId")
         println("STORE MSG: message = $message")
+
         viewModelScope.launch {
             try {
+
+                val messageId = UUID.randomUUID().toString()
+
+                val myUserId = tokenManager.getUserId()
+
+                if (myUserId.isNullOrBlank()) {
+                    println("STORE MSG: USER ID IS EMPTY")
+                    return@launch
+                }
+                // 1. Store message locally first
+                dbrepo.insert(
+                    MessageInfo(
+                        id = messageId,
+                        conversationId = conversationId,
+                        sender_Id = myUserId,
+                        reciver_Id = null,
+                        message = message,
+                        date = System.currentTimeMillis().toString(),
+                        status = "PENDING"
+                    )
+                )
+                println("STORE MSG: LOCAL MESSAGE = PENDING")
                 println("STORE MSG: CALLING API")
+
                 val response = gettingmsg.putMessage(
+                    id = messageId,
                     conversationId = conversationId,
                     msg = message
                 )
-                if (response.isSuccessful) {
-                    println("STORE MSG: API SUCCESS")
-//            gettingmsg.converting()
-                }
                 println("STORE MSG: STATUS = ${response.code()}")
                 println("STORE MSG: BODY = ${response.body()}")
                 println("STORE MSG: ERROR = ${response.errorBody()?.string()}")
 
+                if (response.isSuccessful) {
+                    println("STORE MSG: API SUCCESS")
+                    dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
+                    println("MESSAGE STATUS: $messageId -> SENT")
+                } else {
+                    println("STORE MSG: API FAILED")
+                }
             } catch (e: Exception) {
                 println("STORE MSG: EXCEPTION = ${e.message}")
             }
@@ -139,10 +165,7 @@ class MsgVM(
     }
 
     fun getUnreadCount(conversationId: String, myUserId: String): Flow<Int> {
-        return dbrepo.getUnreadCount(
-            conversationId = conversationId,
-            myUserId = myUserId
-        )
+        return dbrepo.getUnreadCount(conversationId = conversationId, myUserId = myUserId)
     }
     class MsgVMFactory(
         private val messageRepo: MessageRepo,

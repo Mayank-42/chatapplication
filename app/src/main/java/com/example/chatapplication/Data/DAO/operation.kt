@@ -19,6 +19,8 @@ interface operation {
 
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun realtimeInsert(message: MessageInfo)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun localInsert(msg: List<MessageInfo>)
 
     @Insert
@@ -38,6 +40,13 @@ interface operation {
 
     @Update
     suspend fun update(task: MessageInfo)
+
+    @Query("""
+    UPDATE MessageInfo
+    SET status = :status
+    WHERE id = :messageId
+""")
+    suspend fun updateMessageStatus(messageId: String, status: String)
 
     @Query("SELECT * FROM MessageInfo" )
     fun getAllTheValue() : Flow<List<MessageInfo>>
