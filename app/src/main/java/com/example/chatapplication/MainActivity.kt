@@ -137,7 +137,7 @@ class MainActivity : ComponentActivity() {
 
                     val convoRepo= convoInfoRepo(application.database.ConvoInfo(), retroFitClient.apiService)
                     val convoInfoVM: convoVM=viewModel(
-                        factory= ConvoVMFactory(convoRepo,tokenManager)
+                        factory= ConvoVMFactory(convoRepo,tokenManager,repo)
                     )
                     val messageInfoRepo = MessageRepo(
                         retroFitClient.apiService,

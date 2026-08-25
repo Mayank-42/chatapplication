@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.R.attr.text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
@@ -41,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 //import androidx.datastore.preferences.protobuf.LazyStringArrayList.emptyList
@@ -53,6 +57,7 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.R
+import com.example.chatapplication.ui.Screen.Auth.surface
 import kotlinx.coroutines.launch
 import kotlin.collections.emptyList
 
@@ -66,6 +71,7 @@ fun chatScreen(navControl: NavController,
          ){
 
     var currentUserId by rememberSaveable { mutableStateOf("") }
+
 
 
 //    LaunchedEffect(conversationId) {
@@ -82,6 +88,12 @@ fun chatScreen(navControl: NavController,
             println("CHAT SCREEN: realtime started")
             msg.insertingLocaly(conversationId)
             println("CHAT SCREEN: local sync started")
+            if (currentUserId.isNotBlank()) {
+                msg.markMessagesAsRead(
+                    conversationId = conversationId,
+                    myUserId = currentUserId
+                )
+            }
         } catch (e: Exception) {
             println("CHAT SCREEN ERROR: ${e.message}")
             e.printStackTrace()
@@ -237,8 +249,32 @@ fun chatScreen(navControl: NavController,
     }
 
 }
-//@Preview(showSystemUi=true, showBackground =true)
-//@Composable
-//fun showww(){
-//    chatScreen()
-//}
+@Composable
+fun counterUi(){
+        Spacer(modifier=Modifier.height(60.dp))
+    Box(modifier=Modifier.fillMaxSize().background(Color.Black)){
+        Surface(modifier=Modifier.fillMaxWidth().clip(shape=RoundedCornerShape(20.dp)).height(60.dp)){
+            Box(modifier=Modifier.fillMaxSize(),contentAlignment = Alignment.Center){
+            Row(){
+            Text(text="dbvs")
+                Spacer(modifier=Modifier.width(20.dp))
+            Text(text=1000.toString(),
+                fontStyle = FontStyle.Italic,
+                modifier=Modifier
+//                    .size(20.dp)
+                    .clip(CircleShape)
+                    .border(1.dp,Color.Green,CircleShape)
+                    .background(Color.Red)
+                    .padding(5.dp)
+            )
+            }
+            }
+        }
+    }
+
+}
+@Preview(showSystemUi=true, showBackground =true)
+@Composable
+fun showww(){
+    counterUi()
+}

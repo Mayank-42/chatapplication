@@ -21,6 +21,7 @@ import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -102,6 +103,14 @@ class MsgVM(
             )
         }
     }
+    fun markMessagesAsRead(conversationId: String, myUserId: String) {
+        viewModelScope.launch {
+            dbrepo.markMessagesAsRead(
+                conversationId = conversationId,
+                myUserId = myUserId
+            )
+        }
+    }
 
     fun storeMsg(conversationId: String, message: String) {  //send the message
 
@@ -129,25 +138,12 @@ class MsgVM(
         }
     }
 
-    //    fun getingmsg(){  //taking the response from post respose (Not use full)
-//        viewModelScope.launch{
-//            try {
-//
-//            val response= gettingmsg.getingmessage()
-//
-//                println("SEARCH: STATUS = ${response.code()}")
-//                println("SEARCH: BODY = ${response.body()}")
-//                println("SEARCH: ERROR = ${response.errorBody()?.string()}")
-//
-//            if(response.isSuccessful){
-//                localmsgList = response.body() ?: emptyList()
-//            }
-//            } catch (e: Exception) {
-//                println("SEARCH: EXCEPTION = ${e.message}")
-//            }
-//        }
-//    }
-//}
+    fun getUnreadCount(conversationId: String, myUserId: String): Flow<Int> {
+        return dbrepo.getUnreadCount(
+            conversationId = conversationId,
+            myUserId = myUserId
+        )
+    }
     class MsgVMFactory(
         private val messageRepo: MessageRepo,
         private val realtimeRepo: RealTimeRepo,

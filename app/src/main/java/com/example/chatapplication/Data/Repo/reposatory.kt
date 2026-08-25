@@ -10,13 +10,24 @@ class reposatory( private val work: operation) {
 
     val getAllValue=work.getAllTheValue()
 
+    fun getUnreadCount(conversationId: String, myUserId: String): Flow<Int> {
+        return work.getUnreadCount(
+            conversationId = conversationId,
+            myUserId = myUserId
+        )
+    }
+
+    suspend fun markMessagesAsRead(conversationId: String, myUserId: String) {
+        work.markMessagesAsRead(
+            conversationId = conversationId,
+            myUserId = myUserId
+        )
+    }
     suspend fun getTimeId(conversationId: String): MessageInfo? {
         return work.getTimeId(conversationId)
     }
 
-    fun getConversation(
-        conversationId: String
-    ): Flow<List<MessageInfo>> {
+    fun getConversation(conversationId: String): Flow<List<MessageInfo>> {
         return work.getConversation(conversationId)
     }
 //    suspend fun getTimeId(myId: String, userId: String): MessageInfo? {

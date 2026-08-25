@@ -21,7 +21,7 @@ import com.example.chatapplication.Data.local.tables.userLoginInfo
         groupMember::class,
         CinversationId::class
              ],
-    version = 15
+    version = 17
 )
  abstract class dataBaseLocal: RoomDatabase() {
 

@@ -13,5 +13,6 @@ data class MessageInfo(
     var message:String,
     var date:String,
 //    var isSeen:Boolean
+    var status: String = "PENDING"
 ) {
 }
