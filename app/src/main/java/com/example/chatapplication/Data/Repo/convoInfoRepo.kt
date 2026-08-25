@@ -22,7 +22,22 @@ class convoInfoRepo(
         )
         val response = api.getConvoInfo(request)
         if (response.isSuccessful) {
+//            val conversations = response.body() ?: emptyList()
             val conversations = response.body() ?: emptyList()
+
+            println("========== CONVO DEBUG ==========")
+            println("CONVO STATUS = ${response.code()}")
+            println("CONVO BODY = ${response.body()}")
+
+            conversations.forEach { convo ->
+                println(
+                    "CONVO: id=${convo.conversation_id}, " +
+                            "name=${convo.name}, " +
+                            "unread_count=${convo.unread_count}"
+                )
+            }
+
+            println("=================================")
                 val localConversation = conversations.map{convo->
                     CinversationId(
                         conversationId = convo.conversation_id,

@@ -102,6 +102,15 @@ fun chatScreen(navControl: NavController,
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
     val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
+    LaunchedEffect(task.size) {
+
+        if (currentUserId.isNotBlank()) {
+            msg.markMessagesAsRead(
+                conversationId = conversationId,
+                myUserId = currentUserId
+            )
+        }
+    }
 //    LaunchedEffect(conversationId) {
 //        msg.insertingLocaly(conversationId)
 //    }

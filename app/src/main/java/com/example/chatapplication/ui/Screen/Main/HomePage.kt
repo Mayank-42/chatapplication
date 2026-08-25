@@ -177,11 +177,18 @@
                    LazyColumn() {
     //                   items(userinfoo.userInfo) { ele ->
                            items(conversations) { ele ->
-                               val unreadCount by produceState(initialValue = 0, key1 = ele.conversationId, key2 = id
+                               println(
+                                   "HOME UI: conversation=${ele.conversationId}, " +
+                                           "SERVER UNREAD=${ele.unread_count}"
+                               )
+                               val unreadCount by produceState(initialValue = ele.unread_count, key1 = ele.conversationId, key2 = id
                                ) {
                                    if (id.isNotBlank()) {
                                        conversationInfo.getUnreadCount(conversationId = ele.conversationId, myUserId = id)
                                            .collect {
+                                               println(
+                                                   "LOCAL UNREAD: conversation=${ele.conversationId}, count=$it"
+                                               )
                                                value = it
                                            }
                                    }
@@ -225,12 +232,12 @@
 
                                    Text(text = ele.lastTime?:"", fontStyle = FontStyle.Italic)
                                }
-                               if(ele.unread_count!=0)
+                               if(unreadCount!=0)
                                Box(
                                    modifier = Modifier.fillMaxSize().padding(end = 40.dp),
                                    contentAlignment = Alignment.CenterEnd
                                ) {
-                                   Text(text=ele.unread_count.toString(),
+                                   Text(text=unreadCount.toString(),
                                        fontStyle = FontStyle.Italic,
                                        fontWeight = FontWeight.SemiBold,
                                        modifier=Modifier
