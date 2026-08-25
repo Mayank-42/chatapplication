@@ -73,8 +73,9 @@ interface operation {
 
 
     @Query("""
-    SELECT * FROM MessageInfo
+     SELECT * FROM MessageInfo
     WHERE conversationId = :conversationId
+      AND status != 'PENDING'
     ORDER BY date DESC, id DESC
     LIMIT 1
 """)

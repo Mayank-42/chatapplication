@@ -31,19 +31,22 @@ class MessageRepo(
     println("SYNC: BODY = ${response.body()}")
     println("SYNC: ERROR = ${response.errorBody()?.string()}")
         var serverList= response.body()
-        var localMsgList=serverList?.map{
+        val localMsgList = serverList?.map {
             MessageInfo(
                 id = it.id,
                 conversationId = it.conversationId,
                 sender_Id = it.senderId,
                 reciver_Id = it.receiverId,
                 message = it.message,
-                date = it.timeStamp
+                date = it.timeStamp,
+                status = "SENT"
             )
         }
 
     if (localMsgList != null) {
+        println("ROOM SYNC: INSERTING ${localMsgList.size} MESSAGES")
         localWork.localInsert(localMsgList)
+        println("ROOM SYNC: INSERT COMPLETE")
     }
     }
     suspend fun getOrCreateConversation(
