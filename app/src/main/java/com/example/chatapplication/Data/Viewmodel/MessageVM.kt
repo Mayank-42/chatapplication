@@ -75,7 +75,8 @@ class MsgVM(
                         sender_Id = record["sender_id"]!!.jsonPrimitive.content,
                         reciver_Id = record["receiver_id"]!!.jsonPrimitive.content,
                         message = record["message"]!!.jsonPrimitive.content,
-                        date = record["message_timestamp"]!!.jsonPrimitive.content
+                        date = record["message_timestamp"]!!.jsonPrimitive.content,
+                        status = "SENT"
                     )
                     println("ROOM MESSAGE = $messageInfo")
                     dbrepo.realtimeInsert(messageInfo)
