@@ -225,12 +225,12 @@
 
                                    Text(text = ele.lastTime?:"", fontStyle = FontStyle.Italic)
                                }
-                               if(unreadCount!=0)
+                               if(ele.unread_count!=0)
                                Box(
                                    modifier = Modifier.fillMaxSize().padding(end = 40.dp),
                                    contentAlignment = Alignment.CenterEnd
                                ) {
-                                   Text(text=unreadCount.toString(),
+                                   Text(text=ele.unread_count.toString(),
                                        fontStyle = FontStyle.Italic,
                                        fontWeight = FontWeight.SemiBold,
                                        modifier=Modifier

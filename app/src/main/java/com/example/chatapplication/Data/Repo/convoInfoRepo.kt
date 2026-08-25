@@ -31,7 +31,8 @@ class convoInfoRepo(
                         lastMessage = convo.lastMessage,
                         lastTime = convo.lastTime,
                         Image = convo.Image,
-                        last_message_id  = convo.last_message_id
+                        last_message_id  = convo.last_message_id,
+                        unread_count= convo.unread_count
                     )
                 }
                 work.putingInfo(localConversation)
