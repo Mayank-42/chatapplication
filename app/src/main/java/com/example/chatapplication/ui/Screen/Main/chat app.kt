@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,6 +103,9 @@ fun chatScreen(navControl: NavController,
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
     val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
+    val lastSentMessageId = task
+        .lastOrNull { it.sender_Id == currentUserId }
+        ?.id
     LaunchedEffect(task.size) {
 
         if (currentUserId.isNotBlank()) {
@@ -156,6 +160,7 @@ fun chatScreen(navControl: NavController,
                 ) {
                     items(task.reversed()) { ele ->
                         if (ele.sender_Id == currentUserId) {
+                            Column() {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
@@ -167,7 +172,7 @@ fun chatScreen(navControl: NavController,
                                         topEnd = 10.dp,
                                         bottomStart = 8.dp
                                     ),
-                                    modifier = Modifier.padding(10.dp).combinedClickable(
+                                    modifier = Modifier.padding(end=10.dp).combinedClickable(
                                         onClick = {},
                                         onLongClick = { viewMode.delete(ele) }
                                     )
@@ -175,6 +180,18 @@ fun chatScreen(navControl: NavController,
                                     Text(text = ele.message, modifier = Modifier.padding(10.dp))
                                 }
                             }
+                                Box(modifier=Modifier.fillMaxWidth().padding(bottom = 10.dp,end=10.dp), contentAlignment = Alignment.BottomEnd) {
+                                    if (ele.id == lastSentMessageId) {
+                                        Text(
+                                            text = ele.status,
+                                            fontSize = 10.sp,
+                                            fontStyle = FontStyle.Italic,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color.White
+                                        )
+                                    }
+                                }
+                        }
                         }else{
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -228,19 +245,8 @@ fun chatScreen(navControl: NavController,
                         Button(onClick = {
 //                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
                                 if (textingg.isNotBlank()){
-//                            viewMode.insert(
-//                                MessageInfo(
-//                                      0,
-//                                    "",
-//                                    "mayank",
-//                                    textingg,
-//                                    10,
-//                                    false
-//                                )
-//
-//                            )
                                 msg.storeMsg(conversationId,textingg)
-                                                          };
+                                };
                             textingg="";
                         }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
                         ) {
