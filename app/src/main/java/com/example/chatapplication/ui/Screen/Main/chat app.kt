@@ -103,6 +103,16 @@ fun chatScreen(navControl: NavController,
 
 //    val task by viewMode.getallValue.collectAsState(initial = emptyList())
     val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
+    LaunchedEffect(task) {
+        println("CHAT UI: ROOM FLOW EMITTED")
+        println("CHAT UI: MESSAGE COUNT = ${task.size}")
+
+        task.forEach {
+            println(
+                "CHAT UI MESSAGE: id=${it.id}, message=${it.message}, status=${it.status}"
+            )
+        }
+    }
     val lastSentMessageId = task
         .lastOrNull { it.sender_Id == currentUserId }
         ?.id
@@ -158,7 +168,8 @@ fun chatScreen(navControl: NavController,
                 LazyColumn(
                     reverseLayout = true
                 ) {
-                    items(task.reversed()) { ele ->
+                    items(task.reversed(), key = { it.id }) { ele ->
+                        println("LAZY ITEM RENDERING: ${ele.message}")
                         if (ele.sender_Id == currentUserId) {
                             Column() {
                             Row(
