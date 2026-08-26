@@ -76,4 +76,7 @@ suspend fun getConvoInfo(
     @Body request: conversationIdRequest
 ): Response<List<ConversationResponse>>
 
+    @POST("rpc/get_company_users")
+    suspend fun getCompanyUsers(): Response<List<TakingUsernameResponse>>
+
 }

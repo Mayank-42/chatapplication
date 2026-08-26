@@ -29,6 +29,25 @@ var userInfo by mutableStateOf<List<TakingUsernameResponse>>(emptyList())
     private set
     var UserExsist by mutableStateOf<UserNameExistResponse?>(null)
 
+    var companyUsers by mutableStateOf<List<TakingUsernameResponse>>(emptyList())
+        private set
+    fun getCompanyUsers() {
+        viewModelScope.launch {
+            try {
+                println("COMPANY USERS: Calling API")
+                val response = infovm.getCompanyUsers()
+                println("COMPANY USERS: STATUS = ${response.code()}")
+                println("COMPANY USERS: BODY = ${response.body()}")
+                println("COMPANY USERS: ERROR = ${response.errorBody()?.string()}")
+                if (response.isSuccessful) {
+                    companyUsers = response.body() ?: emptyList()
+                    println("COMPANY USERS: LIST SIZE = ${companyUsers.size}")
+                }
+            } catch (e: Exception) {
+                println("COMPANY USERS: EXCEPTION = ${e.message}")
+            }
+        }
+    }
 fun getinfo() {
     viewModelScope.launch {
         try {

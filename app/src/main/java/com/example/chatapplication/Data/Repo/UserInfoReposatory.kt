@@ -18,6 +18,9 @@ class UserInfoReposatory(
     suspend fun takingUserName():Response<List<TakingUsernameResponse>>{
         return userInfoRepo.takingUserName()
     }
+    suspend fun getCompanyUsers(): Response<List<TakingUsernameResponse>> {
+        return userInfoRepo.getCompanyUsers()
+    }
     suspend fun isExist(name:String): Response<UserNameExistResponse>{
         val request= UserNameExistRequest(username_input=name)
         return userInfoRepo.isExsist(request)

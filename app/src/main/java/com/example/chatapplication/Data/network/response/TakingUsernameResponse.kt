@@ -7,7 +7,7 @@ data class TakingUsernameResponse(
     val email: String,
     val photo_url: String?,
     val created_at: String?,
-    var rote :String
+    var role :String?
 ) {
 
 }
