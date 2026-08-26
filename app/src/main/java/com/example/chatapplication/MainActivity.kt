@@ -60,6 +60,7 @@ import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
+import kotlinx.coroutines.delay
 import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
@@ -125,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                 it.access_token,
                                 it.refresh_token
                             )
-
+                            delay(2000)
                             SupaBaseClient.initialize(
                                 tokenManager
                             )

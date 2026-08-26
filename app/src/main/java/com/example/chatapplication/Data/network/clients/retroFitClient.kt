@@ -21,7 +21,7 @@ object retroFitClient {
             val accessToken = runBlocking {
                 token.getAccessToken()
             }
-    println("TOKEN BEING SENT = $accessToken")
+
             val request= chain.request()
                 .newBuilder()
                 .addHeader("apikey",constant.supaBaseKey)

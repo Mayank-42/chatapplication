@@ -9,8 +9,8 @@ data class GroupInfo(
     var GroupId:String,
     var GropName:String,
     var bio:String,
-    var last_message:String,
-    var last_Message_Time:String
+    var createdBy: String,
+    var createdAt: String
 //    var memeber:List<String>
 ) {
 }
