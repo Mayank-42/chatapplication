@@ -17,6 +17,7 @@ interface GroupOperation {
     @Query("select*from GroupInfo")
     fun getAllInfo(): Flow<List<GroupInfo>>
 
+
     @Insert
     suspend fun GroupMemberInfo(memberInfo: groupMember)
 

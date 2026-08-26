@@ -20,6 +20,9 @@ class GroupChatVM(
 
     var groupCreated by mutableStateOf(false)
         private set
+    fun resetGroupCreated() {
+        groupCreated = false
+    }
     var gettingGroupinfo=reposatory.getAllGroupinfo
     var gettingAllMember=reposatory.gettAllMember
     var selectedUserId by  mutableStateOf<List<String>>(emptyList())
@@ -47,24 +50,14 @@ class GroupChatVM(
     ) {
         viewModelScope.launch {
 
-            val result = reposatory.createGroup(
-                name = name,
-                memberIds = selectedUserId
-            )
-
+            val result = reposatory.createGroup(name = name, memberIds = selectedUserId)
             if (result.isSuccessful) {
-
                 val conversationId = result.body()
-
                 if (conversationId != null) {
                     groupCreated = true
                 }
-
             } else {
-                println(
-                    "CREATE GROUP ERROR: ${
-                        result.errorBody()?.string()
-                    }"
+                println("CREATE GROUP ERROR: ${result.errorBody()?.string()}"
                 )
             }
         }

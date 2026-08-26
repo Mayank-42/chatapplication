@@ -14,6 +14,18 @@ interface conversationId {
 
     @Query("select*from CinversationId")
     fun getAllConvoInfo(): Flow<List<CinversationId>>
+    @Query("""
+    SELECT * FROM CinversationId
+    WHERE type = 'private'
+    ORDER BY lastTime DESC
+""")
+    fun getPrivateConversations(): Flow<List<CinversationId>>
+    @Query("""
+    SELECT * FROM CinversationId
+    WHERE type = 'group'
+    ORDER BY lastTime DESC
+""")
+    fun getGroupConversations(): Flow<List<CinversationId>>
 
     @Query("""
         SELECT * FROM CinversationId

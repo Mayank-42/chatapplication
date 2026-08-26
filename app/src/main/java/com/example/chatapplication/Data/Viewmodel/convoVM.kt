@@ -21,6 +21,10 @@ class convoVM(
 
     var gettingConvoInfo= repo.getingConvoInfo
 
+    val privateConversations = repo.privateConversations
+
+    val groupConversations = repo.groupConversations
+
 //    fun insertConvoInfo(info: CinversationId){
 //        viewModelScope.launch{
 //            repo.insertConvoInfo(info)

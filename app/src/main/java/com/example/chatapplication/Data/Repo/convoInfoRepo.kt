@@ -17,6 +17,10 @@
     ) {
         var getingConvoInfo=work.getAllConvoInfo()
 
+        val privateConversations = work.getPrivateConversations()
+
+        val groupConversations = work.getGroupConversations()
+
     //    suspend fun insertConvoInfo(info: CinversationId){
     //        work.putingInfo()
     //    }

@@ -71,6 +71,7 @@ fun GroupName(nav: NavController,save: GroupChatVM){
     var Gbio by rememberSaveable {mutableStateOf("") }
     LaunchedEffect(save.groupCreated) {
         if (save.groupCreated) {
+            save.resetGroupCreated()
             nav.popBackStack(
                 "GroupPage",
                 inclusive = false

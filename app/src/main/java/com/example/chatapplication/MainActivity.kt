@@ -1,10 +1,12 @@
 package com.example.chatapplication
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,12 +64,24 @@ import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val tokenManager = TokenManager(this)
         enableEdgeToEdge()
         setContent {
+
+            val now = java.time.Instant.now()
+
+            println("ANDROID CURRENT TIME = $now")
+            println("ANDROID CURRENT MILLIS = ${System.currentTimeMillis()}")
+
+            println("========== TIME DEBUG ==========")
+            println("ANDROID INSTANT = ${java.time.Instant.now()}")
+            println("ANDROID MILLIS = ${System.currentTimeMillis()}")
+            println("ANDROID EPOCH SECOND = ${System.currentTimeMillis() / 1000}")
+            println("================================")
 
             var userId by rememberSaveable { mutableStateOf("") }
 
@@ -113,7 +127,7 @@ class MainActivity : ComponentActivity() {
                             )
 
                             SupaBaseClient.initialize(
-                                it.access_token
+                                tokenManager
                             )
 
                             userId = tokenManager.getUserId() ?: ""
@@ -210,8 +224,13 @@ class MainActivity : ComponentActivity() {
                         )
 
                     LaunchedEffect(Unit) {
-                        convoInfoVM.syncConversations()
+                        println("========== TIME DEBUG ==========")
+                        println("ANDROID INSTANT = ${java.time.Instant.now()}")
+                        println("ANDROID EPOCH = ${System.currentTimeMillis() / 1000}")
+                        println("================================")
+
                         convoInfoVM.startConversationRealtime()
+                        convoInfoVM.syncConversations()
                         messageInfoVM.startRealtime()
                     }
 

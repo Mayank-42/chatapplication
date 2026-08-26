@@ -59,7 +59,7 @@ class loginVM( private val reposatory: AuthReposatory,
                     data.refresh_token
                 )
                 SupaBaseClient.initialize(
-                    data.access_token
+                    tokenManager
                 )
                 val payload = data.access_token.split(".")[1]
 
@@ -139,7 +139,7 @@ class loginVM( private val reposatory: AuthReposatory,
                 // Supabase must be initialized BEFORE
                 // MainActivity creates RealTimeRepo.
                 SupaBaseClient.initialize(
-                    it.access_token
+                    tokenManager
                 )
             }
 

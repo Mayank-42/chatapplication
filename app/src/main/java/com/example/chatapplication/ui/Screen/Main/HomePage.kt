@@ -84,7 +84,7 @@
         var id by rememberSaveable {mutableStateOf("") }
         LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
 
-        val conversations by conversationInfo.gettingConvoInfo.collectAsState(initial = emptyList())
+        val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
 
             Scaffold(topBar = {
                     TopAppBar(

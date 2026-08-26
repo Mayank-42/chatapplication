@@ -54,7 +54,7 @@ import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 @Composable
 fun GroupPage(nav: NavController,save: GroupChatVM,convoInfo: convoVM){
     val groups by save.gettingGroupinfo.collectAsState(initial = emptyList())
-    val conversations by convoInfo.gettingConvoInfo.collectAsState(initial = emptyList())
+    val conversations by convoInfo.groupConversations.collectAsState(initial = emptyList())
     Scaffold(
         topBar = {
             TopAppBar(
