@@ -8,9 +8,11 @@ import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.CinversationId
+import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonPrimitive
 
 class convoVM(
     private var repo: convoInfoRepo,
@@ -30,23 +32,49 @@ class convoVM(
 //            repo.insertConvoInfo(info)
 //        }
 fun startConversationRealtime() {
+
     viewModelScope.launch {
-        val flow =
-            realTimeRepo.conversationMemberInsertFlow()
+
         launch {
-            flow.collectLatest { event ->
-                println("🔥 GROUP REALTIME EVENT RECEIVED")
-                println("🔥 GROUP EVENT = ${event.record}")
-                val myUserId = token.getUserId()
-                if (!myUserId.isNullOrBlank()) {
+            realTimeRepo.conversationMemberInsertFlow().collect{ event ->
+                    println("GROUP REALTIME EVENT RECEIVED")
+                    println("GROUP EVENT = ${event.record}")
+                    val myUserId = token.getUserId()
+                    if (myUserId.isNullOrBlank()) {
+                        println("GROUP: MY USER ID IS EMPTY")
+                        return@collect
+                    }
+                    val eventUserId =
+                        event.record["user_id"]
+                            ?.jsonPrimitive
+                            ?.content
+                    val conversationId =
+                        event.record["conversation_id"]
+                            ?.jsonPrimitive
+                            ?.content
+                    println("GROUP EVENT USER = $eventUserId")
+                    println("MY USER ID = $myUserId")
+                    println("CONVERSATION ID = $conversationId")
+
+                    if (eventUserId != myUserId) {
+                        println("GROUP: NOT MY EVENT")
+                        return@collect
+                    }
+                    if (conversationId.isNullOrBlank()) {
+                        println("GROUP: CONVERSATION ID IS EMPTY")
+                        return@collect
+                    }
+                    println("GROUP: FETCHING CONVERSATION")
                     repo.handleConversationMemberEvent(
-                        event,
-                        myUserId
+                        event = event,
+                        myUserId = myUserId
                     )
+                    println("GROUP: HANDLE EVENT FINISHED")
                 }
-            }
         }
+        println("GROUP: ABOUT TO SUBSCRIBE")
         realTimeRepo.subscribeConversationMembers()
+        println("GROUP: REALTIME SUBSCRIBED")
     }
 }
 
