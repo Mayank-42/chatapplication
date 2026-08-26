@@ -14,8 +14,8 @@ class AuthReposatory(private val auth:ApiService)  {
         val request= loginRequest(email=email,password=password)
         return auth.login(request)
     }
-    suspend fun signUp(email:String,password:String,name:String,username:String):Response<signUpResponse>{
-        val PutingUserInfo= signUpRequest(email=email,password= password,data=mapOf("name" to name,"username" to username))
+    suspend fun signUp(email:String,password:String,name:String,username:String,role:String):Response<signUpResponse>{
+        val PutingUserInfo= signUpRequest(email=email,password= password,data=mapOf("name" to name,"username" to username,"role" to role))
         return auth.signUp(PutingUserInfo)
 
     }

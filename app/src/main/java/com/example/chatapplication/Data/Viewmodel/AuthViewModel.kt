@@ -86,6 +86,7 @@ class loginVM( private val reposatory: AuthReposatory,
         password: String,
         name: String,
         username: String,
+        role:String,
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
@@ -94,7 +95,8 @@ class loginVM( private val reposatory: AuthReposatory,
                 email = email,
                 password = password,
                 name = name,
-                username = username
+                username = username,
+                role
             )
 
             if (!signupResponse.isSuccessful) {

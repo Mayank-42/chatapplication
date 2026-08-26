@@ -69,13 +69,16 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLo
 
         Spacer(modifier=Modifier.padding(top=70.dp))
         help("Enter the  Name",input= name, onWordsChange = {name=it})
+            dropBox(role,onRoleChange = {
+                role = it
+            })
         help("Enter the UserName",
             true,
             input=username,
             onWordsChange = {username=it},
             onButtonClick={
                 viewMode.userinsert(userInfo(0,name,username))
-                authVM.sigUp(authVM.email ,authVM.password,name,username){
+                authVM.sigUp(authVM.email ,authVM.password,name,username,role){
                     succses->if(succses){
                    onLoginSuccess()
                   }
@@ -83,9 +86,7 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLo
             },
             )
             Spacer(modifier=Modifier.padding(30.dp))
-            dropBox(role,onRoleChange = {
-                role = it
-            })
+
         }
 
     }
