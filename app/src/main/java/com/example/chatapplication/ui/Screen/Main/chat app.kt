@@ -168,8 +168,7 @@ fun chatScreen(navControl: NavController,
                 LazyColumn(
                     reverseLayout = true
                 ) {
-                    items(task.reversed(), key = { it.id }) { ele ->
-                        println("LAZY ITEM RENDERING: ${ele.message}")
+                    items(task.reversed()) { ele ->
                         if (ele.sender_Id == currentUserId) {
                             Column() {
                             Row(

@@ -45,14 +45,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
+import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.R
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupPage(nav: NavController,save: GroupChatVM){
+fun GroupPage(nav: NavController,save: GroupChatVM,convoInfo: convoVM){
     val groups by save.gettingGroupinfo.collectAsState(initial = emptyList())
+    val conversations by convoInfo.gettingConvoInfo.collectAsState(initial = emptyList())
     Scaffold(
         topBar = {
             TopAppBar(
@@ -92,9 +94,9 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
         Box(modifier=Modifier.padding(paddingValues).fillMaxSize().background(Color.Black)){
             Column(modifier = Modifier.fillMaxSize()){
                 LazyColumn() {
-                    items(groups) { ele ->
+                    items(conversations) { ele ->
 
-                GropChatTile(ele.GropName,nav)
+                GropChatTile(ele.name?:"",nav,ele.conversationId,ele.lastMessage?:"",ele.lastTime?:"")
                     }
                 }
             Box(modifier=Modifier.fillMaxSize()
@@ -114,10 +116,11 @@ fun GroupPage(nav: NavController,save: GroupChatVM){
         }
 
     }
+
 }
 @Composable
-fun GropChatTile(Gname:String,nav: NavController){
-    Surface(modifier=Modifier.fillMaxWidth().height(70.dp).clickable(onClick = {nav.navigate("GroupChatScreen")})){
+fun GropChatTile(Gname:String,nav: NavController,id:String,lastMesage:String="this is goup is created by somone",time:String){
+    Surface(modifier=Modifier.fillMaxWidth().height(70.dp).clickable(onClick = {nav.navigate("GroupChatScreen/${id}")})){
         Row(verticalAlignment = Alignment.CenterVertically){
             Image(
                 painter= painterResource(R.drawable.example),
@@ -131,12 +134,12 @@ fun GropChatTile(Gname:String,nav: NavController){
             )
             Column(modifier = Modifier.padding(start=10.dp)){
              Text(text=Gname, fontSize = 25.sp)
-                Text(text="this is goup is created by somone",modifier=Modifier.padding(start=10.dp))
+                Text(text=lastMesage,modifier=Modifier.padding(start=10.dp))
             }
 
         }
             Box(modifier=Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
-            Text(text="date/date/date",modifier=Modifier.padding(start=50.dp))
+            Text(text=time,modifier=Modifier.padding(start=50.dp))
             }
     }
 

@@ -59,9 +59,10 @@ import com.example.chatapplication.ui.Screen.Main.chatScreen
 @Composable
 fun GroupChatScreen(navControl: NavController,
                     viewMode: databaseVM,
-                    userId:String?,
+                    conversationId:String?,
                     msg: MsgVM,
                   tokenManager: TokenManager, save: GroupChatVM){
+    chatScreen(navControl,viewMode,conversationId?:"",msg,tokenManager)
 //    val showInfo by save.gettingGroupinfo.collectAsState(initial=emptyList())
 //    var currentUserId by rememberSaveable { mutableStateOf("") }
 //

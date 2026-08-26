@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Repo.AuthReposatory
 import com.example.chatapplication.Data.Repo.GroupRepo
 import com.example.chatapplication.Data.Repo.MessageRepo
@@ -254,16 +255,12 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         composable("Home") {
-
                             HomeScreen(
                                 navController,
                                 tokenManager,
                                 userInfovm,
-
                                 onLoginSuccess = {
-
                                     userId = ""
-
                                     authState =
                                         ChekUserState.unAuthenticated
                                 },
@@ -275,17 +272,12 @@ class MainActivity : ComponentActivity() {
                         composable(
                             "ChatScreen/{conversationId}"
                         ) { backStackEntry ->
-
                             val conversationId =
                                 backStackEntry.arguments
                                     ?.getString(
                                         "conversationId"
                                     )
-
-                            println(
-                                "NAVIGATION: conversationId = $conversationId"
-                            )
-
+                            println("NAVIGATION: conversationId = $conversationId")
                             if (conversationId != null) {
 
                                 chatScreen(
@@ -329,15 +321,14 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("GroupPage") {
-
                             GroupPage(
                                 navController,
-                                save
+                                save,
+                                convoInfoVM
                             )
                         }
 
                         composable("GropChatSearch") {
-
                             GroupChatSearch(
                                 navController,
                                 userInfovm,
@@ -353,16 +344,23 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable("GroupChatScreen") {
-
-                            GroupChatScreen(
-                                navController,
-                                viewModel,
-                                userId,
-                                messageInfoVM,
-                                tokenManager,
-                                save
-                            )
+                        composable("GroupChatScreen/{conversationId}") { backStackEntry ->
+                            val conversationId =
+                                backStackEntry.arguments
+                                    ?.getString(
+                                        "conversationId"
+                                    )
+                            println("NAVIGATION: conversationId = $conversationId")
+                            if (conversationId != null) {
+                                GroupChatScreen(
+                                    navController,
+                                    viewModel,
+                                    conversationId,
+                                    messageInfoVM,
+                                    tokenManager,
+                                    save
+                                )
+                            }
                         }
                     }
                 }
