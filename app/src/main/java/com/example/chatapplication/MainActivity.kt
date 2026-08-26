@@ -178,8 +178,7 @@ class MainActivity : ComponentActivity() {
                                 )
                         )
 
-                    val realtimeRepo =
-                        RealTimeRepo(tokenManager)
+                    val realtimeRepo = RealTimeRepo()
 
                     val convoRepo =
                         convoInfoRepo(
