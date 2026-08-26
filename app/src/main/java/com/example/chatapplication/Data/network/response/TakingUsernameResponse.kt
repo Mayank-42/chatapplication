@@ -6,7 +6,8 @@ data class TakingUsernameResponse(
     val username: String,
     val email: String,
     val photo_url: String?,
-    val created_at: String?
+    val created_at: String?,
+    var rote :String
 ) {
 
 }

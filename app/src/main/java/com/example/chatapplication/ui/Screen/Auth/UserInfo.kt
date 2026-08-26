@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -33,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -62,8 +64,10 @@ import com.example.chatapplication.Data.local.tables.userInfo
 fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLoginSuccess: () -> Unit){
     var name by rememberSaveable{mutableStateOf("")}
     var username by rememberSaveable{mutableStateOf("")}
-    var role by rememberSaveable { mutableStateOf("Choose your role")
-    }
+    var role by rememberSaveable { mutableStateOf("Choose your role")}
+        var showAlert by rememberSaveable{ mutableStateOf(false) }
+        var alertMessage by rememberSaveable { mutableStateOf("") }
+
     Box(modifier=Modifier.fillMaxSize().background(Color.Black)){
         Column(){
 
@@ -72,20 +76,60 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLo
             dropBox(role,onRoleChange = {
                 role = it
             })
-        help("Enter the UserName",
-            true,
-            input=username,
-            onWordsChange = {username=it},
-            onButtonClick={
-                viewMode.userinsert(userInfo(0,name,username))
-                authVM.sigUp(authVM.email ,authVM.password,name,username,role){
-                    succses->if(succses){
-                   onLoginSuccess()
-                  }
+            help(
+                "Enter the UserName",
+                true,
+                input = username,
+                onWordsChange = { username = it },
+                onButtonClick = {
+
+                    if (username.isBlank()) {
+                        alertMessage = "Please enter a username"
+                        showAlert = true
+                    } else if (role.isBlank() || role == "Choose your role") {
+
+                        alertMessage = "Please choose a role"
+                        showAlert = true
+
+                    } else {
+                        viewMode.userinsert(
+                            userInfo(0, name, username)
+                        )
+                        authVM.sigUp(
+                            authVM.email,
+                            authVM.password,
+                            name,
+                            username,
+                            role
+                        ) { success ->
+                            if (success) {
+                                onLoginSuccess()
+                            }
+                        }
+                    }
                 }
-            },
             )
-            Spacer(modifier=Modifier.padding(30.dp))
+            if (showAlert) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showAlert = false
+                    },
+
+                    title = { Text(text = "Something is missing") },
+
+                    text = { Text(text = alertMessage)  },
+
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showAlert = false
+                            }
+                        ) {
+                            Text(text = "OK")
+                        }
+                    }
+                )
+            }
 
         }
 
@@ -144,7 +188,6 @@ fun help(
                         modifier=Modifier.fillMaxWidth()
                     )
                 }
-
         }
     }
 }
