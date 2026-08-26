@@ -210,9 +210,8 @@ class MainActivity : ComponentActivity() {
                         )
 
                     LaunchedEffect(Unit) {
-
                         convoInfoVM.syncConversations()
-
+                        convoInfoVM.startConversationRealtime()
                         messageInfoVM.startRealtime()
                     }
 

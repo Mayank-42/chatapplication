@@ -46,24 +46,26 @@ class GroupChatVM(
         bio:String
     ) {
         viewModelScope.launch {
-            val result = reposatory.createGroup(name = name, memberIds = selectedUserId)
-            if (result.isSuccessful) {
-                val conversationId = result.body()
-                if(conversationId!=null){
-                    reposatory.goupInfoInsert(
-                        GroupInfo(
-                            GroupId = conversationId,
-                            GropName = name,
-                            bio = bio
-                        )
 
-                    )
-                groupCreated=true;
+            val result = reposatory.createGroup(
+                name = name,
+                memberIds = selectedUserId
+            )
+
+            if (result.isSuccessful) {
+
+                val conversationId = result.body()
+
+                if (conversationId != null) {
+                    groupCreated = true
                 }
-                // We will use this ID to save the group in Room
-                // after we confirm the backend response.
+
             } else {
-                println("CREATE GROUP ERROR: ${result.errorBody()?.string()}")
+                println(
+                    "CREATE GROUP ERROR: ${
+                        result.errorBody()?.string()
+                    }"
+                )
             }
         }
     }
