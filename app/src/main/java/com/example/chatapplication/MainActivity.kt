@@ -178,7 +178,8 @@ class MainActivity : ComponentActivity() {
                                 ConvoVMFactory(
                                     convoRepo,
                                     tokenManager,
-                                    repo
+                                    repo,
+                                    realtimeRepo
                                 )
                         )
 

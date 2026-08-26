@@ -5,6 +5,8 @@ import com.example.chatapplication.Data.local.tables.CinversationId
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
+import io.github.jan.supabase.realtime.PostgresAction
+import kotlinx.serialization.json.jsonPrimitive
 
 class convoInfoRepo(
     private var work: conversationId,
@@ -24,20 +26,6 @@ class convoInfoRepo(
         if (response.isSuccessful) {
 //            val conversations = response.body() ?: emptyList()
             val conversations = response.body() ?: emptyList()
-
-            println("========== CONVO DEBUG ==========")
-            println("CONVO STATUS = ${response.code()}")
-            println("CONVO BODY = ${response.body()}")
-
-            conversations.forEach { convo ->
-                println(
-                    "CONVO: id=${convo.conversation_id}, " +
-                            "name=${convo.name}, " +
-                            "unread_count=${convo.unread_count}"
-                )
-            }
-
-            println("=================================")
                 val localConversation = conversations.map{convo->
                     CinversationId(
                         conversationId = convo.conversation_id,
@@ -55,6 +43,23 @@ class convoInfoRepo(
          else {
             println("CONVERSATION SYNC ERROR = ${response.errorBody()?.string()}")
         }
+    }
+    suspend fun handleConversationMemberEvent(
+        event: PostgresAction.Insert,
+        myUserId: String
+    ) {
+        val record = event.record
+        val userId =
+            record["user_id"]?.jsonPrimitive?.content
+        if (userId != myUserId) {
+            return
+        }
+        val conversationId =
+            record["conversation_id"]?.jsonPrimitive?.content
+                ?: return
+        // Get this conversation from backend
+        // Convert it to CinversationId
+        // Upsert it into Room
     }
         suspend fun updateLastMessage(
             conversationId: String,

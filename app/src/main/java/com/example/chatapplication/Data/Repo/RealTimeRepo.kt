@@ -22,6 +22,13 @@ class RealTimeRepo( private val tokenManager: TokenManager) {
             table = "message"
         }
     }
+    fun conversationMemberInsertFlow(): Flow<PostgresAction.Insert> {
+        return channel.postgresChangeFlow<PostgresAction.Insert>(
+            schema = "public"
+        ) {
+            table = "conversation_member"
+        }
+    }
     /*
      This block establishes the listener for new messages.
 
