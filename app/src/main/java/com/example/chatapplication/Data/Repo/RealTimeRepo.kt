@@ -1,53 +1,76 @@
 package com.example.chatapplication.Data.Repo
 
-import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.network.clients.SupaBaseClient
-import com.example.chatapplication.Data.network.clients.SupaBaseClient.supabase
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
-import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
-class RealTimeRepo( private val tokenManager: TokenManager) {
+class RealTimeRepo {
 
-    private val channel =
+    private val messageChannel =
         SupaBaseClient.supabase.channel("message-realtime")
 
+    private val conversationMemberChannel =
+        SupaBaseClient.supabase.channel("conversation-member-realtime")
+
+    private var messageSubscribed = false
+    private var conversationMemberSubscribed = false
+
+
     fun messageInsertFlow(): Flow<PostgresAction.Insert> {
-        return channel.postgresChangeFlow<PostgresAction.Insert>(
+
+        return messageChannel.postgresChangeFlow<PostgresAction.Insert>(
             schema = "public"
         ) {
             table = "message"
         }
     }
+
+
     fun conversationMemberInsertFlow(): Flow<PostgresAction.Insert> {
-        return channel.postgresChangeFlow<PostgresAction.Insert>(
+        return conversationMemberChannel.postgresChangeFlow<PostgresAction.Insert>(
             schema = "public"
         ) {
             table = "conversation_member"
         }
     }
-    /*
-     This block establishes the listener for new messages.
 
- messageInsertFlow() returns a Flow of PostgreSQL INSERT events.
- We specifically listen to INSERT events because we only want to
- know when a new row is inserted into the message table.
 
- schema = "public" -> PostgreSQL schema
- table = "message" -> table we want to listen to
-        below this
- subscribe() actually activates the Realtime channel.
- blockUntilSubscribed = true means the suspend call waits until
-the channel has successfully become subscribed.
-     */
+    suspend fun subscribeMessages() {
+        if (messageSubscribed) {
+            println("REALTIME: MESSAGE CHANNEL ALREADY SUBSCRIBED")
+            return
+        }
+        println("REALTIME: SUBSCRIBING MESSAGE CHANNEL")
+        messageChannel.subscribe(blockUntilSubscribed = true)
+        messageSubscribed = true
+        println("REALTIME: MESSAGE CHANNEL SUBSCRIBED")
+    }
 
-    suspend fun subscribe() {
-        channel.subscribe(blockUntilSubscribed = true)
+
+    suspend fun subscribeConversationMembers() {
+        if (conversationMemberSubscribed) {
+            println("REALTIME: CONVERSATION MEMBER CHANNEL ALREADY SUBSCRIBED")
+            return
+        }
+        println("REALTIME: SUBSCRIBING CONVERSATION MEMBER CHANNEL")
+        conversationMemberChannel.subscribe(blockUntilSubscribed = true)
+        conversationMemberSubscribed = true
+        println("REALTIME: CONVERSATION MEMBER CHANNEL SUBSCRIBED")
     }
-    suspend fun UnSubscriber(){
-        channel.unsubscribe()
+
+
+    suspend fun unsubscribeMessages() {
+
+        messageChannel.unsubscribe()
+        messageSubscribed = false
     }
+
+
+    suspend fun unsubscribeConversationMembers() {
+
+        conversationMemberChannel.unsubscribe()
+        conversationMemberSubscribed = false
     }
+}

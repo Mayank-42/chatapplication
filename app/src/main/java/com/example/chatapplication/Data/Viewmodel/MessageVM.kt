@@ -92,7 +92,7 @@ class MsgVM(
                 }
             }
 //         realtimeRepo.UnSubscriber()
-            realtimeRepo.subscribe()
+            realtimeRepo.subscribeMessages()
         }
     }
 

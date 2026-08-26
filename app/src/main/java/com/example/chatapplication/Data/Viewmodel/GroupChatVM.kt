@@ -33,6 +33,9 @@ class GroupChatVM(
     fun removeUser(id:String){
             selectedUserId=selectedUserId-id
     }
+    fun clearSelectedUsers() {
+        selectedUserId = emptyList()
+    }
      fun insertGroupInfo(info: GroupInfo){
         viewModelScope.launch{
             reposatory.goupInfoInsert(info)
@@ -54,6 +57,7 @@ class GroupChatVM(
             if (result.isSuccessful) {
                 val conversationId = result.body()
                 if (conversationId != null) {
+                    clearSelectedUsers()
                     groupCreated = true
                 }
             } else {

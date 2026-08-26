@@ -30,25 +30,26 @@ class convoVM(
 //            repo.insertConvoInfo(info)
 //        }
 fun startConversationRealtime() {
-
     viewModelScope.launch {
-
         val flow =
             realTimeRepo.conversationMemberInsertFlow()
-
-        flow.collectLatest { event ->
-            println("🔥 GROUP REALTIME EVENT RECEIVED")
-            println("🔥 GROUP EVENT = ${event.record}")
-            val myUserId = token.getUserId()
-            if (!myUserId.isNullOrBlank()) {
-                repo.handleConversationMemberEvent(
-                    event,
-                    myUserId
-                )
+        launch {
+            flow.collectLatest { event ->
+                println("🔥 GROUP REALTIME EVENT RECEIVED")
+                println("🔥 GROUP EVENT = ${event.record}")
+                val myUserId = token.getUserId()
+                if (!myUserId.isNullOrBlank()) {
+                    repo.handleConversationMemberEvent(
+                        event,
+                        myUserId
+                    )
+                }
             }
         }
+        realTimeRepo.subscribeConversationMembers()
     }
 }
+
 fun syncConversations() {
     viewModelScope.launch {
         try {
