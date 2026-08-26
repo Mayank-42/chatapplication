@@ -1,17 +1,36 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.contentDescription
 import android.R.attr.password
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Crop
+import androidx.compose.material.icons.filled.Preview
+import androidx.compose.material.icons.outlined.Feedback
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -19,12 +38,15 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,6 +62,8 @@ import com.example.chatapplication.Data.local.tables.userInfo
 fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLoginSuccess: () -> Unit){
     var name by rememberSaveable{mutableStateOf("")}
     var username by rememberSaveable{mutableStateOf("")}
+    var role by rememberSaveable { mutableStateOf("Choose your role")
+    }
     Box(modifier=Modifier.fillMaxSize().background(Color.Black)){
         Column(){
 
@@ -58,6 +82,10 @@ fun UserInfo(navControl: NavController,viewMode: databaseVM,authVM: loginVM,onLo
                 }
             },
             )
+            Spacer(modifier=Modifier.padding(30.dp))
+            dropBox(role,onRoleChange = {
+                role = it
+            })
         }
 
     }
@@ -119,10 +147,126 @@ fun help(
         }
     }
 }
+@Composable
+fun dropBox(
+    role: String,
+    onRoleChange: (String) -> Unit
+) {
+    var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
 
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 15.dp)
+    ) {
+
+        // Main dropdown tile
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(90.dp),
+            color = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 19.dp)
+                    .clickable {
+                        expanded = !expanded
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = role,
+                    color = Color.Black,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Select role",
+                    tint = Color.Black,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+        }
+
+        // Dropdown options
+        if (expanded) {
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+            ) {
+
+                jobRole("Principal Engineer") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+
+                jobRole("Manager") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+
+                jobRole("SDE") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+
+                jobRole("QA") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+
+                jobRole("Product Manager") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+
+                jobRole("Intern") {
+                    onRoleChange(it)
+                    expanded = false
+                }
+            }
+        }
+    }
+}
+@Composable
+fun jobRole(
+    role: String,
+    onClick: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .clickable {
+                onClick(role)
+            }
+            .padding(horizontal = 19.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Text(
+            text = role,
+            color = Color.Black
+        )
+    }
+}
 
 //@Preview(showBackground = true, showSystemUi = true)
 //@Composable
-//fun showw(){
-//    UserInfo()
+//fun showw() {
+//    dropBox()
 //}

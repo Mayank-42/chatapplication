@@ -65,33 +65,22 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val tokenManager = TokenManager(this)
-
         enableEdgeToEdge()
-
         setContent {
 
-            var userId by rememberSaveable {
-                mutableStateOf("")
-            }
+            var userId by rememberSaveable { mutableStateOf("") }
 
             var application = application as dataBaseBuilder
-
             retroFitClient.initialize(applicationContext)
 
             var repo = reposatory(
                 application.database.dataBaseCall()
             )
 
-            var viewModel: databaseVM = viewModel(
-                factory = dataBaseVMfacrory(repo)
-            )
+            var viewModel: databaseVM = viewModel(factory = dataBaseVMfacrory(repo))
 
-            var authRepo =
-                AuthReposatory(
-                    AuthRetroFitClient.AuthApiService
-                )
+            var authRepo = AuthReposatory(AuthRetroFitClient.AuthApiService)
 
             var authVM: loginVM = viewModel(
                 factory = AuthViewModelFactory(
@@ -108,23 +97,16 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
 
-                val refreshToken =
-                    tokenManager.getRefreshToken()
+                val refreshToken = tokenManager.getRefreshToken()
 
                 if (refreshToken.isNullOrBlank()) {
-
-                    authState =
-                        ChekUserState.unAuthenticated
+                    authState = ChekUserState.unAuthenticated
 
                 } else {
-
-                    val response =
-                        authRepo.refreshToken(refreshToken)
-
+                    val response = authRepo.refreshToken(refreshToken)
                     if (response.isSuccessful) {
 
                         response.body()?.let {
-
                             tokenManager.saveTokens(
                                 it.access_token,
                                 it.refresh_token
@@ -134,26 +116,18 @@ class MainActivity : ComponentActivity() {
                                 it.access_token
                             )
 
-                            userId =
-                                tokenManager.getUserId() ?: ""
+                            userId = tokenManager.getUserId() ?: ""
 
-                            authState =
-                                ChekUserState.authenticated
+                            authState = ChekUserState.authenticated
 
                         } ?: run {
-
                             tokenManager.clearTokens()
-
                             authState =
                                 ChekUserState.unAuthenticated
                         }
-
                     } else {
-
                         tokenManager.clearTokens()
-
-                        authState =
-                            ChekUserState.unAuthenticated
+                        authState = ChekUserState.unAuthenticated
                     }
                 }
             }
@@ -225,21 +199,13 @@ class MainActivity : ComponentActivity() {
                                     convoRepo
                                 )
                         )
-
                     val userInfoRepo =
-                        UserInfoReposatory(
-                            retroFitClient.apiService,
-                            SupaBaseClient.supabase
-                        )
+                        UserInfoReposatory(retroFitClient.apiService, SupaBaseClient.supabase)
 
                     val userInfovm: UserInfo =
                         viewModel(
                             key = "UserInfo-$userId",
-                            factory =
-                                UserInfoFactory(
-                                    userInfoRepo,
-                                    messageInfoRepo
-                                )
+                            factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
                         )
 
                     LaunchedEffect(Unit) {
@@ -264,7 +230,6 @@ class MainActivity : ComponentActivity() {
                                     authState =
                                         ChekUserState.unAuthenticated
                                 },
-
                                 convoInfoVM
                             )
                         }
@@ -390,19 +355,10 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("register") {
-
-                            ShowShinUp(
-                                navController,
-                                authVM
-                            )
+                            ShowShinUp(navController, authVM)
                         }
-
                         composable("UserInfo") {
-
-                            UserInfo(
-                                navController,
-                                viewModel,
-                                authVM,
+                            UserInfo(navController, viewModel, authVM,
 
                                 onLoginSuccess = {
 
