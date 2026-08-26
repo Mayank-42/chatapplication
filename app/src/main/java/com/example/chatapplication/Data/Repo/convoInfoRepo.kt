@@ -69,24 +69,71 @@
             event: PostgresAction.Insert,
             myUserId: String
         ) {
+            println("========== REALTIME GROUP DEBUG ==========")
+
             val record = event.record
-            val userId = record["user_id"]?.jsonPrimitive?.content
+
+            val userId =
+                record["user_id"]?.jsonPrimitive?.content
+
+            val conversationId =
+                record["conversation_id"]?.jsonPrimitive?.content
+
+            println("REALTIME GROUP: EVENT USER = $userId")
+            println("REALTIME GROUP: MY USER  = $myUserId")
+            println("REALTIME GROUP: CONVERSATION ID = $conversationId")
+
             if (userId != myUserId) {
+                println("REALTIME GROUP: NOT MY MEMBERSHIP EVENT")
+                println("=========================================")
                 return
             }
-            val conversationId = record["conversation_id"]?.jsonPrimitive?.content ?: return
-            // Fetch ONLY this conversation
+
+            if (conversationId.isNullOrBlank()) {
+                println("REALTIME GROUP: CONVERSATION ID IS NULL")
+                println("=========================================")
+                return
+            }
+
+            println("REALTIME GROUP: FETCHING CONVERSATION")
+
             val response = getConversationById(conversationId)
+
+            println("REALTIME GROUP: API CODE = ${response.code()}")
+            println("REALTIME GROUP: API BODY = ${response.body()}")
+            println(
+                "REALTIME GROUP: API ERROR = ${
+                    response.errorBody()?.string()
+                }"
+            )
+
             if (!response.isSuccessful) {
-                println(
-                    "REALTIME CONVO ERROR = ${
-                        response.errorBody()?.string()
-                    }"
-                )
+                println("REALTIME GROUP: API FAILED")
+                println("=========================================")
                 return
             }
+
             val conversations = response.body() ?: emptyList()
+
+            println(
+                "REALTIME GROUP: CONVERSATIONS RETURNED = ${conversations.size}"
+            )
+
+            if (conversations.isEmpty()) {
+                println("REALTIME GROUP: API RETURNED EMPTY LIST")
+                println("=========================================")
+                return
+            }
+
             val localConversation = conversations.map { convo ->
+
+                println(
+                    "REALTIME GROUP: INSERTING CONVERSATION = " +
+                            "${convo.conversation_id}, " +
+                            "type=${convo.type}, " +
+                            "name=${convo.name}"
+                )
+
                 CinversationId(
                     conversationId = convo.conversation_id,
                     type = convo.type,
@@ -98,7 +145,15 @@
                     unread_count = convo.unread_count
                 )
             }
+
+            println(
+                "REALTIME GROUP: PUTTING ${localConversation.size} INTO ROOM"
+            )
+
             work.putingInfo(localConversation)
+
+            println("REALTIME GROUP: ROOM UPSERT COMPLETE")
+            println("=========================================")
         }
 
 

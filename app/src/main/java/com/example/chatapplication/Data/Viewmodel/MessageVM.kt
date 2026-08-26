@@ -56,10 +56,17 @@ class MsgVM(
             val flow =realtimeRepo.messageInsertFlow() //geting all the event flow in variable flow so ya
             launch {
                 flow.collectLatest { event -> //tells that if any new event happaned execute this block
+                    println("========== REALTIME MESSAGE DEBUG ==========")
                     println("REALTIME: NEW MESSAGE RECEIVED")
+                    println("REALTIME: EVENT = $event")
+
 
                     val record = event.record
+                    println("REALTIME: RECORD = $record")
                     val conversationIdFromEvent = record["conversation_id"]?.jsonPrimitive?.content
+                    println("REALTIME: CONVERSATION ID = $conversationIdFromEvent")
+
+
 
 //                    if (conversationIdFromEvent != activeConversationId) {
 //                        println("REALTIME: IGNORING OTHER CONVERSATION")
@@ -81,8 +88,11 @@ class MsgVM(
                         date = record["message_timestamp"]!!.jsonPrimitive.content,
                         status = "SENT"
                     )
-                    println("ROOM MESSAGE = $messageInfo")
+                    println("REALTIME: CONVERTED MESSAGE = $messageInfo")
+
                     dbrepo.realtimeInsert(messageInfo)
+
+                    println("REALTIME: INSERTED INTO ROOM")
                     convoRepo.updateLastMessage(
                         conversationId = messageInfo.conversationId,
                         messageId = messageInfo.id,
@@ -90,9 +100,15 @@ class MsgVM(
                         time = messageInfo.date
                     )
                 }
+                println("REALTIME: LAST MESSAGE UPDATED")
+                println("============================================")
             }
 //         realtimeRepo.UnSubscriber()
+            println("REALTIME: ABOUT TO SUBSCRIBE MESSAGE CHANNEL")
+
             realtimeRepo.subscribeMessages()
+
+            println("REALTIME: SUBSCRIBE FUNCTION RETURNED")
         }
     }
 
@@ -155,6 +171,7 @@ class MsgVM(
                 println("STORE MSG: STATUS = ${response.code()}")
                 println("STORE MSG: BODY = ${response.body()}")
                 println("STORE MSG: ERROR = ${response.errorBody()?.string()}")
+                println("STORE MSG: MESSAGE ID = $messageId")
 
                 if (response.isSuccessful) {
                     println("STORE MSG: API SUCCESS")

@@ -14,11 +14,19 @@ class RealTimeRepo {
     private val conversationMemberChannel =
         SupaBaseClient.supabase.channel("conversation-member-realtime")
 
+    private val conversationChannel =
+        SupaBaseClient.supabase.channel("conversation-realtime")
+
     private var messageSubscribed = false
     private var conversationMemberSubscribed = false
+    private var conversationChannelSubscribed = false
 
 
     fun messageInsertFlow(): Flow<PostgresAction.Insert> {
+
+        println("REALTIME: CREATING MESSAGE INSERT FLOW")
+        println("REALTIME: SCHEMA = public")
+        println("REALTIME: TABLE = message")
 
         return messageChannel.postgresChangeFlow<PostgresAction.Insert>(
             schema = "public"
@@ -60,17 +68,39 @@ class RealTimeRepo {
         println("REALTIME: CONVERSATION MEMBER CHANNEL SUBSCRIBED")
     }
 
+    fun conversationInsertFlow(): Flow<PostgresAction.Insert> {
+        return conversationChannel.postgresChangeFlow<PostgresAction.Insert>(
+            schema = "public"
+        ) {
+            table = "conversation"
+        }
+    }
+
 
     suspend fun unsubscribeMessages() {
-
         messageChannel.unsubscribe()
         messageSubscribed = false
     }
 
-
     suspend fun unsubscribeConversationMembers() {
-
         conversationMemberChannel.unsubscribe()
         conversationMemberSubscribed = false
+    }
+    suspend fun subscribeConversations() {
+        if (conversationChannelSubscribed) {
+            println("REALTIME: CONVERSATION CHANNEL ALREADY SUBSCRIBED")
+            return
+        }
+        println("REALTIME: SUBSCRIBING CONVERSATION CHANNEL")
+
+        conversationChannel.subscribe(
+            blockUntilSubscribed = true
+        )
+        conversationChannelSubscribed = true
+        println("REALTIME: CONVERSATION CHANNEL SUBSCRIBED")
+    }
+    suspend fun unsubscribeConversations() {
+        conversationChannel.unsubscribe()
+        conversationChannelSubscribed = false
     }
 }
