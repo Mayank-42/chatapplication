@@ -2,7 +2,10 @@ package com.example.chatapplication.Data.Viewmodel
 
 
 import android.R.id.message
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.util.UUID
+import java .util.*
 import kotlinx.serialization.json.jsonPrimitive
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -111,6 +114,7 @@ class MsgVM(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun storeMsg(conversationId: String, message: String) {
 
         println("STORE MSG: FUNCTION CALLED")
@@ -136,7 +140,7 @@ class MsgVM(
                         sender_Id = myUserId,
                         reciver_Id = null,
                         message = message,
-                        date = System.currentTimeMillis().toString(),
+                        date = java.time.Instant.now().toString(),
                         status = "PENDING"
                     )
                 )
