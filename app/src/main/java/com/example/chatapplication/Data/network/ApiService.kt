@@ -7,6 +7,7 @@ import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
+import com.example.chatapplication.Data.network.request.getOneConversation
 import com.example.chatapplication.Data.network.request.loginRequest
 import com.example.chatapplication.Data.network.request.signUpRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
@@ -78,5 +79,11 @@ suspend fun getConvoInfo(
 
     @POST("rpc/get_company_users")
     suspend fun getCompanyUsers(): Response<List<TakingUsernameResponse>>
+
+    @POST("rpc/get_conversation_by_id")
+    suspend fun getConversationById(
+        @Body request: getOneConversation
+    ): Response<List<ConversationResponse>>
+
 
 }
