@@ -43,74 +43,94 @@ class MsgVM(
     var localmsgList by mutableStateOf<List<WholeMessageResponse>>(emptyList())
 
 
-    fun startRealtime() { // every new inserted row will come to local db
-//        activeConversationId = conversationId
+    fun startRealtime() {
+
         if (realtimeStarted) {
             println("REALTIME: Already started")
             return
         }
+
         realtimeStarted = true
 
         viewModelScope.launch {
-//            val currentUserId = tokenManager.getUserId() ?: ""
-            val flow =realtimeRepo.messageInsertFlow() //geting all the event flow in variable flow so ya
+            val flow = realtimeRepo.messageInsertFlow()
             launch {
-                flow.collectLatest { event -> //tells that if any new event happaned execute this block
+                flow.collectLatest { event ->
+
                     println("========== REALTIME MESSAGE DEBUG ==========")
                     println("REALTIME: NEW MESSAGE RECEIVED")
                     println("REALTIME: EVENT = $event")
 
-
                     val record = event.record
+
                     println("REALTIME: RECORD = $record")
-                    val conversationIdFromEvent = record["conversation_id"]?.jsonPrimitive?.content
-                    println("REALTIME: CONVERSATION ID = $conversationIdFromEvent")
 
+                    val conversationIdFromEvent =
+                        record["conversation_id"]
+                            ?.jsonPrimitive
+                            ?.content
 
+                    println(
+                        "REALTIME: CONVERSATION ID = $conversationIdFromEvent"
+                    )
 
-//                    if (conversationIdFromEvent != activeConversationId) {
-//                        println("REALTIME: IGNORING OTHER CONVERSATION")
-//                        return@collectLatest
-//                    }
-//                    val senderId = record["sender_id"]!!.jsonPrimitive.content
-//                    val receiverId = record["receiver_id"]!!.jsonPrimitive.content
-//                    if ( senderId != currentUserId && receiverId != currentUserId
-//                    ) {
-//                        println("REALTIME: IGNORING UNRELATED MESSAGE")
-//                        return@collectLatest  //if senderId(user) is not involved then ignore the event
-//                    }
                     val messageInfo = MessageInfo(
                         id = record["id"]!!.jsonPrimitive.content,
-                        conversationId = conversationIdFromEvent!! ,
-                        sender_Id = record["sender_id"]!!.jsonPrimitive.content,
-                        reciver_Id = record["receiver_id"]!!.jsonPrimitive.content,
-                        message = record["message"]!!.jsonPrimitive.content,
-                        date = record["message_timestamp"]!!.jsonPrimitive.content,
+
+                        conversationId =
+                            conversationIdFromEvent!!,
+
+                        sender_Id =
+                            record["sender_id"]!!.jsonPrimitive.content,
+
+                        reciver_Id =
+                            record["receiver_id"]!!.jsonPrimitive.content,
+
+                        message =
+                            record["message"]!!.jsonPrimitive.content,
+
+                        date =
+                            record["message_timestamp"]!!.jsonPrimitive.content,
+
                         status = "SENT"
                     )
+
                     println("REALTIME: CONVERTED MESSAGE = $messageInfo")
-
                     dbrepo.realtimeInsert(messageInfo)
-
                     println("REALTIME: INSERTED INTO ROOM")
+
                     convoRepo.updateLastMessage(
                         conversationId = messageInfo.conversationId,
                         messageId = messageInfo.id,
                         message = messageInfo.message,
                         time = messageInfo.date
                     )
+
+                    println("REALTIME: LAST MESSAGE UPDATE")
+
+                    println("============================================")
                 }
-                println("REALTIME: LAST MESSAGE UPDATED")
-                println("============================================")
             }
-//         realtimeRepo.UnSubscriber()
+
+            launch {
+                realtimeRepo
+                    .conversationInsertFlow()
+                    .collectLatest { event ->
+
+                        println("CONVERSATION REALTIME EVENT RECEIVED")
+                        println("CONVERSATION EVENT = $event")
+                        println("CONVERSATION RECORD = ${event.record}")
+                    }
+            }
+
             println("REALTIME: ABOUT TO SUBSCRIBE MESSAGE CHANNEL")
-
             realtimeRepo.subscribeMessages()
-
-            println("REALTIME: SUBSCRIBE FUNCTION RETURNED")
+            println("REALTIME: ABOUT TO SUBSCRIBE CONVERSATION CHANNEL")
+            realtimeRepo.subscribeConversations()
+            println("REALTIME: ALL REALTIME SUBSCRIPTIONS STARTED")
         }
     }
+
 
     fun insertingLocaly(
         conversationId: String
