@@ -1,10 +1,12 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.R.attr.onClick
 import android.R.attr.text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,13 +37,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -72,8 +78,15 @@ fun chatScreen(navControl: NavController,
          ){
 
     var currentUserId by rememberSaveable { mutableStateOf("") }
+    var dragDistance by remember { mutableFloatStateOf(0f) }
 
-
+    val density = LocalDensity.current
+    val dragThreshold = with(density) {
+        200.dp.toPx()
+    }
+    if(dragDistance>=dragThreshold){
+        navControl.popBackStack("Home",false)
+    }
 
 //    LaunchedEffect(conversationId) {
 //        currentUserId = tokenManager.getUserId() ?: ""
@@ -131,8 +144,26 @@ fun chatScreen(navControl: NavController,
 
     var textingg by rememberSaveable{mutableStateOf("")}
 
+    Box(modifier= Modifier.fillMaxSize()
+        .background(Color.Black)
+        .pointerInput(Unit) {
 
-    Box(modifier= Modifier.fillMaxSize().background(Color.Black)) {
+            detectHorizontalDragGestures(
+                onHorizontalDrag = { change, dragAmount ->
+                    change.consume()
+                    if (dragAmount > 0) {
+                        dragDistance += dragAmount
+                    }
+                    if (dragDistance >= 200f) {
+                        navControl.popBackStack()
+                    }
+                },
+                onDragEnd = { dragDistance = 0f },
+                onDragCancel = { dragDistance = 0f }
+            )
+        }
+
+    ) {
         Column() {
             Box(
                 modifier = Modifier.fillMaxWidth().background(Color.White).height(100.dp),
@@ -230,48 +261,71 @@ fun chatScreen(navControl: NavController,
 
 
             Box(
-                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, bottom = 40.dp).imePadding(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp, bottom = 40.dp)
+                    .imePadding(),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Surface(
-                    modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(18.dp))
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp)),
+                    color = Color.White
                 ) {
-                    Row() {
-                        Text(text = "jdbsvsdhvsb", color = Color.Black)
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         TextField(
                             value = textingg,
-                            onValueChange = { textingg = it },
-                            placeholder = { Text(text = "enter the text yooo") },
+                            onValueChange = {
+                                textingg = it
+                            },
+                            placeholder = {
+                                Text(text = "enter the text yooo")
+                            },
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = Color.Black,
-                                focusedContainerColor = Color.Transparent,
-                                focusedPlaceholderColor = Color.Gray,
                                 unfocusedTextColor = Color.Black,
-//                        unfocusedContainerColor = Color.Transparent
-
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedPlaceholderColor = Color.Gray,
+                                unfocusedPlaceholderColor = Color.Gray,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
                             ),
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 65.dp)
                         )
-                        Button(onClick = {
-//                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
-                                if (textingg.isNotBlank()){
-                                msg.storeMsg(conversationId,textingg)
-                                };
-                            textingg="";
-                        }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                        Button(
+                            onClick = {
+                                if (textingg.isNotBlank()) {
+                                    msg.storeMsg(conversationId, textingg)
+                                    textingg = ""
+                                }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 6.dp, bottom = 6.dp),
+
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Blue
+                            )
                         ) {
+
                             Icon(
                                 imageVector = Icons.Default.Send,
-                                contentDescription = null,
+                                contentDescription = "Send",
                                 tint = Color.White
-
                             )
                         }
                     }
                 }
             }
+            }
         }
-    }
+
 
 }
 @Composable

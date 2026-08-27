@@ -250,6 +250,7 @@ class MainActivity : ComponentActivity() {
                         convoInfoVM.startConversationRealtime()
                         convoInfoVM.syncConversations()
                         messageInfoVM.startRealtime()
+                        userInfovm.getCompanyUsers()
                     }
 
                     NavHost(
