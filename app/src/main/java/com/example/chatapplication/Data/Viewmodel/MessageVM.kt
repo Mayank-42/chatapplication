@@ -44,14 +44,12 @@ class MsgVM(
 
 
     fun startRealtime() {
-
         if (realtimeStarted) {
             println("REALTIME: Already started")
             return
         }
 
         realtimeStarted = true
-
         viewModelScope.launch {
             val flow = realtimeRepo.messageInsertFlow()
             launch {
@@ -203,6 +201,16 @@ class MsgVM(
             } catch (e: Exception) {
                 println("STORE MSG: EXCEPTION = ${e.message}")
             }
+        }
+    }
+    fun stopRealtime() {
+        viewModelScope.launch {
+            realtimeRepo.unsubscribeMessages()
+            realtimeRepo.unsubscribeConversations()
+
+            realtimeStarted = false
+
+            println("REALTIME: MESSAGE/CONVERSATION STOPPED")
         }
     }
 

@@ -17,6 +17,30 @@ class RealTimeRepo {
     private val conversationChannel =
         SupaBaseClient.supabase.channel("conversation-realtime")
 
+
+    // Register the postgres flows BEFORE subscribing/joining the channels.
+    private val messageFlow =
+        messageChannel.postgresChangeFlow<PostgresAction.Insert>(
+            schema = "public"
+        ) {
+            table = "message"
+        }
+
+    private val conversationMemberFlow =
+        conversationMemberChannel.postgresChangeFlow<PostgresAction.Insert>(
+            schema = "public"
+        ) {
+            table = "conversation_member"
+        }
+
+    private val conversationFlow =
+        conversationChannel.postgresChangeFlow<PostgresAction.Insert>(
+            schema = "public"
+        ) {
+            table = "conversation"
+        }
+
+
     private var messageSubscribed = false
     private var conversationMemberSubscribed = false
     private var conversationChannelSubscribed = false
@@ -24,83 +48,120 @@ class RealTimeRepo {
 
     fun messageInsertFlow(): Flow<PostgresAction.Insert> {
 
-        println("REALTIME: CREATING MESSAGE INSERT FLOW")
-        println("REALTIME: SCHEMA = public")
-        println("REALTIME: TABLE = message")
+        println("REALTIME: RETURNING MESSAGE FLOW")
 
-        return messageChannel.postgresChangeFlow<PostgresAction.Insert>(
-            schema = "public"
-        ) {
-            table = "message"
-        }
+        return messageFlow
     }
 
 
     fun conversationMemberInsertFlow(): Flow<PostgresAction.Insert> {
-        return conversationMemberChannel.postgresChangeFlow<PostgresAction.Insert>(
-            schema = "public"
-        ) {
-            table = "conversation_member"
-        }
+
+        println("REALTIME: RETURNING CONVERSATION MEMBER FLOW")
+
+        return conversationMemberFlow
+    }
+
+
+    fun conversationInsertFlow(): Flow<PostgresAction.Insert> {
+
+        println("REALTIME: RETURNING CONVERSATION FLOW")
+
+        return conversationFlow
     }
 
 
     suspend fun subscribeMessages() {
+
         if (messageSubscribed) {
             println("REALTIME: MESSAGE CHANNEL ALREADY SUBSCRIBED")
             return
         }
+
         println("REALTIME: SUBSCRIBING MESSAGE CHANNEL")
         messageChannel.subscribe(blockUntilSubscribed = true)
         messageSubscribed = true
+
         println("REALTIME: MESSAGE CHANNEL SUBSCRIBED")
     }
 
 
     suspend fun subscribeConversationMembers() {
+
         if (conversationMemberSubscribed) {
             println("REALTIME: CONVERSATION MEMBER CHANNEL ALREADY SUBSCRIBED")
             return
         }
+
         println("REALTIME: SUBSCRIBING CONVERSATION MEMBER CHANNEL")
+
         conversationMemberChannel.subscribe(blockUntilSubscribed = true)
+
         conversationMemberSubscribed = true
+
         println("REALTIME: CONVERSATION MEMBER CHANNEL SUBSCRIBED")
     }
 
-    fun conversationInsertFlow(): Flow<PostgresAction.Insert> {
-        return conversationChannel.postgresChangeFlow<PostgresAction.Insert>(
-            schema = "public"
-        ) {
-            table = "conversation"
-        }
-    }
 
-
-    suspend fun unsubscribeMessages() {
-        messageChannel.unsubscribe()
-        messageSubscribed = false
-    }
-
-    suspend fun unsubscribeConversationMembers() {
-        conversationMemberChannel.unsubscribe()
-        conversationMemberSubscribed = false
-    }
     suspend fun subscribeConversations() {
+
         if (conversationChannelSubscribed) {
             println("REALTIME: CONVERSATION CHANNEL ALREADY SUBSCRIBED")
             return
         }
+
         println("REALTIME: SUBSCRIBING CONVERSATION CHANNEL")
 
-        conversationChannel.subscribe(
-            blockUntilSubscribed = true
-        )
+        conversationChannel.subscribe(blockUntilSubscribed = true)
         conversationChannelSubscribed = true
+
         println("REALTIME: CONVERSATION CHANNEL SUBSCRIBED")
     }
+
+
+    suspend fun unsubscribeMessages() {
+
+        if (!messageSubscribed) {
+            return
+        }
+
+        println("REALTIME: UNSUBSCRIBING MESSAGE CHANNEL")
+
+        messageChannel.unsubscribe()
+        messageSubscribed = false
+
+        println("REALTIME: MESSAGE CHANNEL UNSUBSCRIBED")
+    }
+
+
+    suspend fun unsubscribeConversationMembers() {
+
+        if (!conversationMemberSubscribed) {
+            return
+        }
+
+        println("REALTIME: UNSUBSCRIBING CONVERSATION MEMBER CHANNEL")
+
+        conversationMemberChannel.unsubscribe()
+        conversationMemberSubscribed = false
+
+        println("REALTIME: CONVERSATION MEMBER CHANNEL UNSUBSCRIBED")
+    }
+
+
     suspend fun unsubscribeConversations() {
+
+        if (!conversationChannelSubscribed) {
+            return
+        }
+
+        println("REALTIME: UNSUBSCRIBING CONVERSATION CHANNEL")
+
         conversationChannel.unsubscribe()
+
         conversationChannelSubscribed = false
+
+        println(
+            "REALTIME: CONVERSATION CHANNEL UNSUBSCRIBED"
+        )
     }
 }

@@ -32,9 +32,7 @@ class convoVM(
 //            repo.insertConvoInfo(info)
 //        }
 fun startConversationRealtime() {
-
     viewModelScope.launch {
-
         launch {
             realTimeRepo.conversationMemberInsertFlow().collect{ event ->
                     println("GROUP REALTIME EVENT RECEIVED")
@@ -103,6 +101,12 @@ fun syncConversations() {
             conversationId = conversationId,
             myUserId = myUserId
         )
+    }
+    fun stopConversationRealtime() {
+        viewModelScope.launch {
+            realTimeRepo.unsubscribeConversationMembers()
+            println("GROUP: REALTIME STOPPED")
+        }
     }
 }
 class ConvoVMFactory(
