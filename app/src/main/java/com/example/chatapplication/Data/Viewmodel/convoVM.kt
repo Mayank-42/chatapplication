@@ -118,6 +118,12 @@ fun syncConversations() {
             println("GROUP: REALTIME STOPPED")
         }
     }
+    fun clearLocalConversations() {
+        viewModelScope.launch {
+            repo.clearLocalConversations()
+            println("CONVO: LOCAL CONVERSATIONS CLEARED")
+        }
+    }
 }
 class ConvoVMFactory(
     private val repo: convoInfoRepo,

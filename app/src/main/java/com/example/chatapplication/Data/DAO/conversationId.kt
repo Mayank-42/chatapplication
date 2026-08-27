@@ -50,6 +50,9 @@
             time: String
         )
 
+        @Query("DELETE FROM CinversationId")
+        suspend fun deleteAllConversations()
+
     }
 
 

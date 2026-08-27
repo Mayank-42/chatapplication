@@ -170,5 +170,7 @@
                     time = time
                 )
             }
-
+        suspend fun clearLocalConversations() {
+            work.deleteAllConversations()
+        }
     }

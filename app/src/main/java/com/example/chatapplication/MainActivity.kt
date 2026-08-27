@@ -265,6 +265,7 @@ class MainActivity : ComponentActivity() {
                                 onLoginSuccess = {
                                     messageInfoVM.stopRealtime()
                                     convoInfoVM.stopConversationRealtime()
+                                    convoInfoVM.clearLocalConversations()
                                     userId = ""
                                     authState =
                                         ChekUserState.unAuthenticated
