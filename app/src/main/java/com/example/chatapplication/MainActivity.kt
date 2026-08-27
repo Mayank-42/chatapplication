@@ -75,15 +75,6 @@ class MainActivity : ComponentActivity() {
 
             val now = java.time.Instant.now()
 
-            println("ANDROID CURRENT TIME = $now")
-            println("ANDROID CURRENT MILLIS = ${System.currentTimeMillis()}")
-
-            println("========== TIME DEBUG ==========")
-            println("ANDROID INSTANT = ${java.time.Instant.now()}")
-            println("ANDROID MILLIS = ${System.currentTimeMillis()}")
-            println("ANDROID EPOCH SECOND = ${System.currentTimeMillis() / 1000}")
-            println("================================")
-
             var userId by rememberSaveable { mutableStateOf("") }
 
             var application = application as dataBaseBuilder
@@ -272,6 +263,8 @@ class MainActivity : ComponentActivity() {
                                 tokenManager,
                                 userInfovm,
                                 onLoginSuccess = {
+                                    messageInfoVM.stopRealtime()
+                                    convoInfoVM.stopConversationRealtime()
                                     userId = ""
                                     authState =
                                         ChekUserState.unAuthenticated

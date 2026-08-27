@@ -23,6 +23,8 @@ class convoVM(
 
     var gettingConvoInfo= repo.getingConvoInfo
 
+    private var conversationRealtimeStarted = false
+
     val privateConversations = repo.privateConversations
 
     val groupConversations = repo.groupConversations
@@ -32,6 +34,13 @@ class convoVM(
 //            repo.insertConvoInfo(info)
 //        }
 fun startConversationRealtime() {
+    if (conversationRealtimeStarted) {
+    println("GROUP: REALTIME ALREADY STARTED")
+    return
+}
+
+    conversationRealtimeStarted = true
+
     viewModelScope.launch {
         launch {
             realTimeRepo.conversationMemberInsertFlow().collect{ event ->
@@ -105,6 +114,7 @@ fun syncConversations() {
     fun stopConversationRealtime() {
         viewModelScope.launch {
             realTimeRepo.unsubscribeConversationMembers()
+            conversationRealtimeStarted = false
             println("GROUP: REALTIME STOPPED")
         }
     }
