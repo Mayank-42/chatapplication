@@ -23,6 +23,20 @@ class UserInfo(
     private val messageRepo: MessageRepo
 ): ViewModel() {
 
+    private val rolePriority = mapOf(
+        "Principal Engineer" to 1,
+        "Manager" to 2,
+        "Product Manager" to 3,
+        "SDE" to 4,
+        "QA" to 5,
+        "Intern" to 6
+    )
+    val sortedCompanyUsers: Map<Int, List<TakingUsernameResponse>>
+        get() = companyUsers
+            .groupBy { user ->
+                rolePriority[user.role] ?: 999
+            }
+            .toSortedMap()
 //    var userInfo:List<TakingUsernameResponse> = emptyList()
 //        private set
 var userInfo by mutableStateOf<List<TakingUsernameResponse>>(emptyList())

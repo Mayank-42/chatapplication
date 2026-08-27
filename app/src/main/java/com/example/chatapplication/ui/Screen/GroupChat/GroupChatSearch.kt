@@ -75,6 +75,7 @@ fun GroupChatSearch(nav: NavController,infoo: UserInfo,save: GroupChatVM) {
     var showIcon by remember { mutableStateOf(false) }
 
 
+
 //    var checked by remember { mutableStateOf(false) }
 // var  selectedId=rememberSaveable {mutableStateOf<List<String>>(emptyList())}
     var selectedId by rememberSaveable {
@@ -139,6 +140,7 @@ fun GroupChatSearch(nav: NavController,infoo: UserInfo,save: GroupChatVM) {
                     fontSize = 15.sp,
                 )
             }
+            infoo.companyUsers
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth()
             )
@@ -172,59 +174,68 @@ fun GroupChatSearch(nav: NavController,infoo: UserInfo,save: GroupChatVM) {
 @Composable
 fun officeCoWorker(userinfoo: UserInfo, list:List<String>,onChecked:(String,Boolean)->Unit) {
     LazyColumn() {
-        items(userinfoo.userInfo) { ele ->
-            var checked by remember { mutableStateOf(false) }
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, 10.dp).height(80.dp)
-                    .clickable {/*navControl.navigate("chatScreen/${ele.id}")*/ },
-                color = Color.White,
-                shape = RoundedCornerShape(35)
+        userinfoo.sortedCompanyUsers.forEach { (priority, users) ->
 
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                Text(
+                    text = "ROLE HERE",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+            items(users) { ele ->
+                var checked by remember { mutableStateOf(false) }
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp, 10.dp).height(80.dp)
+                        .clickable {/*navControl.navigate("chatScreen/${ele.id}")*/ },
+                    color = Color.White,
+                    shape = RoundedCornerShape(35)
+
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.example),
-                        contentDescription = "profile image",
-                        modifier = Modifier.size(50.dp).clip(CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 12.dp)
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = ele.name,
-//                                text ="name",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.SemiBold
+                        Image(
+                            painter = painterResource(R.drawable.example),
+                            contentDescription = "profile image",
+                            modifier = Modifier.size(50.dp).clip(CircleShape)
+                                .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+
                         )
-                        Text(
-                            text = "this the part which will shouw beloww name",
-                            fontSize = 16.sp
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 12.dp)
+                        ) {
+                            Text(
+                                text = ele.name,
+//                                text ="name",
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "this the part which will shouw beloww name",
+                                fontSize = 16.sp
+                            )
+                        }
+                        Checkbox(
+                            checked = ele.id in list,
+                            onCheckedChange = { checked -> onChecked(ele.id, checked) }
                         )
                     }
-                    Checkbox(
-                        checked = ele.id in list,
-                        onCheckedChange = {checked ->onChecked(ele.id,checked)}
-                    )
-                }
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(end = 40.dp),
-                    contentAlignment = Alignment.TopEnd
-                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize().padding(end = 40.dp),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
 
 //                    Text(text = ele.created_at.toString(), fontStyle = FontStyle.Italic)
+                    }
                 }
             }
         }
     }
 }
-
 
 
 //@Preview(showBackground = true, showSystemUi = false)
