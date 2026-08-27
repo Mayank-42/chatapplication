@@ -41,45 +41,77 @@ class loginVM( private val reposatory: AuthReposatory,
 
         return org.json.JSONObject(json).getString("sub")
     }
-    fun login(email:String,password:String,onResult: (Response<loginResponse>,String?) -> Unit){
-    viewModelScope.launch{
-        println("LOGIN: calling API")
-        val response = reposatory.login(
-            email,
-            password
-        )
-//        println("LOGIN STATUS: ${response.code()}")
-        var userId: String? = null
-        if (response.isSuccessful) {
-//            userLoggedIn = true
-            val data=response.body()
-            if(data!=null){
-                tokenManager.saveTokens(
-                    data.access_token,
-                    data.refresh_token
-                )
-                SupaBaseClient.initialize(
-                    tokenManager
-                )
-                val payload = data.access_token.split(".")[1]
+    fun login(
+        email: String,
+        password: String,
+        onResult: (Response<loginResponse>, String?) -> Unit
+    ) {
+        viewModelScope.launch {
 
-                val decoded = android.util.Base64.decode(
-                    payload,
-                    android.util.Base64.URL_SAFE
-                )
+            println("LOGIN: calling API")
 
-                val json = String(decoded)
+            try {
+                val response = reposatory.login(email, password)
+                println("LOGIN: STATUS = ${response.code()}")
+                var userId: String? = null
 
-                userId =
-                    org.json.JSONObject(json).getString("sub")
+                if (response.isSuccessful) {
+                    println("LOGIN: API SUCCESS")
+
+                    val data = response.body()
+                    if (data != null) {
+                        println("LOGIN: RESPONSE BODY RECEIVED")
+                        // 1. Save the NEW user's tokens
+                        tokenManager.saveTokens(
+                            data.access_token,
+                            data.refresh_token
+                        )
+
+                        println("LOGIN: TOKENS SAVED")
+
+                        // 2. Initialize Supabase with the NEW session
+                        SupaBaseClient.initialize(tokenManager)
+
+                        println("LOGIN: SUPABASE INITIALIZED")
+
+                        // 3. Get user ID from access token
+                        try {
+                            val parts = data.access_token.split(".")
+                            if (parts.size >= 2) {
+                                val payload = parts[1]
+                                val decoded = android.util.Base64.decode(
+                                    payload,
+                                    android.util.Base64.URL_SAFE or
+                                            android.util.Base64.NO_WRAP or
+                                            android.util.Base64.NO_PADDING
+                                )
+                                val json = String(decoded)
+                                userId =
+                                    org.json.JSONObject(json).getString("sub")
+                                println("LOGIN: USER ID = $userId")
+                            } else {
+                                println("LOGIN: INVALID JWT")
+                            }
+                        } catch (e: Exception) {
+
+                            println(
+                                "LOGIN: USER ID DECODING FAILED = ${e.message}"
+                            )
+
+                        }
+                    }
+                }
+                println("LOGIN: BEFORE onResult")
+                println("LOGIN: USER ID = $userId")
+                // Only now tell the UI that login finished
+                onResult(response, userId)
+                println("LOGIN: AFTER onResult")
+            } catch (e: Exception) {
+                println("LOGIN: EXCEPTION = ${e.message}")
+                e.printStackTrace()
+                throw e
             }
-            }
-        onResult(response,userId)
-
-
-
-    }
-
+        }
     }
     fun sigUp(
         email: String,
@@ -100,11 +132,8 @@ class loginVM( private val reposatory: AuthReposatory,
             )
 
             if (!signupResponse.isSuccessful) {
-
                 println("SIGNUP FAILED: ${signupResponse.code()}")
-                println(
-                    "ERROR: ${signupResponse.errorBody()?.string()}"
-                )
+                println("ERROR: ${signupResponse.errorBody()?.string()}")
 
                 onResult(false)
                 return@launch
@@ -120,16 +149,13 @@ class loginVM( private val reposatory: AuthReposatory,
             if (!loginResponse.isSuccessful) {
 
                 println("LOGIN AFTER SIGNUP FAILED: ${loginResponse.code()}")
-                println(
-                    "ERROR: ${loginResponse.errorBody()?.string()}"
-                )
+                println("ERROR: ${loginResponse.errorBody()?.string()}")
 
                 onResult(false)
                 return@launch
             }
 
             loginResponse.body()?.let {
-
                 tokenManager.saveTokens(
                     it.access_token,
                     it.refresh_token
@@ -144,7 +170,6 @@ class loginVM( private val reposatory: AuthReposatory,
             }
 
             println("SIGNUP + LOGIN SUCCESS")
-
             // Only now tell MainActivity that authentication is ready.
             onResult(true)
         }

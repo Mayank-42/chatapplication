@@ -111,36 +111,63 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-
+                println("AUTH FLOW: CHECKING EXISTING SESSION")
                 val refreshToken = tokenManager.getRefreshToken()
-
                 if (refreshToken.isNullOrBlank()) {
+                    println("AUTH FLOW: NO REFRESH TOKEN")
                     authState = ChekUserState.unAuthenticated
 
                 } else {
-                    val response = authRepo.refreshToken(refreshToken)
-                    if (response.isSuccessful) {
 
+                    println("AUTH FLOW: REFRESH TOKEN FOUND")
+                    println("AUTH FLOW: REFRESHING SESSION")
+
+                    val response = authRepo.refreshToken(refreshToken)
+
+                    println("AUTH FLOW: REFRESH STATUS = ${response.code()}")
+
+                    if (response.isSuccessful) {
                         response.body()?.let {
+                            println("AUTH FLOW: REFRESH SUCCESS")
+                            // Save NEW access + refresh tokens
                             tokenManager.saveTokens(
                                 it.access_token,
                                 it.refresh_token
                             )
-                            delay(2000)
+                            println("AUTH FLOW: NEW TOKENS SAVED")
+                            // Initialize Supabase with the new session
                             SupaBaseClient.initialize(
                                 tokenManager
                             )
+                            println("AUTH FLOW: SUPABASE INITIALIZED")
+                            // Get the user ID belonging to this session
+                            val newUserId = tokenManager.getUserId()
+                            println("AUTH FLOW: USER ID = $newUserId")
+                            if (!newUserId.isNullOrBlank()) {
+                                userId = newUserId
 
-                            userId = tokenManager.getUserId() ?: ""
+                                println("AUTH FLOW: SESSION READY")
+                                println("AUTH FLOW: USER = $userId")
 
-                            authState = ChekUserState.authenticated
+                                // ONLY NOW enter authenticated state
+                                authState = ChekUserState.authenticated
+
+                            } else {
+                                println("AUTH FLOW: USER ID EMPTY")
+                                tokenManager.clearTokens()
+                                authState = ChekUserState.unAuthenticated
+                            }
 
                         } ?: run {
+                            println("AUTH FLOW: REFRESH BODY IS NULL")
                             tokenManager.clearTokens()
-                            authState =
-                                ChekUserState.unAuthenticated
+                            authState = ChekUserState.unAuthenticated
                         }
+
                     } else {
+                        println("AUTH FLOW: REFRESH FAILED")
+                        println("AUTH FLOW: STATUS = ${response.code()}")
+
                         tokenManager.clearTokens()
                         authState = ChekUserState.unAuthenticated
                     }
