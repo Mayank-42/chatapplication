@@ -1,244 +1,324 @@
 package com.example.chatapplication.ui.Screen.Main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Videocam
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-//import androidx.datastore.preferences.protobuf.LazyStringArrayList.emptyList
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.MsgVM
-import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
-import com.example.chatapplication.Data.local.tables.userInfo
-import com.example.chatapplication.R
-import kotlinx.coroutines.launch
-import kotlin.collections.emptyList
+import com.example.chatapplication.ui.components.AvatarView
+import com.example.chatapplication.ui.components.ChatBubble
+import com.example.chatapplication.ui.components.DateHeaderChip
+import com.example.chatapplication.ui.components.DraggableBackButton
+import com.example.chatapplication.ui.components.EmptyStateView
+import com.example.chatapplication.ui.components.LuxuryComposer
+import com.example.chatapplication.ui.theme.ChatTheme
 
 @Composable
-fun chatScreen(navControl: NavController,
-               viewMode: databaseVM,
-//               userId:String?,
-               conversationId:String,
-               msg: MsgVM,
-               tokenManager: TokenManager
-         ){
-
+fun chatScreen(
+    navControl: NavController,
+    viewMode: databaseVM,
+    conversationId: String,
+    msg: MsgVM,
+    tokenManager: TokenManager
+) {
+    val colors = ChatTheme.colors
     var currentUserId by rememberSaveable { mutableStateOf("") }
+    var textMessage by rememberSaveable { mutableStateOf("") }
+    var gestureProgress by remember { mutableFloatStateOf(0f) }
+    var showMoreMenu by remember { mutableStateOf(false) }
+    var selectedMessageForDelete by remember { mutableStateOf<MessageInfo?>(null) }
 
-
-//    LaunchedEffect(conversationId) {
-//        currentUserId = tokenManager.getUserId() ?: ""
-//        msg.startRealtime(conversationId)
-//        msg.insertingLocaly(conversationId)
-//    }
     LaunchedEffect(conversationId) {
-        println("CHAT SCREEN: conversationId = $conversationId")
         try {
             currentUserId = tokenManager.getUserId() ?: ""
-            println("CHAT SCREEN: currentUserId = $currentUserId")
             msg.startRealtime(conversationId)
-            println("CHAT SCREEN: realtime started")
             msg.insertingLocaly(conversationId)
-            println("CHAT SCREEN: local sync started")
         } catch (e: Exception) {
-            println("CHAT SCREEN ERROR: ${e.message}")
             e.printStackTrace()
         }
     }
 
-//    val task by viewMode.getallValue.collectAsState(initial = emptyList())
-    val task by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
-//    LaunchedEffect(conversationId) {
-//        msg.insertingLocaly(conversationId)
-//    }
+    val messagesList by viewMode.getConversation(conversationId).collectAsState(initial = emptyList())
 
-    var textingg by rememberSaveable{mutableStateOf("")}
-
-
-    Box(modifier= Modifier.fillMaxSize().background(Color.Black)) {
-        Column() {
-            Box(
-                modifier = Modifier.fillMaxWidth().background(Color.White).height(100.dp),
-                contentAlignment = Alignment.BottomEnd
+    Scaffold(
+        containerColor = colors.background,
+        topBar = {
+            // Flagship Clean Header
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 3.dp,
+                        spotColor = colors.textPrimary.copy(alpha = 0.04f),
+                        ambientColor = colors.textPrimary.copy(alpha = 0.02f)
+                    ),
+                color = colors.surface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border.copy(alpha = 0.5f))
             ) {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Image(
-                        painter = painterResource(R.drawable.example),
-                        contentDescription = null,
-                        modifier = Modifier.size(50.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Tactile Draggable Back Control
+                    DraggableBackButton(
+                        onBack = { navControl.popBackStack() },
+                        onProgressChanged = { gestureProgress = it }
                     )
-                    Spacer(modifier = Modifier.width(30.dp),)
 
+                    Spacer(modifier = Modifier.width(10.dp))
 
-                    Text(text = "Mayank", color = Color.Black, fontSize = 25.sp)
+                    // Contact Avatar
+                    AvatarView(
+                        name = "Chat",
+                        size = 40.dp,
+                        showOnlineIndicator = true,
+                        isOnline = true
+                    )
 
-                    Spacer(modifier = Modifier.width(30.dp))
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.BottomEnd
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // Contact Name & Presence Info
+                    Column(
+                        modifier = Modifier.weight(1f)
                     ) {
-
-                        Text(text = "online", color = Color.Green, fontSize = 25.sp)
-                    }
-
-                }
-            }
-            Box(
-                modifier = Modifier.fillMaxWidth().weight(1f).padding(end = 4.dp),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                LazyColumn(
-                    reverseLayout = true
-                ) {
-                    items(task.reversed()) { ele ->
-                        if (ele.sender_Id == currentUserId) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                Surface(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 10.dp,
-                                        topEnd = 10.dp,
-                                        bottomStart = 8.dp
-                                    ),
-                                    modifier = Modifier.padding(10.dp).combinedClickable(
-                                        onClick = {},
-                                        onLongClick = { viewMode.delete(ele) }
-                                    )
-                                ) {
-                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
-                                }
-                            }
-                        }else{
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Surface(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 10.dp,
-                                        topEnd = 10.dp,
-                                        bottomStart = 8.dp
-                                    ),
-                                    modifier = Modifier.padding(10.dp).combinedClickable(
-                                        onClick = {},
-                                        onLongClick = { viewMode.delete(ele) }
-                                    )
-                                ) {
-                                    Text(text = ele.message, modifier = Modifier.padding(10.dp))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, bottom = 40.dp).imePadding(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth().height(50.dp).clip(RoundedCornerShape(18.dp))
-                ) {
-                    Row() {
-                        Text(text = "jdbsvsdhvsb", color = Color.Black)
-                        TextField(
-                            value = textingg,
-                            onValueChange = { textingg = it },
-                            placeholder = { Text(text = "enter the text yooo") },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.Black,
-                                focusedContainerColor = Color.Transparent,
-                                focusedPlaceholderColor = Color.Gray,
-                                unfocusedTextColor = Color.Black,
-//                        unfocusedContainerColor = Color.Transparent
-
-                            ),
-                            modifier = Modifier.weight(1f)
+                        Text(
+                            text = "Conversation",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = colors.textPrimary
                         )
-                        Button(onClick = {
-//                            if(textingg.length!=0){ //if we do this thaen we can able to put space and then send so ya thats y
-                                if (textingg.isNotBlank()){
-//                            viewMode.insert(
-//                                MessageInfo(
-//                                      0,
-//                                    "",
-//                                    "mayank",
-//                                    textingg,
-//                                    10,
-//                                    false
-//                                )
-//
-//                            )
-                                msg.storeMsg(conversationId,textingg)
-                                                          };
-                            textingg="";
-                        }, colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Send,
-                                contentDescription = null,
-                                tint = Color.White
-
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(colors.statusSuccess)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Active now",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = colors.statusSuccess
                             )
                         }
+                    }
+
+                    // Header Action Icons
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Call,
+                                contentDescription = "Voice Call",
+                                tint = colors.textPrimary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Videocam,
+                                contentDescription = "Video Call",
+                                tint = colors.textPrimary,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+
+                        Box {
+                            IconButton(
+                                onClick = { showMoreMenu = true },
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MoreVert,
+                                    contentDescription = "More",
+                                    tint = colors.textPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = showMoreMenu,
+                                onDismissRequest = { showMoreMenu = false },
+                                modifier = Modifier.background(colors.surface)
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Search in conversation", style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary) },
+                                    onClick = { showMoreMenu = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Media & files", style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary) },
+                                    onClick = { showMoreMenu = false }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Clear chat", style = MaterialTheme.typography.bodyMedium, color = colors.danger) },
+                                    onClick = { showMoreMenu = false }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        bottomBar = {
+            // Floating Luxury Message Composer
+            LuxuryComposer(
+                value = textMessage,
+                onValueChange = { textMessage = it },
+                placeholder = "Write a message...",
+                onSend = {
+                    if (textMessage.isNotBlank()) {
+                        val toSend = textMessage
+                        textMessage = ""
+                        msg.storeMsg(conversationId, toSend)
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.background)
+                .padding(paddingValues)
+                .graphicsLayer {
+                    // Smooth content shift on back drag gesture
+                    translationX = gestureProgress * 40f
+                    alpha = 1f - (gestureProgress * 0.15f)
+                }
+        ) {
+            if (messagesList.isEmpty()) {
+                EmptyStateView(
+                    icon = Icons.Rounded.Call,
+                    title = "End-to-end encrypted",
+                    subtitle = "Messages and calls are secured with private realtime delivery. Say hello to start the conversation.",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp),
+                    reverseLayout = true
+                ) {
+                    items(messagesList.reversed(), key = { it.id }) { ele ->
+                        val isOutgoing = ele.sender_Id == currentUserId
+
+                        ChatBubble(
+                            message = ele.message,
+                            timestamp = ele.date,
+                            isOutgoing = isOutgoing,
+                            onLongClick = {
+                                selectedMessageForDelete = ele
+                            }
+                        )
+                    }
+
+                    item {
+                        DateHeaderChip(
+                            dateText = "Today",
+                            modifier = Modifier.fillMaxWidth()
+                        )
                     }
                 }
             }
         }
-    }
 
+        // Delete Message Confirmation Dialog
+        selectedMessageForDelete?.let { msgToDelete ->
+            AlertDialog(
+                onDismissRequest = { selectedMessageForDelete = null },
+                title = {
+                    Text(
+                        text = "Delete Message",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = colors.textPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Are you sure you want to delete this message locally?",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colors.textMuted
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewMode.delete(msgToDelete)
+                            selectedMessageForDelete = null
+                        }
+                    ) {
+                        Text(
+                            text = "Delete",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = colors.danger
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { selectedMessageForDelete = null }) {
+                        Text(
+                            text = "Cancel",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = colors.textPrimary
+                        )
+                    }
+                },
+                containerColor = colors.surface,
+                shape = RoundedCornerShape(20.dp)
+            )
+        }
+    }
 }
-//@Preview(showSystemUi=true, showBackground =true)
-//@Composable
-//fun showww(){
-//    chatScreen()
-//}

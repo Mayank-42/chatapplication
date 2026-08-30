@@ -59,9 +59,8 @@ class MainActivity : ComponentActivity() {
             val tokenManager = TokenManager(this)
         enableEdgeToEdge()
         setContent {
-
-
-            var userId by rememberSaveable { mutableStateOf("") }
+            ChatApplicationTheme {
+                var userId by rememberSaveable { mutableStateOf("") }
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
 
@@ -279,6 +278,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 }
 
 @Composable

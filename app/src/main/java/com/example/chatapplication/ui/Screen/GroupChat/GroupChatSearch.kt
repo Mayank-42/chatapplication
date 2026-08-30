@@ -1,11 +1,14 @@
 package com.example.chatapplication.ui.Screen.GroupChat
 
-import android.R.attr.checked
-import android.R.attr.text
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,29 +18,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.GroupAdd
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,189 +48,341 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalOf
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.chatapplication.Data.Viewmodel.UserInfo
-import com.example.chatapplication.Data.local.tables.userInfo
-import com.example.chatapplication.R
-import com.example.chatapplication.ui.Screen.Auth.surface
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
-import androidx.datastore.preferences.protobuf.LazyStringArrayList.emptyList
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
-import kotlin.collections.emptyList
+import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.ui.components.AvatarView
+import com.example.chatapplication.ui.components.DraggableBackButton
+import com.example.chatapplication.ui.theme.ChatTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupChatSearch(nav: NavController,infoo: UserInfo,save: GroupChatVM) {
+fun GroupChatSearch(
+    nav: NavController,
+    infoo: UserInfo,
+    save: GroupChatVM
+) {
+    val colors = ChatTheme.colors
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val selectedIds = save.selectedUserId
 
-    var username by rememberSaveable { mutableStateOf("") }
-    var showIcon by remember { mutableStateOf(false) }
-
-
-//    var checked by remember { mutableStateOf(false) }
-// var  selectedId=rememberSaveable {mutableStateOf<List<String>>(emptyList())}
-    var selectedId by rememberSaveable {
-        mutableStateOf(emptyList<String>())
+    val filteredMembers = infoo.userInfo.filter {
+        searchQuery.isBlank() || it.name.contains(searchQuery, ignoreCase = true) || it.username.contains(searchQuery, ignoreCase = true)
     }
-    for(i in selectedId){
-        println("the id sar {$i}")
-    }
+
+    val selectedMembers = infoo.userInfo.filter { it.id in selectedIds }
+
     Scaffold(
-
-        topBar={
-            TopAppBar(
-                colors= TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Color.White
-                ),
-                title={Text(text="Add Group Member")}
-            )
-        }
-    ) { paddingValues ->
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black).padding(paddingValues)) {
-
-        Column() {
+        containerColor = colors.background,
+        topBar = {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
-                    .height(50.dp)
-                    .clip(shape = RoundedCornerShape(20.dp))
-            ) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    IconButton(
-                        onClick = { nav.popBackStack() },
-                        colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Transparent)
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null,
-
-                            )
-                    }
-                    TextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        placeholder = { Text(text = "Add Member") },
-                        modifier = Modifier.weight(1f),
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
-
-                    )
-                }
-            }
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Your Colleague",
-                    color = Color.Gray,
-                    fontSize = 15.sp,
-                )
-            }
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
-            officeCoWorker(infoo,save.selectedUserId, onChecked = {id,checked ->
-                 if(checked)  save.addUser(id) else  save.removeUser(id);
-                showIcon=true})
-//            infoo
-        }
-        if(showIcon) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .padding(end = 35.dp, bottom = 60.dp),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                FloatingActionButton(onClick = { nav.navigate("GroupName") }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = null,
-                        tint = Color.Black
-                    )
-                }
-            }
-        }
-
-    }
-}
-}
-
-@Composable
-fun officeCoWorker(userinfoo: UserInfo, list:List<String>,onChecked:(String,Boolean)->Unit) {
-    LazyColumn() {
-        items(userinfoo.userInfo) { ele ->
-            var checked by remember { mutableStateOf(false) }
-            Surface(
-                modifier = Modifier.fillMaxWidth().padding(start = 10.dp, 10.dp).height(80.dp)
-                    .clickable {/*navControl.navigate("chatScreen/${ele.id}")*/ },
-                color = Color.White,
-                shape = RoundedCornerShape(35)
-
+                    .shadow(
+                        elevation = 2.dp,
+                        spotColor = colors.textPrimary.copy(alpha = 0.04f),
+                        ambientColor = colors.textPrimary.copy(alpha = 0.02f)
+                    ),
+                color = colors.surface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border.copy(alpha = 0.5f))
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.example),
-                        contentDescription = "profile image",
-                        modifier = Modifier.size(50.dp).clip(CircleShape)
-                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    DraggableBackButton(onBack = { nav.popBackStack() })
 
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 12.dp)
-                    ) {
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = ele.name,
-//                                text ="name",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.SemiBold
+                            text = "Add Group Members",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = colors.textPrimary
                         )
                         Text(
-                            text = "this the part which will shouw beloww name",
-                            fontSize = 16.sp
+                            text = if (selectedIds.isEmpty()) "Select colleagues to add" else "${selectedIds.size} selected",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (selectedIds.isNotEmpty()) colors.accent else colors.textMuted
                         )
                     }
-                    Checkbox(
-                        checked = ele.id in list,
-                        onCheckedChange = {checked ->onChecked(ele.id,checked)}
+                }
+            }
+        },
+        floatingActionButton = {
+            AnimatedVisibility(
+                visible = selectedIds.isNotEmpty(),
+                enter = scaleIn() + fadeIn(),
+                exit = scaleOut() + fadeOut()
+            ) {
+                FloatingActionButton(
+                    onClick = { nav.navigate("GroupName") },
+                    containerColor = colors.accent,
+                    contentColor = colors.surface,
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp),
+                    modifier = Modifier.padding(bottom = 16.dp, end = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                        contentDescription = "Proceed to name group",
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(end = 40.dp),
-                    contentAlignment = Alignment.TopEnd
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.background)
+                .padding(paddingValues)
+        ) {
+            // Search Input Surface
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                    .height(46.dp)
+                    .clip(RoundedCornerShape(23.dp))
+                    .border(1.dp, colors.border.copy(alpha = 0.8f), RoundedCornerShape(23.dp)),
+                color = colors.surface,
+                shape = RoundedCornerShape(23.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = null,
+                        tint = colors.textMuted,
+                        modifier = Modifier.size(20.dp)
+                    )
 
-//                    Text(text = ele.created_at.toString(), fontStyle = FontStyle.Italic)
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = {
+                            Text(
+                                text = "Search colleagues by name or @username...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.textMuted.copy(alpha = 0.7f)
+                            )
+                        },
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = colors.textPrimary,
+                            unfocusedTextColor = colors.textPrimary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // Selected Members Avatar Tray
+            if (selectedMembers.isNotEmpty()) {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(selectedMembers, key = { it.id }) { member ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.width(54.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.TopEnd) {
+                                AvatarView(
+                                    imageUrl = member.photo_url,
+                                    name = member.name,
+                                    size = 46.dp
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .clip(CircleShape)
+                                        .background(colors.accent)
+                                        .border(1.dp, colors.surface, CircleShape)
+                                        .clickable { save.removeUser(member.id) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Close,
+                                        contentDescription = "Remove",
+                                        tint = colors.surface,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = member.name.split(" ").firstOrNull() ?: member.name,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = colors.textPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+                    thickness = 0.5.dp,
+                    color = colors.subtleDivider
+                )
+            }
+
+            Text(
+                text = "DIRECTORY",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 1.sp
+                ),
+                color = colors.textMuted,
+                modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 4.dp)
+            )
+
+            // Colleague List
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                items(filteredMembers, key = { it.id }) { ele ->
+                    val isSelected = ele.id in selectedIds
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (isSelected) save.removeUser(ele.id) else save.addUser(ele.id)
+                            },
+                        color = Color.Transparent
+                    ) {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                AvatarView(
+                                    imageUrl = ele.photo_url,
+                                    name = ele.name,
+                                    size = 48.dp
+                                )
+
+                                Spacer(modifier = Modifier.width(14.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = ele.name,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = colors.textPrimary
+                                    )
+                                    Text(
+                                        text = "@${ele.username}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = colors.textMuted
+                                    )
+                                }
+
+                                // Quiet Luxury Selection Ring
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .background(if (isSelected) colors.accent else Color.Transparent)
+                                        .border(
+                                            width = 1.5.dp,
+                                            color = if (isSelected) colors.accent else colors.border,
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (isSelected) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "Selected",
+                                            tint = colors.surface,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = 82.dp, end = 20.dp),
+                                thickness = 0.5.dp,
+                                color = colors.subtleDivider
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * Legacy compatibility wrapper for existing call signatures if any.
+ */
+@Composable
+fun officeCoWorker(
+    userinfoo: UserInfo,
+    list: List<String>,
+    onChecked: (String, Boolean) -> Unit
+) {
+    val colors = ChatTheme.colors
 
-
-//@Preview(showBackground = true, showSystemUi = false)
-//@Composable
-//fun show(){
-//    officeCoWorker()
-//}
+    LazyColumn {
+        items(userinfoo.userInfo) { ele ->
+            val checked = ele.id in list
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .clickable { onChecked(ele.id, !checked) },
+                color = colors.surface,
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AvatarView(imageUrl = ele.photo_url, name = ele.name, size = 44.dp)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = ele.name, style = MaterialTheme.typography.titleMedium, color = colors.textPrimary)
+                        Text(text = "@${ele.username}", style = MaterialTheme.typography.bodyMedium, color = colors.textMuted)
+                    }
+                }
+            }
+        }
+    }
+}

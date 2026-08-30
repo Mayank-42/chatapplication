@@ -1,8 +1,5 @@
 package com.example.chatapplication.ui.Screen.Main
 
-import android.R.attr.text
-import android.R.id.message
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,16 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.PersonSearch
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,33 +33,31 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.UserInfo
-import com.example.chatapplication.R
+import com.example.chatapplication.ui.components.AvatarView
+import com.example.chatapplication.ui.components.DraggableBackButton
+import com.example.chatapplication.ui.components.EmptyStateView
+import com.example.chatapplication.ui.theme.ChatTheme
 
 @Composable
-fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
+fun SearchBarPage(navControl: NavController, userEsist: UserInfo) {
+    val colors = ChatTheme.colors
     var userName by rememberSaveable { mutableStateOf("") }
-    var isSearched by rememberSaveable{mutableStateOf(false)}
+    var isSearched by rememberSaveable { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
 
@@ -70,153 +65,197 @@ fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
         focusRequester.requestFocus()
     }
 
-        Box(modifier= Modifier.fillMaxSize().background(Color.Black)){
+    Scaffold(
+        containerColor = colors.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.background)
+                .padding(paddingValues)
+                .statusBarsPadding()
+        ) {
+            // Header with Draggable Back & Search Field
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(
+                        elevation = 2.dp,
+                        spotColor = colors.textPrimary.copy(alpha = 0.04f),
+                        ambientColor = colors.textPrimary.copy(alpha = 0.02f)
+                    ),
+                color = colors.surface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, colors.border.copy(alpha = 0.5f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DraggableBackButton(
+                        onBack = { navControl.popBackStack() }
+                    )
 
-                Column(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    // Minimalist Search Input Surface
                     Surface(
-                        color = Color.White,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp, top = 40.dp)
-                            .clip(shape = RoundedCornerShape(30.dp))
-                            .background(Color.White)
-                            .height(52.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(46.dp)
+                            .clip(RoundedCornerShape(23.dp))
+                            .background(colors.secondarySurface.copy(alpha = 0.6f))
+                            .border(1.dp, colors.border.copy(alpha = 0.8f), RoundedCornerShape(23.dp)),
+                        color = colors.secondarySurface.copy(alpha = 0.6f)
                     ) {
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.Rounded.Search,
                                 contentDescription = null,
-                                tint = Color.Black,
-                                modifier = Modifier.padding(start = 25.dp)
-//                                    .clickable { navControl.navigate("Home") } this is good example to not use navigate evrywhere
-                                    .clickable { navControl.popBackStack()}
+                                tint = colors.textMuted,
+                                modifier = Modifier.size(20.dp)
                             )
-                            Spacer(modifier = Modifier.width(15.dp))
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
                             TextField(
                                 value = userName,
-                                onValueChange = { userName = it;isSearched = false },
-                                modifier = Modifier.focusRequester(focusRequester),
-                                placeholder = {
-                                    Text(text = "Search user by UserName ('')")
+                                onValueChange = {
+                                    userName = it
+                                    isSearched = false
                                 },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .focusRequester(focusRequester),
+                                placeholder = {
+                                    Text(
+                                        text = "Search by username...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = colors.textMuted.copy(alpha = 0.7f)
+                                    )
+                                },
+                                singleLine = true,
                                 keyboardOptions = KeyboardOptions(
                                     imeAction = ImeAction.Search
                                 ),
                                 keyboardActions = KeyboardActions(
-                                    onSearch = { userEsist.isExsist(userName);isSearched = true }
+                                    onSearch = {
+                                        if (userName.isNotBlank()) {
+                                            userEsist.isExsist(userName.trim())
+                                            isSearched = true
+                                        }
+                                    }
                                 ),
-
                                 colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.Transparent,
                                     focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent,
-                                    unfocusedTextColor = Color.Gray
+                                    focusedTextColor = colors.textPrimary,
+                                    unfocusedTextColor = colors.textPrimary
                                 )
+                            )
+                        }
+                    }
+                }
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Search Results Section
+            val ans = userEsist.UserExsist
+
+            if (!isSearched) {
+                EmptyStateView(
+                    icon = Icons.Rounded.PersonSearch,
+                    title = "Find Colleagues & Contacts",
+                    subtitle = "Enter an exact username to search the directory and start a conversation.",
+                    modifier = Modifier.weight(1f)
+                )
+            } else if (ans?.isExsist == true) {
+                val foundUser = ans.data
+                Text(
+                    text = "Search Result",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = colors.textMuted,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, colors.border, RoundedCornerShape(16.dp))
+                        .clickable {
+                            foundUser?.id?.let { otherUserId ->
+                                userEsist.openConversation(otherUserId = otherUserId) { conversationId ->
+                                    navControl.navigate("ChatScreen/$conversationId")
+                                }
+                            }
+                        },
+                    color = colors.surface,
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AvatarView(
+                            imageUrl = foundUser?.photo_url,
+                            name = foundUser?.name ?: userName,
+                            size = 50.dp,
+                            showOnlineIndicator = true,
+                            isOnline = true
+                        )
+
+                        Spacer(modifier = Modifier.width(14.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = foundUser?.name ?: userName,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = colors.textPrimary
+                            )
+                            Text(
+                                text = "@$userName",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.accent
                             )
                         }
 
-
-                    }
-
-                    val ans = userEsist.UserExsist
-                    Spacer(modifier = Modifier.height(20.dp))
-                    if(isSearched==true) {
-                        if (ans?.isExsist == true) {
-
-                            Surface(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(60.dp)
-                                    .padding(start = 5.dp, end = 5.dp)
-                                    .clickable { ans?.data?.id?.let { otherUserId ->
-
-                                        userEsist.openConversation(
-                                            otherUserId = otherUserId
-                                        ) { conversationId ->
-
-                                            navControl.navigate(
-                                                "ChatScreen/$conversationId"
-                                            )
-                                        }
-                                    } }
-                                    .clip(shape = RoundedCornerShape(8.dp)),
-                                color = Color.White
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.example),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .size(50.dp)
-                                            .clip(CircleShape)
-                                            .border(3.dp, Color.Transparent, CircleShape)
-                                    )
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    Column() {
-                                        Text(text = ans.data?.name ?: userName, fontSize = 20.sp)
-                                        Text(text = "designation")
-                                    }
-                                    Spacer(modifier = Modifier.width(80.dp))
-                                    Text(
-                                        text = """some message
-                            | common for all""".trimMargin()
-                                    )
-                                }
-                            }
-
-                        } else {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(60.dp)
-                                    .padding(start = 5.dp, end = 5.dp)
-                                    .clickable { navControl.navigate("ChatScreen") }
-                                    .clip(shape = RoundedCornerShape(8.dp)),
-                                color = Color.White
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.example),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .size(50.dp)
-                                            .clip(CircleShape)
-                                            .border(3.dp, Color.Transparent, CircleShape)
-                                    )
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    Column() {
-                                        Text(text = "UnownUser", fontSize = 20.sp)
-                                        Text(text = "designation")
-                                    }
-                                    Spacer(modifier = Modifier.width(80.dp))
-                                    Text(
-                                        text = """some message
-                            | common for all""".trimMargin()
-                                    )
-                                }
-                            }
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(colors.accentTint),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                contentDescription = "Open Chat",
+                                tint = colors.accent,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                     }
-
-
-
+                }
+            } else {
+                EmptyStateView(
+                    icon = Icons.Rounded.PersonSearch,
+                    title = "No user found",
+                    subtitle = "No account found matching \"$userName\". Please verify the username and try again.",
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
-
+    }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun ShowScreen(){
-//    SearchBarPage()
-//}

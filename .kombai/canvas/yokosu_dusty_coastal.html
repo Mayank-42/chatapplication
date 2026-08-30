@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <meta name="kombai-design-canvas" content="true">
+  
+  
+  
+  <script src="https://unpkg.com/@tailwindcss/browser@4.3.3/dist/index.global.js" integrity="sha384-2ql948lIdLcGEE0/qxNiudyTjgauA3RDJERu5xW75kFCvSl5a9odyQYCb6tEjnmB" crossorigin="anonymous"></script>
+  
+  <style>html, body { margin: 0; padding: 0; } #root { display: contents; }</style>
+</head><body>
+  <div id="root"><style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css');
+
+.board {
+  --pearl: #F0F3F5;
+  --white: #FFFFFF;
+  --stone: #E3E9EE;
+  --graphite: #22303C;
+  --muted: #748A9D;
+  --border: #D2DCE4;
+  --lavender: #5D8AA8;
+  --lavender-tint: #E8F0F8;
+  --sage: #39A78D;
+  --danger: #D0417E;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--pearl);
+  color: var(--graphite);
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: -0.01em;
+}
+.board, .board * { box-sizing: border-box; }
+.board i { line-height: 1; }
+.snapshot {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: var(--pearl);
+}
+.snapshot-home { min-height: 800px; }
+.snapshot-chat { min-height: 1120px; }
+.snapshot-group { min-height: 1280px; }
+.snapshot-utilities { min-height: 1500px; }
+.snapshot-profile { min-height: 870px; }
+.snapshot-auth { min-height: 930px; }
+.snapshot-states { min-height: 520px; border-bottom: 0; }
+.board-caption {
+  padding: 22px 20px 10px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.board-caption span { color: var(--lavender); }
+.status {
+  display: flex;
+  height: 26px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: var(--graphite);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.status-icons { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+.top-safe { padding-top: 7px; }
+.home-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 26px 20px 18px 24px;
+}
+.home-head h1, .auth-head h1 { margin: 0; font-size: 36px; line-height: 42px; font-weight: 400; letter-spacing: -0.065em; }
+.home-sub { margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 16px; font-weight: 500; }
+.home-actions { display: flex; align-items: center; gap: 5px; padding-top: 3px; }
+.icon-target {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  color: var(--graphite);
+  font-size: 20px;
+}
+.icon-target.quiet { color: var(--muted); }
+.icon-target.lav { color: var(--lavender); }
+.avatar {
+  position: relative;
+  display: grid;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: visible;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--stone);
+  color: var(--graphite);
+  font-size: 14px;
+  font-weight: 700;
+}
+.avatar.small { width: 34px; height: 34px; font-size: 11px; }
+.avatar.large { width: 82px; height: 82px; font-size: 25px; }
+.avatar.maya { background: var(--lavender-tint); }
+.avatar.olive { background: var(--stone); }
+.presence {
+  position: absolute;
+  right: -1px;
+  bottom: 0;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--pearl);
+  border-radius: 50%;
+  background: var(--sage);
+}
+.search-field {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  gap: 10px;
+  margin: 0 16px 16px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.search-field i { font-size: 18px; }
+.conversation-list { padding: 2px 8px 96px; }
+.conversation-row {
+  position: relative;
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.conversation-row:last-child { border-bottom: 0; }
+.conversation-row.selected {
+  border-bottom-color: transparent;
+  border-radius: 10px;
+  background: var(--lavender-tint);
+}
+.conversation-row.selected:before {
+  position: absolute;
+  left: 3px;
+  bottom: 18px;
+  width: 3px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--lavender);
+  content: '';
+}
+.row-copy { min-width: 0; flex: 1; }
+.row-top, .row-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.row-top { margin-bottom: 5px; }
+.row-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 700; }
+.row-time { flex: none; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 600; }
+.row-preview { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 12px; line-height: 17px; font-weight: 500; }
+.row-preview strong { color: var(--graphite); font-weight: 600; }
+.unread { display: grid; width: 22px; height: 22px; flex: none; place-items: center; border-radius: 50%; background: var(--stone); color: var(--graphite); font-size: 10px; font-weight: 700; }
+.group-mosaic { position: relative; display: grid; width: 42px; height: 42px; flex: none; grid-template-columns: 1fr 1fr; gap: 2px; overflow: hidden; border: 1px solid var(--border); border-radius: 50%; background: var(--stone); padding: 7px; }
+.group-mosaic span { display: grid; place-items: center; border-radius: 50%; background: var(--white); color: var(--graphite); font-size: 7px; font-weight: 700; }
+.group-mosaic span:nth-child(2), .group-mosaic span:nth-child(3) { background: var(--lavender-tint); }
+.group-mosaic.large { width: 92px; height: 92px; padding: 15px; gap: 3px; }
+.group-mosaic.large span { font-size: 11px; }
+.bottom-nav {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 76px;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+  padding: 7px 22px 11px;
+}
+.nav-item { display: flex; width: 76px; height: 58px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); font-size: 10px; font-weight: 600; }
+.nav-item i { display: grid; width: 28px; height: 24px; place-items: center; border-radius: 8px; font-size: 19px; }
+.nav-item.active { color: var(--graphite); }
+.nav-item.active i { background: var(--lavender-tint); color: var(--lavender); }
+
+.chat-shell { position: relative; min-height: 1120px; }
+.chat-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 72px;
+  align-items: center;
+  gap: 3px;
+  padding: 0 10px 0 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--pearl);
+}
+.drag-control { position: relative; display: grid; width: 48px; height: 48px; place-items: center; }
+.drag-disc { position: relative; display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: var(--stone); color: var(--graphite); font-size: 18px; transform: translateX(7px); }
+.drag-disc:after { position: absolute; right: -7px; top: 8px; width: 3px; height: 15px; border-radius: 3px; background: var(--lavender); content: ''; opacity: 0.75; }
+.identity { display: flex; min-width: 0; flex: 1; align-items: center; gap: 9px; }
+.identity-copy { min-width: 0; }
+.identity-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; line-height: 21px; font-weight: 700; }
+.identity-status { display: flex; align-items: center; gap: 5px; margin-top: 2px; color: var(--sage); font-size: 11px; line-height: 15px; font-weight: 600; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); }
+.header-actions { display: flex; align-items: center; }
+.header-actions .icon-target { width: 44px; height: 48px; font-size: 18px; }
+.thread-seam { position: absolute; top: 72px; bottom: 104px; left: 20px; width: 1px; background: var(--border); opacity: 0.8; }
+.thread-seam:after { position: absolute; top: 28px; left: -1px; width: 3px; height: 11px; border-radius: 3px; background: var(--lavender); content: ''; opacity: 0.55; }
+.drag-progress { display: flex; height: 20px; align-items: center; gap: 7px; padding: 6px 20px 0; color: var(--muted); font-size: 9px; font-weight: 600; }
+.progress-track { position: relative; width: 48px; height: 2px; border-radius: 2px; background: var(--stone); }
+.progress-track:after { position: absolute; left: 0; top: 0; width: 19px; height: 2px; border-radius: 2px; background: var(--lavender); content: ''; }
+.date-rule { display: flex; align-items: center; gap: 10px; margin: 23px 20px 18px; color: var(--muted); font-size: 10px; line-height: 14px; font-weight: 700; }
+.date-rule:before, .date-rule:after { height: 1px; flex: 1; background: var(--border); content: ''; }
+.thread { position: relative; padding: 0 16px 135px; }
+.message { display: flex; align-items: flex-end; gap: 7px; margin: 0 0 10px; }
+.message.incoming { justify-content: flex-start; }
+.message.outgoing { justify-content: flex-end; }
+.sender-mark { display: grid; width: 24px; height: 24px; flex: none; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: var(--lavender-tint); color: var(--graphite); font-size: 8px; font-weight: 700; }
+.bubble-wrap { max-width: 78%; }
+.sender-label { margin: 0 0 4px 4px; color: var(--graphite); font-size: 11px; line-height: 14px; font-weight: 700; }
+.bubble { position: relative; padding: 10px 12px 7px; border-radius: 13px; font-size: 14px; line-height: 20px; font-weight: 500; }
+.bubble.in { border-bottom-left-radius: 4px; background: var(--stone); }
+.bubble.out { border-bottom-right-radius: 4px; background: var(--lavender-tint); }
+.bubble-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 13px; font-weight: 600; }
+.bubble-meta i { color: var(--lavender); font-size: 12px; }
+.reply-strip { margin: 0 0 8px; padding: 5px 8px 6px; border-left: 2px solid var(--lavender); border-radius: 0 6px 6px 0; background: rgba(255,255,255,0.55); color: var(--muted); font-size: 10px; line-height: 13px; }
+.reply-strip strong { display: block; margin-bottom: 2px; color: var(--graphite); font-size: 10px; font-weight: 700; }
+.reaction { display: inline-flex; align-items: center; gap: 4px; margin: 4px 0 0 8px; padding: 3px 7px; border: 1px solid var(--border); border-radius: 10px; background: var(--white); color: var(--graphite); font-size: 11px; line-height: 13px; font-weight: 600; }
+.media-message { overflow: hidden; border: 1px solid var(--border); border-radius: 13px 13px 4px 13px; background: var(--white); }
+.media-thumb { display: flex; height: 94px; align-items: flex-end; justify-content: space-between; padding: 9px; background: var(--stone); color: var(--graphite); }
+.media-thumb .ti-photo { font-size: 27px; color: var(--muted); }
+.media-thumb em { font-style: normal; color: var(--muted); font-size: 10px; font-weight: 700; }
+.media-caption { padding: 7px 10px 8px; color: var(--graphite); font-size: 12px; line-height: 16px; font-weight: 600; }
+.file-row { display: flex; min-width: 220px; align-items: center; gap: 9px; padding: 10px 11px; border: 1px solid var(--border); border-radius: 12px 12px 4px 12px; background: var(--white); }
+.file-icon { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; background: var(--stone); color: var(--muted); font-size: 16px; }
+.file-copy { min-width: 0; flex: 1; }
+.file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--graphite); font-size: 11px; line-height: 15px; font-weight: 700; }
+.file-size { color: var(--muted); font-size: 10px; line-height: 13px; font-weight: 500; }
+.typing { display: flex; align-items: flex-end; gap: 7px; margin: 14px 0 0 0; }
+.typing-bubble { display: flex; height: 32px; align-items: center; gap: 4px; padding: 0 11px; border-radius: 13px 13px 13px 4px; background: var(--stone); }
+.typing-bubble span { width: 4px; height: 4px; border-radius: 50%; background: var(--muted); }
+.typing-bubble span:nth-child(2) { opacity: 0.65; }
+.typing-bubble span:nth-child(3) { opacity: 0.35; }
+.composer {
+  position: absolute;
+  right: 12px;
+  bottom: 16px;
+  left: 12px;
+  display: flex;
+  min-height: 60px;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 5px 5px 7px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: 0 3px 12px rgba(34,48,60,0.08);
+}
+.composer .icon-target { width: 44px; height: 48px; font-size: 19px; }
+.composer-input { min-width: 0; flex: 1; color: var(--muted); font-size: 13px; line-height: 20px; font-weight: 500; }
+.send-button { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: var(--lavender); color: var(--white); font-size: 18px; }
+
+.section-head { display: flex; align-items: center; gap: 12px; padding: 22px 20px 14px; }
+.section-head .icon-target { width: 48px; height: 48px; }
+.section-title { min-width: 0; flex: 1; }
+.section-title h2 { margin: 0; font-size: 21px; line-height: 27px; font-weight: 600; letter-spacing: -0.04em; }
+.section-title p { margin: 3px 0 0; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 500; }
+.group-chat-frame { position: relative; min-height: 660px; border-top: 1px solid var(--border); }
+.group-info-frame { min-height: 600px; border-top: 1px solid var(--border); }
+.group-count { color: var(--muted); font-size: 11px; font-weight: 600; }
+.group-info-top { display: flex; flex-direction: column; align-items: center; padding: 26px 20px 20px; text-align: center; }
+.group-info-top h2 { margin: 14px 0 2px; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.04em; }
+.group-info-top p { margin: 0; color: var(--muted); font-size: 12px; line-height: 17px; font-weight: 500; }
+.group-description { max-width: 285px; margin-top: 12px !important; color: var(--graphite) !important; }
+.flat-section { margin: 0 20px; border-top: 1px solid var(--border); }
+.flat-section-title { padding: 15px 0 8px; color: var(--muted); font-size: 11px; line-height: 15px; font-weight: 700; }
+.member-row, .media-row, .setting-row, .data-row { display: flex; min-height: 58px; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+.member-row:last-child, .setting-row:last-child, .data-row:last-child { border-bottom: 0; }
+.member-copy, .setting-copy { min-width: 0; flex: 1; }
+.member-name, .setting-name { color: var(--graphite); font-size: 13px; line-height: 18px; font-weight: 700; }
+.member-sub, .setting-sub { margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 15px; font-weight: 500; }
+.row-chevron { color: var(--muted); font-size: 17px; }
+.media-row { min-height: 52px; }
+.media-row i { width: 28px; color: var(--muted); font-size: 18px; text-align: center; }
+.media-row span { flex: 1; color: var(--graphite); font-size: 13px; font-weight: 600; }
+.leave-action { display: flex; height: 52px; align-items: center; gap: 10px; margin: 17px 20px 26px; color: var(--danger); font-size: 13px; font-weight: 700; }
+
+.utility-header { display: flex; min-height: 72px; align-items: center; gap: 5px; padding: 0 11px 0 4px; border-bottom: 1px solid var(--border); }
+.utility-header h2 { margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.04em; }
+.utility-field { margin: 16px 16px 8px; }
+.utility-instruction { padding: 18px 20px 12px; }
+.utility-instruction h3 { margin: 0 0 4px; font-size: 18px; line-height: 24px; font-weight: 600; letter-spacing: -0.035em; }
+.utility-instruction p { max-width: 300px; margin: 0; color: var(--muted); font-size: 12px; line-height: 18px; font-weight: 500; }
+.result-row { display: flex; min-height: 76px; align-items: center; gap: 12px; margin: 7px 16px 28px; padding: 10px 4px; border-bottom: 1px solid var(--border); }
+.result-copy { min-width: 0; flex: 1; }
+.result-copy strong { display: block; color: var(--graphite); font-size: 14px; line-height: 19px; font-weight: 700; }
+.result-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; line-height: 15px; font-weight: 500; }
+.result-action { display: grid; width: 48px; height: 48px; place-items: center; color: var(--lavender); font-size: 19px; }
+.utility-divider { height: 1px; margin: 0 20px; background: var(--border); }
+.selection-header { padding: 18px 20px 13px; }
+.selection-header h3 { margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; }
+.selection-header p { margin: 3px 0 0; color: var(--muted); font-size: 12px; line-height: 16px; font-weight: 500; }
+.selected-rail { display: flex; min-height: 63px; align-items: center; gap: 0; padding: 0 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.rail-avatar { margin-right: -7px; border: 2px solid var(--pearl); }
+.rail-more { display: grid; width: 34px; height: 34px; margin-left: 9px; place-items: center; border: 1px solid var(--border); border-radius: 50%; background: var(--white); color: var(--muted); font-size: 10px; font-weight: 700; }
+.directory-label { padding: 18px 20px 6px; color: var(--muted); font-size: 11px; line-height: 15px; font-weight: 700; }
+.select-row { display: flex; min-height: 68px; align-items: center; gap: 12px; padding: 7px 20px; border-bottom: 1px solid var(--border); }
+.select-row .row-copy { flex: 1; }
+.select-check { display: grid; width: 26px; height: 26px; place-items: center; border: 1px solid var(--border); border-radius: 50%; color: transparent; font-size: 15px; }
+.select-row.selected .select-check { border-color: var(--lavender); background: var(--lavender); color: var(--white); }
+.selection-action { display: flex; min-height: 66px; align-items: center; justify-content: space-between; padding: 9px 20px; border-top: 1px solid var(--border); background: var(--white); }
+.selection-action span { color: var(--muted); font-size: 12px; font-weight: 600; }
+.next-action { display: flex; height: 44px; align-items: center; gap: 7px; padding: 0 13px; border-radius: 10px; background: var(--lavender); color: var(--white); font-size: 12px; font-weight: 700; }
+.group-details { border-top: 1px solid var(--border); }
+.group-details-head { display: flex; align-items: center; gap: 5px; padding: 17px 11px 0 4px; }
+.group-details-head .icon-target { width: 48px; height: 48px; }
+.group-details-head h3 { margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; }
+.group-identity { display: flex; flex-direction: column; align-items: center; padding: 17px 20px 20px; }
+.group-identity p { margin: 10px 0 0; color: var(--muted); font-size: 12px; font-weight: 600; }
+.form-stack { padding: 0 20px; }
+.form-field { min-height: 58px; margin-bottom: 12px; padding: 8px 12px 6px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); }
+.form-label { display: block; color: var(--muted); font-size: 10px; line-height: 14px; font-weight: 700; }
+.form-value { display: block; margin-top: 4px; color: var(--graphite); font-size: 13px; line-height: 18px; font-weight: 600; }
+.form-value.placeholder { color: var(--muted); font-weight: 500; }
+.review-label { padding: 5px 0 6px; color: var(--muted); font-size: 11px; line-height: 15px; font-weight: 700; }
+.review-person { display: flex; height: 51px; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+.review-person span { color: var(--graphite); font-size: 12px; font-weight: 600; }
+.create-surface { margin-top: 16px; padding: 12px 20px 16px; border-top: 1px solid var(--border); background: var(--white); }
+.primary-action { display: flex; height: 50px; align-items: center; justify-content: center; border-radius: 10px; background: var(--lavender); color: var(--white); font-size: 13px; font-weight: 700; }
+
+.profile-header { display: flex; align-items: center; gap: 16px; padding: 27px 20px 21px; }
+.profile-copy { min-width: 0; flex: 1; }
+.profile-copy h2 { margin: 0; font-size: 25px; line-height: 31px; font-weight: 600; letter-spacing: -0.055em; }
+.profile-copy p { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 17px; font-weight: 600; }
+.edit-link { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: 10px; color: var(--graphite); font-size: 12px; font-weight: 700; }
+.edit-link i { color: var(--lavender); font-size: 15px; }
+.profile-section { margin: 0 20px; border-top: 1px solid var(--border); }
+.profile-section h3 { margin: 0; padding: 16px 0 7px; color: var(--muted); font-size: 12px; line-height: 16px; font-weight: 700; }
+.data-row { min-height: 57px; }
+.data-label { width: 82px; flex: none; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 600; }
+.data-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--graphite); font-size: 13px; line-height: 18px; font-weight: 600; }
+.settings-group { margin: 0 20px 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.settings-group h3 { margin: 0; padding: 16px 0 6px; color: var(--muted); font-size: 12px; line-height: 16px; font-weight: 700; }
+.setting-row { min-height: 58px; }
+.setting-row i { width: 24px; color: var(--muted); font-size: 18px; text-align: center; }
+.sign-out { display: flex; height: 50px; align-items: center; gap: 10px; margin: 34px 20px 23px; color: var(--danger); font-size: 13px; font-weight: 700; }
+.sign-out i { font-size: 18px; }
+
+.auth-shell { padding: 13px 24px 42px; }
+.auth-brand { padding: 39px 0 73px; }
+.wordmark { display: inline-flex; align-items: flex-end; gap: 2px; color: var(--graphite); font-size: 19px; line-height: 25px; font-weight: 700; letter-spacing: 0.14em; }
+.wordmark:after { display: block; width: 10px; height: 2px; margin-bottom: 4px; margin-left: 3px; border-radius: 2px; background: var(--lavender); content: ''; }
+.auth-head { padding-bottom: 26px; }
+.auth-head h1 { font-size: 32px; line-height: 38px; }
+.auth-head p { max-width: 280px; margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 18px; font-weight: 500; }
+.auth-field { display: flex; min-height: 56px; align-items: center; gap: 10px; margin-bottom: 12px; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--white); }
+.auth-field.focused { border-color: var(--lavender); }
+.auth-field i { color: var(--muted); font-size: 18px; }
+.auth-field-copy { min-width: 0; flex: 1; }
+.auth-field-label { color: var(--muted); font-size: 10px; line-height: 14px; font-weight: 700; }
+.auth-field-value { margin-top: 3px; color: var(--graphite); font-size: 13px; line-height: 17px; font-weight: 600; }
+.auth-field-value.muted { color: var(--muted); font-weight: 500; }
+.auth-submit { display: flex; height: 52px; align-items: center; justify-content: center; margin-top: 16px; border-radius: 10px; background: var(--lavender); color: var(--white); font-size: 13px; font-weight: 700; }
+.auth-foot { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 18px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.auth-foot strong { color: var(--graphite); font-weight: 700; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.auth-state { margin-top: 31px; padding: 13px 14px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.auth-state-row { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 600; }
+.auth-state-row + .auth-state-row { margin-top: 9px; }
+.auth-state-row i { color: var(--lavender); font-size: 16px; }
+.auth-state-row.error i { color: var(--danger); }
+
+.states-intro { padding: 22px 20px 15px; }
+.states-intro h2 { margin: 0; font-size: 21px; line-height: 27px; font-weight: 600; }
+.states-intro p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 500; }
+.state-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 0 16px; border: 1px solid var(--border); background: var(--border); }
+.state-cell { min-height: 122px; padding: 15px 13px; background: var(--pearl); }
+.state-cell i { display: block; margin-bottom: 15px; color: var(--muted); font-size: 19px; }
+.state-cell h3 { margin: 0; color: var(--graphite); font-size: 12px; line-height: 16px; font-weight: 700; }
+.state-cell p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 14px; font-weight: 500; }
+.state-cell.error i { color: var(--danger); }
+.state-cell.loading i { color: var(--lavender); }
+.state-action { display: inline-flex; min-height: 34px; align-items: center; margin-top: 8px; color: var(--graphite); font-size: 10px; font-weight: 700; text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+.skeleton-line { width: 95px; height: 7px; margin: 5px 0; border-radius: 4px; background: var(--stone); }
+.skeleton-line.short { width: 60px; }
+.note { padding: 18px 20px 27px; color: var(--muted); font-size: 10px; line-height: 15px; font-weight: 500; }
+</style>
+<div class="board" data-kid="1">
+    <section class="snapshot snapshot-home" data-kid="1-1">
+        <div class="board-caption" data-kid="1-1-1">
+            <span data-kid="1-1-1-1">
+                01
+            </span>
+            / root route · Messages
+        </div>
+        <div class="status top-safe" data-kid="1-1-2">
+            <span data-dynamic="true" data-kid="1-1-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-1-2-2">
+                <i class="ti ti-wifi" data-kid="1-1-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-1-2-2-2">
+                </i>
+            </span>
+        </div>
+        <header class="home-head" data-kid="1-1-3">
+            <div data-kid="1-1-3-1">
+                <h1 data-kid="1-1-3-1-1">
+                    Messages
+                </h1>
+                <div class="home-sub" data-kid="1-1-3-1-2">
+                    Your conversations, quietly in reach
+                </div>
+            </div>
+            <div class="home-actions" data-kid="1-1-3-2">
+                <div class="icon-target quiet" data-kid="1-1-3-2-1">
+                    <i class="ti ti-square-pen" data-kid="1-1-3-2-1-1">
+                    </i>
+                </div>
+                <div class="avatar maya small" data-kid="1-1-3-2-2">
+                    A
+                    <span class="presence" data-kid="1-1-3-2-2-1">
+                    </span>
+                </div>
+            </div>
+        </header>
+        <div class="search-field" data-kid="1-1-4">
+            <i class="ti ti-search" data-kid="1-1-4-1">
+            </i>
+            <span data-kid="1-1-4-2">
+                Search by username
+            </span>
+        </div>
+        <div class="conversation-list" data-kid="1-1-5">
+            <div class="conversation-row selected" data-kid="1-1-5-1">
+                <div class="avatar maya" data-kid="1-1-5-1-1">
+                    M
+                    <span class="presence" data-kid="1-1-5-1-1-1">
+                    </span>
+                </div>
+                <div class="row-copy" data-kid="1-1-5-1-2">
+                    <div class="row-top" data-kid="1-1-5-1-2-1">
+                        <span class="row-name" data-kid="1-1-5-1-2-1-1">
+                            Maya Chen
+                        </span>
+                        <span class="row-time" data-dynamic="true" data-kid="1-1-5-1-2-1-2" data-name="conversation timestamp" data-reason="time text updated by messaging sync">
+                            10:42
+                        </span>
+                    </div>
+                    <div class="row-bottom" data-kid="1-1-5-1-2-2">
+                        <span class="row-preview" data-kid="1-1-5-1-2-2-1">
+                            <strong data-kid="1-1-5-1-2-2-1-1">
+                                You:
+                            </strong>
+                            The deck is ready to review.
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation-row" data-kid="1-1-5-2">
+                <div class="group-mosaic" data-kid="1-1-5-2-1">
+                    <span data-kid="1-1-5-2-1-1">
+                        J
+                    </span>
+                    <span data-kid="1-1-5-2-1-2">
+                        R
+                    </span>
+                    <span data-kid="1-1-5-2-1-3">
+                        S
+                    </span>
+                    <span data-kid="1-1-5-2-1-4">
+                        +
+                    </span>
+                </div>
+                <div class="row-copy" data-kid="1-1-5-2-2">
+                    <div class="row-top" data-kid="1-1-5-2-2-1">
+                        <span class="row-name" data-kid="1-1-5-2-2-1-1">
+                            Studio planning
+                        </span>
+                        <span class="row-time" data-dynamic="true" data-kid="1-1-5-2-2-1-2" data-name="group conversation timestamp" data-reason="time text updated by messaging sync">
+                            09:18
+                        </span>
+                    </div>
+                    <div class="row-bottom" data-kid="1-1-5-2-2-2">
+                        <span class="row-preview" data-kid="1-1-5-2-2-2-1">
+                            Rhea: Let’s keep the first section quiet.
+                        </span>
+                        <span class="unread" data-kid="1-1-5-2-2-2-2">
+                            3
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation-row" data-kid="1-1-5-3">
+                <div class="avatar olive" data-kid="1-1-5-3-1">
+                    L
+                </div>
+                <div class="row-copy" data-kid="1-1-5-3-2">
+                    <div class="row-top" data-kid="1-1-5-3-2-1">
+                        <span class="row-name" data-kid="1-1-5-3-2-1-1">
+                            Leo Martins
+                        </span>
+                        <span class="row-time" data-dynamic="true" data-kid="1-1-5-3-2-1-2" data-name="conversation timestamp" data-reason="time text updated by messaging sync">
+                            Yesterday
+                        </span>
+                    </div>
+                    <div class="row-bottom" data-kid="1-1-5-3-2-2">
+                        <span class="row-preview" data-kid="1-1-5-3-2-2-1">
+                            Can you send the address when you arrive?
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation-row" data-kid="1-1-5-4">
+                <div class="avatar" data-kid="1-1-5-4-1" style="background:var(--white)">
+                    N
+                </div>
+                <div class="row-copy" data-kid="1-1-5-4-2">
+                    <div class="row-top" data-kid="1-1-5-4-2-1">
+                        <span class="row-name" data-kid="1-1-5-4-2-1-1">
+                            Northstar crew
+                        </span>
+                        <span class="row-time" data-dynamic="true" data-kid="1-1-5-4-2-1-2" data-name="conversation timestamp" data-reason="time text updated by messaging sync">
+                            Mon
+                        </span>
+                    </div>
+                    <div class="row-bottom" data-kid="1-1-5-4-2-2">
+                        <span class="row-preview" data-kid="1-1-5-4-2-2-1">
+                            You shared a file
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation-row" data-kid="1-1-5-5">
+                <div class="group-mosaic" data-kid="1-1-5-5-1">
+                    <span data-kid="1-1-5-5-1-1">
+                        E
+                    </span>
+                    <span data-kid="1-1-5-5-1-2">
+                        A
+                    </span>
+                    <span data-kid="1-1-5-5-1-3">
+                        +
+                    </span>
+                    <span data-kid="1-1-5-5-1-4">
+                        +
+                    </span>
+                </div>
+                <div class="row-copy" data-kid="1-1-5-5-2">
+                    <div class="row-top" data-kid="1-1-5-5-2-1">
+                        <span class="row-name" data-kid="1-1-5-5-2-1-1">
+                            Evening walk
+                        </span>
+                        <span class="row-time" data-dynamic="true" data-kid="1-1-5-5-2-1-2" data-name="conversation timestamp" data-reason="time text updated by messaging sync">
+                            Sun
+                        </span>
+                    </div>
+                    <div class="row-bottom" data-kid="1-1-5-5-2-2">
+                        <span class="row-preview" data-kid="1-1-5-5-2-2-1">
+                            5 members · No recent message
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="bottom-nav" data-kid="1-1-6">
+            <div class="nav-item active" data-kid="1-1-6-1">
+                <i class="ti ti-message-2" data-kid="1-1-6-1-1">
+                </i>
+                <span data-kid="1-1-6-1-2">
+                    Messages
+                </span>
+            </div>
+            <div class="nav-item" data-kid="1-1-6-2">
+                <i class="ti ti-users" data-kid="1-1-6-2-1">
+                </i>
+                <span data-kid="1-1-6-2-2">
+                    Groups
+                </span>
+            </div>
+            <div class="nav-item" data-kid="1-1-6-3">
+                <i class="ti ti-user" data-kid="1-1-6-3-1">
+                </i>
+                <span data-kid="1-1-6-3-2">
+                    Profile
+                </span>
+            </div>
+        </nav>
+    </section>
+    <section class="snapshot snapshot-chat" data-kid="1-2">
+        <div class="board-caption" data-kid="1-2-1">
+            <span data-kid="1-2-1-1">
+                02
+            </span>
+            / ChatScreen/{conversationId} · dominant thread
+        </div>
+        <div class="status top-safe" data-kid="1-2-2">
+            <span data-dynamic="true" data-kid="1-2-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-2-2-2">
+                <i class="ti ti-wifi" data-kid="1-2-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-2-2-2-2">
+                </i>
+            </span>
+        </div>
+        <div class="chat-shell" data-kid="1-2-3">
+            <header class="chat-header" data-kid="1-2-3-1">
+                <div class="drag-control" data-kid="1-2-3-1-1">
+                    <div class="drag-disc" data-kid="1-2-3-1-1-1">
+                        <i class="ti ti-chevron-left" data-kid="1-2-3-1-1-1-1">
+                        </i>
+                    </div>
+                </div>
+                <div class="identity" data-kid="1-2-3-1-2">
+                    <div class="avatar maya small" data-kid="1-2-3-1-2-1">
+                        M
+                        <span class="presence" data-kid="1-2-3-1-2-1-1">
+                        </span>
+                    </div>
+                    <div class="identity-copy" data-kid="1-2-3-1-2-2">
+                        <div class="identity-name" data-kid="1-2-3-1-2-2-1">
+                            Maya Chen
+                        </div>
+                        <div class="identity-status" data-kid="1-2-3-1-2-2-2">
+                            <span class="status-dot" data-kid="1-2-3-1-2-2-2-1">
+                            </span>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions" data-kid="1-2-3-1-3">
+                    <div class="icon-target quiet" data-kid="1-2-3-1-3-1">
+                        <i class="ti ti-phone" data-kid="1-2-3-1-3-1-1">
+                        </i>
+                    </div>
+                    <div class="icon-target quiet" data-kid="1-2-3-1-3-2">
+                        <i class="ti ti-video" data-kid="1-2-3-1-3-2-1">
+                        </i>
+                    </div>
+                    <div class="icon-target quiet" data-kid="1-2-3-1-3-3">
+                        <i class="ti ti-dots-vertical" data-kid="1-2-3-1-3-3-1">
+                        </i>
+                    </div>
+                </div>
+            </header>
+            <div class="drag-progress" data-kid="1-2-3-2">
+                <div class="progress-track" data-kid="1-2-3-2-1">
+                </div>
+                <span data-kid="1-2-3-2-2">
+                    Back gesture ready
+                </span>
+            </div>
+            <div class="thread-seam" data-kid="1-2-3-3">
+            </div>
+            <div class="thread" data-kid="1-2-3-4">
+                <div class="date-rule" data-kid="1-2-3-4-1">
+                    <span data-kid="1-2-3-4-1-1">
+                        Today
+                    </span>
+                </div>
+                <div class="message incoming" data-kid="1-2-3-4-2">
+                    <div class="sender-mark" data-kid="1-2-3-4-2-1">
+                        M
+                    </div>
+                    <div class="bubble-wrap" data-kid="1-2-3-4-2-2">
+                        <div class="sender-label" data-kid="1-2-3-4-2-2-1">
+                            Maya
+                        </div>
+                        <div class="bubble in" data-kid="1-2-3-4-2-2-2">
+                            I made a quieter pass on the opening. It feels closer to what we discussed.
+                            <div class="bubble-meta" data-kid="1-2-3-4-2-2-2-1">
+                                <span data-dynamic="true" data-kid="1-2-3-4-2-2-2-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    10:34
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message outgoing" data-kid="1-2-3-4-3">
+                    <div class="bubble-wrap" data-kid="1-2-3-4-3-1">
+                        <div class="bubble out" data-kid="1-2-3-4-3-1-1">
+                            This is much better. The space around the title is doing the work now.
+                            <div class="bubble-meta" data-kid="1-2-3-4-3-1-1-1">
+                                <span data-dynamic="true" data-kid="1-2-3-4-3-1-1-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    10:35
+                                </span>
+                                <i class="ti ti-checks" data-kid="1-2-3-4-3-1-1-1-2">
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message incoming" data-kid="1-2-3-4-4">
+                    <div class="sender-mark" data-kid="1-2-3-4-4-1">
+                        M
+                    </div>
+                    <div class="bubble-wrap" data-kid="1-2-3-4-4-2">
+                        <div class="bubble in" data-kid="1-2-3-4-4-2-1">
+                            <div class="reply-strip" data-kid="1-2-3-4-4-2-1-1">
+                                <strong data-kid="1-2-3-4-4-2-1-1-1">
+                                    You
+                                </strong>
+                                The space around the title is doing the work now.
+                            </div>
+                            Exactly. I’ll keep the controls quiet and let the hierarchy carry it.
+                            <div class="bubble-meta" data-kid="1-2-3-4-4-2-1-2">
+                                <span data-dynamic="true" data-kid="1-2-3-4-4-2-1-2-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    10:36
+                                </span>
+                            </div>
+                        </div>
+                        <div class="reaction" data-kid="1-2-3-4-4-2-2">
+                            <span data-kid="1-2-3-4-4-2-2-1">
+                                ♡
+                            </span>
+                            <span data-kid="1-2-3-4-4-2-2-2">
+                                2
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="message outgoing" data-kid="1-2-3-4-5">
+                    <div class="bubble-wrap" data-kid="1-2-3-4-5-1">
+                        <div class="media-message" data-kid="1-2-3-4-5-1-1">
+                            <div class="media-thumb" data-kid="1-2-3-4-5-1-1-1">
+                                <i class="ti ti-photo" data-kid="1-2-3-4-5-1-1-1-1">
+                                </i>
+                                <em data-kid="1-2-3-4-5-1-1-1-2">
+                                    image · 1.8 MB
+                                </em>
+                            </div>
+                            <div class="media-caption" data-kid="1-2-3-4-5-1-1-2">
+                                The new profile direction
+                            </div>
+                        </div>
+                        <div class="bubble-meta" data-kid="1-2-3-4-5-1-2">
+                            <span data-dynamic="true" data-kid="1-2-3-4-5-1-2-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                10:37
+                            </span>
+                            <i class="ti ti-checks" data-kid="1-2-3-4-5-1-2-2">
+                            </i>
+                        </div>
+                    </div>
+                </div>
+                <div class="message incoming" data-kid="1-2-3-4-6">
+                    <div class="sender-mark" data-kid="1-2-3-4-6-1">
+                        M
+                    </div>
+                    <div class="bubble-wrap" data-kid="1-2-3-4-6-2">
+                        <div class="file-row" data-kid="1-2-3-4-6-2-1">
+                            <div class="file-icon" data-kid="1-2-3-4-6-2-1-1">
+                                <i class="ti ti-file-type-pdf" data-kid="1-2-3-4-6-2-1-1-1">
+                                </i>
+                            </div>
+                            <div class="file-copy" data-kid="1-2-3-4-6-2-1-2">
+                                <div class="file-name" data-kid="1-2-3-4-6-2-1-2-1">
+                                    profile-notes.pdf
+                                </div>
+                                <div class="file-size" data-kid="1-2-3-4-6-2-1-2-2">
+                                    2.4 MB · ready to open
+                                </div>
+                            </div>
+                            <i class="ti ti-arrow-down" data-kid="1-2-3-4-6-2-1-3" style="color:var(--muted);font-size:17px">
+                            </i>
+                        </div>
+                        <div class="bubble-meta" data-kid="1-2-3-4-6-2-2">
+                            <span data-dynamic="true" data-kid="1-2-3-4-6-2-2-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                10:39
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="message outgoing" data-kid="1-2-3-4-7">
+                    <div class="bubble-wrap" data-kid="1-2-3-4-7-1">
+                        <div class="bubble out" data-kid="1-2-3-4-7-1-1">
+                            I’ll read this on the train and send a clean pass before lunch.
+                            <div class="bubble-meta" data-kid="1-2-3-4-7-1-1-1">
+                                <span data-dynamic="true" data-kid="1-2-3-4-7-1-1-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    10:40
+                                </span>
+                                <i class="ti ti-checks" data-kid="1-2-3-4-7-1-1-1-2">
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="typing" data-kid="1-2-3-4-8">
+                    <div class="sender-mark" data-kid="1-2-3-4-8-1">
+                        M
+                    </div>
+                    <div class="typing-bubble" data-dynamic="true" data-kid="1-2-3-4-8-2" data-name="typing indicator animation" data-reason="dots animated by script to show typing state">
+                        <span data-kid="1-2-3-4-8-2-1">
+                        </span>
+                        <span data-kid="1-2-3-4-8-2-2">
+                        </span>
+                        <span data-kid="1-2-3-4-8-2-3">
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="composer" data-kid="1-2-3-5">
+                <div class="icon-target quiet" data-kid="1-2-3-5-1">
+                    <i class="ti ti-plus" data-kid="1-2-3-5-1-1">
+                    </i>
+                </div>
+                <div class="composer-input" data-kid="1-2-3-5-2">
+                    Write a message
+                </div>
+                <div class="icon-target quiet" data-kid="1-2-3-5-3">
+                    <i class="ti ti-mood-smile" data-kid="1-2-3-5-3-1">
+                    </i>
+                </div>
+                <div class="send-button" data-kid="1-2-3-5-4">
+                    <i class="ti ti-send" data-kid="1-2-3-5-4-1">
+                    </i>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="snapshot snapshot-group" data-kid="1-3">
+        <div class="board-caption" data-kid="1-3-1">
+            <span data-kid="1-3-1-1">
+                03
+            </span>
+            / GroupChatScreen · Group information
+        </div>
+        <div class="status top-safe" data-kid="1-3-2">
+            <span data-dynamic="true" data-kid="1-3-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-3-2-2">
+                <i class="ti ti-wifi" data-kid="1-3-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-3-2-2-2">
+                </i>
+            </span>
+        </div>
+        <div class="group-chat-frame" data-kid="1-3-3">
+            <header class="chat-header" data-kid="1-3-3-1">
+                <div class="drag-control" data-kid="1-3-3-1-1">
+                    <div class="drag-disc" data-kid="1-3-3-1-1-1">
+                        <i class="ti ti-chevron-left" data-kid="1-3-3-1-1-1-1">
+                        </i>
+                    </div>
+                </div>
+                <div class="identity" data-kid="1-3-3-1-2">
+                    <div class="group-mosaic" data-kid="1-3-3-1-2-1">
+                        <span data-kid="1-3-3-1-2-1-1">
+                            D
+                        </span>
+                        <span data-kid="1-3-3-1-2-1-2">
+                            R
+                        </span>
+                        <span data-kid="1-3-3-1-2-1-3">
+                            S
+                        </span>
+                        <span data-kid="1-3-3-1-2-1-4">
+                            +
+                        </span>
+                    </div>
+                    <div class="identity-copy" data-kid="1-3-3-1-2-2">
+                        <div class="identity-name" data-kid="1-3-3-1-2-2-1">
+                            Design Circle
+                        </div>
+                        <div class="identity-status" data-kid="1-3-3-1-2-2-2" style="color:var(--muted)">
+                            7 members · 3 online
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions" data-kid="1-3-3-1-3">
+                    <div class="icon-target quiet" data-kid="1-3-3-1-3-1">
+                        <i class="ti ti-phone" data-kid="1-3-3-1-3-1-1">
+                        </i>
+                    </div>
+                    <div class="icon-target quiet" data-kid="1-3-3-1-3-2">
+                        <i class="ti ti-dots-vertical" data-kid="1-3-3-1-3-2-1">
+                        </i>
+                    </div>
+                </div>
+            </header>
+            <div class="thread-seam" data-kid="1-3-3-2" style="top:72px;bottom:80px">
+            </div>
+            <div class="thread" data-kid="1-3-3-3" style="padding-bottom:92px">
+                <div class="date-rule" data-kid="1-3-3-3-1">
+                    <span data-kid="1-3-3-3-1-1">
+                        Yesterday
+                    </span>
+                </div>
+                <div class="message incoming" data-kid="1-3-3-3-2">
+                    <div class="sender-mark" data-kid="1-3-3-3-2-1">
+                        R
+                    </div>
+                    <div class="bubble-wrap" data-kid="1-3-3-3-2-2">
+                        <div class="sender-label" data-kid="1-3-3-3-2-2-1">
+                            Rhea Patel
+                        </div>
+                        <div class="bubble in" data-kid="1-3-3-3-2-2-2">
+                            Sharing the latest notes here so the whole group has one source of truth.
+                            <div class="bubble-meta" data-kid="1-3-3-3-2-2-2-1">
+                                <span data-dynamic="true" data-kid="1-3-3-3-2-2-2-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    18:08
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message incoming" data-kid="1-3-3-3-3" style="margin-top:-5px;margin-left:31px">
+                    <div class="bubble-wrap" data-kid="1-3-3-3-3-1">
+                        <div class="bubble in" data-kid="1-3-3-3-3-1-1">
+                            The feedback on the navigation rail was especially useful.
+                            <div class="bubble-meta" data-kid="1-3-3-3-3-1-1-1">
+                                <span data-dynamic="true" data-kid="1-3-3-3-3-1-1-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    18:09
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message outgoing" data-kid="1-3-3-3-4">
+                    <div class="bubble-wrap" data-kid="1-3-3-3-4-1">
+                        <div class="bubble out" data-kid="1-3-3-3-4-1-1">
+                            I’m aligned. The gesture should feel like part of the system, not a demo.
+                            <div class="bubble-meta" data-kid="1-3-3-3-4-1-1-1">
+                                <span data-dynamic="true" data-kid="1-3-3-3-4-1-1-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    18:12
+                                </span>
+                                <i class="ti ti-checks" data-kid="1-3-3-3-4-1-1-1-2">
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message incoming" data-kid="1-3-3-3-5">
+                    <div class="sender-mark" data-kid="1-3-3-3-5-1" style="background:var(--stone)">
+                        S
+                    </div>
+                    <div class="bubble-wrap" data-kid="1-3-3-3-5-2">
+                        <div class="sender-label" data-kid="1-3-3-3-5-2-1">
+                            Samir Khan
+                        </div>
+                        <div class="bubble in" data-kid="1-3-3-3-5-2-2">
+                            That small shift on drag is the detail that makes it feel physical.
+                            <div class="bubble-meta" data-kid="1-3-3-3-5-2-2-1">
+                                <span data-dynamic="true" data-kid="1-3-3-3-5-2-2-1-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                    18:15
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message outgoing" data-kid="1-3-3-3-6">
+                    <div class="bubble-wrap" data-kid="1-3-3-3-6-1">
+                        <div class="file-row" data-kid="1-3-3-3-6-1-1">
+                            <div class="file-icon" data-kid="1-3-3-3-6-1-1-1">
+                                <i class="ti ti-file-description" data-kid="1-3-3-3-6-1-1-1-1">
+                                </i>
+                            </div>
+                            <div class="file-copy" data-kid="1-3-3-3-6-1-1-2">
+                                <div class="file-name" data-kid="1-3-3-3-6-1-1-2-1">
+                                    interaction-spec.md
+                                </div>
+                                <div class="file-size" data-kid="1-3-3-3-6-1-1-2-2">
+                                    18 KB · sent
+                                </div>
+                            </div>
+                            <i class="ti ti-checks" data-kid="1-3-3-3-6-1-1-3" style="color:var(--lavender);font-size:17px">
+                            </i>
+                        </div>
+                        <div class="bubble-meta" data-kid="1-3-3-3-6-1-2">
+                            <span data-dynamic="true" data-kid="1-3-3-3-6-1-2-1" data-name="message timestamp" data-reason="time text updated by messaging sync">
+                                18:17
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="composer" data-kid="1-3-3-4">
+                <div class="icon-target quiet" data-kid="1-3-3-4-1">
+                    <i class="ti ti-plus" data-kid="1-3-3-4-1-1">
+                    </i>
+                </div>
+                <div class="composer-input" data-kid="1-3-3-4-2">
+                    Message group
+                </div>
+                <div class="icon-target quiet" data-kid="1-3-3-4-3">
+                    <i class="ti ti-mood-smile" data-kid="1-3-3-4-3-1">
+                    </i>
+                </div>
+                <div class="icon-target quiet" data-kid="1-3-3-4-4">
+                    <i class="ti ti-microphone" data-kid="1-3-3-4-4-1">
+                    </i>
+                </div>
+            </div>
+        </div>
+        <div class="group-info-frame" data-kid="1-3-4">
+            <div class="utility-header" data-kid="1-3-4-1">
+                <div class="drag-control" data-kid="1-3-4-1-1">
+                    <div class="drag-disc" data-kid="1-3-4-1-1-1">
+                        <i class="ti ti-chevron-left" data-kid="1-3-4-1-1-1-1">
+                        </i>
+                    </div>
+                </div>
+                <h2 data-kid="1-3-4-1-2">
+                    Group information
+                </h2>
+                <div class="icon-target quiet" data-kid="1-3-4-1-3">
+                    <i class="ti ti-dots-vertical" data-kid="1-3-4-1-3-1">
+                    </i>
+                </div>
+            </div>
+            <div class="group-info-top" data-kid="1-3-4-2">
+                <div class="group-mosaic large" data-kid="1-3-4-2-1">
+                    <span data-kid="1-3-4-2-1-1">
+                        D
+                    </span>
+                    <span data-kid="1-3-4-2-1-2">
+                        R
+                    </span>
+                    <span data-kid="1-3-4-2-1-3">
+                        S
+                    </span>
+                    <span data-kid="1-3-4-2-1-4">
+                        +
+                    </span>
+                </div>
+                <h2 data-kid="1-3-4-2-2">
+                    Design Circle
+                </h2>
+                <p data-kid="1-3-4-2-3">
+                    7 members · 3 online
+                </p>
+                <p class="group-description" data-kid="1-3-4-2-4">
+                    A quiet place for product, interface, and interaction notes.
+                </p>
+            </div>
+            <div class="flat-section" data-kid="1-3-4-3">
+                <div class="flat-section-title" data-kid="1-3-4-3-1">
+                    Members
+                </div>
+                <div class="member-row" data-kid="1-3-4-3-2">
+                    <div class="avatar small maya" data-kid="1-3-4-3-2-1">
+                        R
+                        <span class="presence" data-kid="1-3-4-3-2-1-1">
+                        </span>
+                    </div>
+                    <div class="member-copy" data-kid="1-3-4-3-2-2">
+                        <div class="member-name" data-kid="1-3-4-3-2-2-1">
+                            Rhea Patel
+                        </div>
+                        <div class="member-sub" data-kid="1-3-4-3-2-2-2">
+                            Online · Admin
+                        </div>
+                    </div>
+                    <i class="ti ti-chevron-right row-chevron" data-kid="1-3-4-3-2-3">
+                    </i>
+                </div>
+                <div class="member-row" data-kid="1-3-4-3-3">
+                    <div class="avatar small olive" data-kid="1-3-4-3-3-1">
+                        S
+                    </div>
+                    <div class="member-copy" data-kid="1-3-4-3-3-2">
+                        <div class="member-name" data-kid="1-3-4-3-3-2-1">
+                            Samir Khan
+                        </div>
+                        <div class="member-sub" data-kid="1-3-4-3-3-2-2">
+                            Last active recently
+                        </div>
+                    </div>
+                    <i class="ti ti-chevron-right row-chevron" data-kid="1-3-4-3-3-3">
+                    </i>
+                </div>
+                <div class="member-row" data-kid="1-3-4-3-4">
+                    <div class="avatar small" data-kid="1-3-4-3-4-1">
+                        J
+                    </div>
+                    <div class="member-copy" data-kid="1-3-4-3-4-2">
+                        <div class="member-name" data-kid="1-3-4-3-4-2-1">
+                            Jules Nguyen
+                        </div>
+                        <div class="member-sub" data-kid="1-3-4-3-4-2-2">
+                            Offline
+                        </div>
+                    </div>
+                    <i class="ti ti-chevron-right row-chevron" data-kid="1-3-4-3-4-3">
+                    </i>
+                </div>
+            </div>
+            <div class="flat-section" data-kid="1-3-4-4">
+                <div class="flat-section-title" data-kid="1-3-4-4-1">
+                    Shared
+                </div>
+                <div class="media-row" data-kid="1-3-4-4-2">
+                    <i class="ti ti-photo" data-kid="1-3-4-4-2-1">
+                    </i>
+                    <span data-kid="1-3-4-4-2-2">
+                        Shared media
+                    </span>
+                    <span class="row-chevron" data-kid="1-3-4-4-2-3">
+                        12
+                    </span>
+                    <i class="ti ti-chevron-right row-chevron" data-kid="1-3-4-4-2-4">
+                    </i>
+                </div>
+                <div class="media-row" data-kid="1-3-4-4-3">
+                    <i class="ti ti-file" data-kid="1-3-4-4-3-1">
+                    </i>
+                    <span data-kid="1-3-4-4-3-2">
+                        Files
+                    </span>
+                    <span class="row-chevron" data-kid="1-3-4-4-3-3">
+                        4
+                    </span>
+                    <i class="ti ti-chevron-right row-chevron" data-kid="1-3-4-4-3-4">
+                    </i>
+                </div>
+            </div>
+            <div class="leave-action" data-kid="1-3-4-5">
+                <i class="ti ti-logout" data-kid="1-3-4-5-1">
+                </i>
+                <span data-kid="1-3-4-5-2">
+                    Leave group
+                </span>
+            </div>
+        </div>
+    </section>
+    <section class="snapshot snapshot-utilities" data-kid="1-4">
+        <div class="board-caption" data-kid="1-4-1">
+            <span data-kid="1-4-1-1">
+                04
+            </span>
+            / SearchBarPage · GropChatSearch · GroupName
+        </div>
+        <div class="status top-safe" data-kid="1-4-2">
+            <span data-dynamic="true" data-kid="1-4-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-4-2-2">
+                <i class="ti ti-wifi" data-kid="1-4-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-4-2-2-2">
+                </i>
+            </span>
+        </div>
+        <div class="utility-header" data-kid="1-4-3">
+            <div class="drag-control" data-kid="1-4-3-1">
+                <div class="drag-disc" data-kid="1-4-3-1-1">
+                    <i class="ti ti-chevron-left" data-kid="1-4-3-1-1-1">
+                    </i>
+                </div>
+            </div>
+            <div class="search-field utility-field" data-kid="1-4-3-2" style="flex:1;margin:0;height:48px">
+                <i class="ti ti-search" data-kid="1-4-3-2-1">
+                </i>
+                <span data-kid="1-4-3-2-2">
+                    Search by username
+                </span>
+            </div>
+        </div>
+        <div class="utility-instruction" data-kid="1-4-4">
+            <h3 data-kid="1-4-4-1">
+                Find someone to message
+            </h3>
+            <p data-kid="1-4-4-2">
+                Enter an exact username to start a one-to-one conversation.
+            </p>
+        </div>
+        <div class="result-row" data-kid="1-4-5">
+            <div class="avatar maya" data-kid="1-4-5-1">
+                E
+                <span class="presence" data-kid="1-4-5-1-1">
+                </span>
+            </div>
+            <div class="result-copy" data-kid="1-4-5-2">
+                <strong data-kid="1-4-5-2-1">
+                    Elena Rossi
+                </strong>
+                <span data-kid="1-4-5-2-2">
+                    @elena · Available now
+                </span>
+            </div>
+            <div class="result-action" data-kid="1-4-5-3">
+                <i class="ti ti-arrow-right" data-kid="1-4-5-3-1">
+                </i>
+            </div>
+        </div>
+        <div class="utility-divider" data-kid="1-4-6">
+        </div>
+        <div class="selection-header" data-kid="1-4-7">
+            <h3 data-kid="1-4-7-1">
+                Select members
+            </h3>
+            <p data-kid="1-4-7-2">
+                Choose people for your new group
+            </p>
+        </div>
+        <div class="search-field" data-kid="1-4-8" style="margin-bottom:11px">
+            <i class="ti ti-search" data-kid="1-4-8-1">
+            </i>
+            <span data-kid="1-4-8-2">
+                Search people
+            </span>
+        </div>
+        <div class="selected-rail" data-kid="1-4-9">
+            <div class="avatar small maya rail-avatar" data-kid="1-4-9-1">
+                R
+            </div>
+            <div class="avatar small olive rail-avatar" data-kid="1-4-9-2">
+                S
+            </div>
+            <div class="avatar small rail-avatar" data-kid="1-4-9-3">
+                J
+            </div>
+            <div class="rail-more" data-kid="1-4-9-4">
+                +3
+            </div>
+            <span data-kid="1-4-9-5" style="margin-left:auto;color:var(--muted);font-size:11px;font-weight:600">
+                6 selected
+            </span>
+        </div>
+        <div class="directory-label" data-kid="1-4-10">
+            People
+        </div>
+        <div class="select-row selected" data-kid="1-4-11">
+            <div class="avatar small maya" data-kid="1-4-11-1">
+                R
+            </div>
+            <div class="row-copy" data-kid="1-4-11-2">
+                <div class="row-name" data-kid="1-4-11-2-1">
+                    Rhea Patel
+                </div>
+                <div class="row-preview" data-kid="1-4-11-2-2">
+                    @rhea
+                </div>
+            </div>
+            <div class="select-check" data-kid="1-4-11-3">
+                <i class="ti ti-check" data-kid="1-4-11-3-1">
+                </i>
+            </div>
+        </div>
+        <div class="select-row selected" data-kid="1-4-12">
+            <div class="avatar small olive" data-kid="1-4-12-1">
+                S
+            </div>
+            <div class="row-copy" data-kid="1-4-12-2">
+                <div class="row-name" data-kid="1-4-12-2-1">
+                    Samir Khan
+                </div>
+                <div class="row-preview" data-kid="1-4-12-2-2">
+                    @samir
+                </div>
+            </div>
+            <div class="select-check" data-kid="1-4-12-3">
+                <i class="ti ti-check" data-kid="1-4-12-3-1">
+                </i>
+            </div>
+        </div>
+        <div class="select-row" data-kid="1-4-13">
+            <div class="avatar small" data-kid="1-4-13-1">
+                E
+            </div>
+            <div class="row-copy" data-kid="1-4-13-2">
+                <div class="row-name" data-kid="1-4-13-2-1">
+                    Elena Rossi
+                </div>
+                <div class="row-preview" data-kid="1-4-13-2-2">
+                    @elena
+                </div>
+            </div>
+            <div class="select-check" data-kid="1-4-13-3">
+                <i class="ti ti-check" data-kid="1-4-13-3-1">
+                </i>
+            </div>
+        </div>
+        <div class="selection-action" data-kid="1-4-14">
+            <span data-kid="1-4-14-1">
+                3 selected
+            </span>
+            <div class="next-action" data-kid="1-4-14-2">
+                Next
+                <i class="ti ti-arrow-right" data-kid="1-4-14-2-1">
+                </i>
+            </div>
+        </div>
+        <div class="group-details" data-kid="1-4-15">
+            <div class="group-details-head" data-kid="1-4-15-1">
+                <div class="drag-control" data-kid="1-4-15-1-1">
+                    <div class="drag-disc" data-kid="1-4-15-1-1-1">
+                        <i class="ti ti-chevron-left" data-kid="1-4-15-1-1-1-1">
+                        </i>
+                    </div>
+                </div>
+                <h3 data-kid="1-4-15-1-2">
+                    Group details
+                </h3>
+            </div>
+            <div class="group-identity" data-kid="1-4-15-2">
+                <div class="group-mosaic large" data-kid="1-4-15-2-1">
+                    <span data-kid="1-4-15-2-1-1">
+                        R
+                    </span>
+                    <span data-kid="1-4-15-2-1-2">
+                        S
+                    </span>
+                    <span data-kid="1-4-15-2-1-3">
+                        J
+                    </span>
+                    <span data-kid="1-4-15-2-1-4">
+                        +
+                    </span>
+                </div>
+                <p data-kid="1-4-15-2-2">
+                    6 members selected
+                </p>
+            </div>
+            <div class="form-stack" data-kid="1-4-15-3">
+                <div class="form-field" data-kid="1-4-15-3-1">
+                    <span class="form-label" data-kid="1-4-15-3-1-1">
+                        Group name
+                    </span>
+                    <span class="form-value" data-kid="1-4-15-3-1-2">
+                        Design Circle
+                    </span>
+                </div>
+                <div class="form-field" data-kid="1-4-15-3-2" style="min-height:78px">
+                    <span class="form-label" data-kid="1-4-15-3-2-1">
+                        Description
+                    </span>
+                    <span class="form-value placeholder" data-kid="1-4-15-3-2-2">
+                        What is this group for?
+                    </span>
+                </div>
+                <div class="review-label" data-kid="1-4-15-3-3">
+                    Members
+                </div>
+                <div class="review-person" data-kid="1-4-15-3-4">
+                    <div class="avatar small maya" data-kid="1-4-15-3-4-1">
+                        R
+                    </div>
+                    <span data-kid="1-4-15-3-4-2">
+                        Rhea Patel
+                    </span>
+                </div>
+                <div class="review-person" data-kid="1-4-15-3-5">
+                    <div class="avatar small olive" data-kid="1-4-15-3-5-1">
+                        S
+                    </div>
+                    <span data-kid="1-4-15-3-5-2">
+                        Samir Khan
+                    </span>
+                </div>
+                <div class="review-person" data-kid="1-4-15-3-6">
+                    <div class="avatar small" data-kid="1-4-15-3-6-1">
+                        J
+                    </div>
+                    <span data-kid="1-4-15-3-6-2">
+                        Jules Nguyen
+                    </span>
+                </div>
+            </div>
+            <div class="create-surface" data-kid="1-4-15-4">
+                <div class="primary-action" data-kid="1-4-15-4-1">
+                    Create group
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="snapshot snapshot-profile" data-kid="1-5">
+        <div class="board-caption" data-kid="1-5-1">
+            <span data-kid="1-5-1-1">
+                05
+            </span>
+            / profileScreen/{userId} · Profile + settings
+        </div>
+        <div class="status top-safe" data-kid="1-5-2">
+            <span data-dynamic="true" data-kid="1-5-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-5-2-2">
+                <i class="ti ti-wifi" data-kid="1-5-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-5-2-2-2">
+                </i>
+            </span>
+        </div>
+        <div class="utility-header" data-kid="1-5-3">
+            <div class="drag-control" data-kid="1-5-3-1">
+                <div class="drag-disc" data-kid="1-5-3-1-1">
+                    <i class="ti ti-chevron-left" data-kid="1-5-3-1-1-1">
+                    </i>
+                </div>
+            </div>
+            <h2 data-kid="1-5-3-2">
+                Profile
+            </h2>
+            <div class="icon-target quiet" data-kid="1-5-3-3">
+                <i class="ti ti-dots-vertical" data-kid="1-5-3-3-1">
+                </i>
+            </div>
+        </div>
+        <div class="profile-header" data-kid="1-5-4">
+            <div class="avatar large maya" data-kid="1-5-4-1">
+                A
+                <span class="presence" data-kid="1-5-4-1-1">
+                </span>
+            </div>
+            <div class="profile-copy" data-kid="1-5-4-2">
+                <h2 data-kid="1-5-4-2-1">
+                    Alex Morgan
+                </h2>
+                <p data-kid="1-5-4-2-2">
+                    @alexm · available now
+                </p>
+                <div class="edit-link" data-kid="1-5-4-2-3">
+                    <i class="ti ti-pencil" data-kid="1-5-4-2-3-1">
+                    </i>
+                    <span data-kid="1-5-4-2-3-2">
+                        Edit profile
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="profile-section" data-kid="1-5-5">
+            <h3 data-kid="1-5-5-1">
+                Account
+            </h3>
+            <div class="data-row" data-kid="1-5-5-2">
+                <span class="data-label" data-kid="1-5-5-2-1">
+                    Name
+                </span>
+                <span class="data-value" data-kid="1-5-5-2-2">
+                    Alex Morgan
+                </span>
+            </div>
+            <div class="data-row" data-kid="1-5-5-3">
+                <span class="data-label" data-kid="1-5-5-3-1">
+                    Username
+                </span>
+                <span class="data-value" data-kid="1-5-5-3-2">
+                    @alexm
+                </span>
+            </div>
+            <div class="data-row" data-kid="1-5-5-4">
+                <span class="data-label" data-kid="1-5-5-4-1">
+                    Email
+                </span>
+                <span class="data-value" data-kid="1-5-5-4-2">
+                    alex@example.com
+                </span>
+            </div>
+        </div>
+        <div class="settings-group" data-kid="1-5-6">
+            <h3 data-kid="1-5-6-1">
+                Preferences
+            </h3>
+            <div class="setting-row" data-kid="1-5-6-2">
+                <i class="ti ti-bell" data-kid="1-5-6-2-1">
+                </i>
+                <div class="setting-copy" data-kid="1-5-6-2-2">
+                    <div class="setting-name" data-kid="1-5-6-2-2-1">
+                        Notifications
+                    </div>
+                    <div class="setting-sub" data-kid="1-5-6-2-2-2">
+                        Messages and sounds
+                    </div>
+                </div>
+                <i class="ti ti-chevron-right row-chevron" data-kid="1-5-6-2-3">
+                </i>
+            </div>
+            <div class="setting-row" data-kid="1-5-6-3">
+                <i class="ti ti-shield-lock" data-kid="1-5-6-3-1">
+                </i>
+                <div class="setting-copy" data-kid="1-5-6-3-2">
+                    <div class="setting-name" data-kid="1-5-6-3-2-1">
+                        Privacy
+                    </div>
+                    <div class="setting-sub" data-kid="1-5-6-3-2-2">
+                        Presence and read status
+                    </div>
+                </div>
+                <i class="ti ti-chevron-right row-chevron" data-kid="1-5-6-3-3">
+                </i>
+            </div>
+            <div class="setting-row" data-kid="1-5-6-4">
+                <i class="ti ti-moon" data-kid="1-5-6-4-1">
+                </i>
+                <div class="setting-copy" data-kid="1-5-6-4-2">
+                    <div class="setting-name" data-kid="1-5-6-4-2-1">
+                        Appearance
+                    </div>
+                    <div class="setting-sub" data-kid="1-5-6-4-2-2">
+                        Light · Pearl
+                    </div>
+                </div>
+                <i class="ti ti-chevron-right row-chevron" data-kid="1-5-6-4-3">
+                </i>
+            </div>
+            <div class="setting-row" data-kid="1-5-6-5">
+                <i class="ti ti-database" data-kid="1-5-6-5-1">
+                </i>
+                <div class="setting-copy" data-kid="1-5-6-5-2">
+                    <div class="setting-name" data-kid="1-5-6-5-2-1">
+                        Data & storage
+                    </div>
+                    <div class="setting-sub" data-kid="1-5-6-5-2-2">
+                        Local messages and media
+                    </div>
+                </div>
+                <i class="ti ti-chevron-right row-chevron" data-kid="1-5-6-5-3">
+                </i>
+            </div>
+            <div class="setting-row" data-kid="1-5-6-6">
+                <i class="ti ti-info-circle" data-kid="1-5-6-6-1">
+                </i>
+                <div class="setting-copy" data-kid="1-5-6-6-2">
+                    <div class="setting-name" data-kid="1-5-6-6-2-1">
+                        About YOKOSU
+                    </div>
+                </div>
+                <i class="ti ti-chevron-right row-chevron" data-kid="1-5-6-6-3">
+                </i>
+            </div>
+        </div>
+        <div class="sign-out" data-kid="1-5-7">
+            <i class="ti ti-logout" data-kid="1-5-7-1">
+            </i>
+            <span data-kid="1-5-7-2">
+                Sign out
+            </span>
+        </div>
+    </section>
+    <section class="snapshot snapshot-auth" data-kid="1-6">
+        <div class="board-caption" data-kid="1-6-1">
+            <span data-kid="1-6-1-1">
+                06
+            </span>
+            / SignIn · register · UserInfo
+        </div>
+        <div class="status top-safe" data-kid="1-6-2">
+            <span data-dynamic="true" data-kid="1-6-2-1" data-name="status bar clock" data-reason="time text updated periodically by system script">
+                9:41
+            </span>
+            <span class="status-icons" data-kid="1-6-2-2">
+                <i class="ti ti-wifi" data-kid="1-6-2-2-1">
+                </i>
+                <i class="ti ti-battery-4" data-kid="1-6-2-2-2">
+                </i>
+            </span>
+        </div>
+        <div class="auth-shell" data-kid="1-6-3">
+            <div class="auth-brand" data-kid="1-6-3-1">
+                <div class="wordmark" data-kid="1-6-3-1-1">
+                    YOKOSU
+                </div>
+            </div>
+            <div class="auth-head" data-kid="1-6-3-2">
+                <h1 data-kid="1-6-3-2-1">
+                    Welcome back
+                </h1>
+                <p data-kid="1-6-3-2-2">
+                    Sign in to return to your conversations.
+                </p>
+            </div>
+            <div class="auth-field focused" data-kid="1-6-3-3">
+                <i class="ti ti-mail" data-kid="1-6-3-3-1">
+                </i>
+                <div class="auth-field-copy" data-kid="1-6-3-3-2">
+                    <div class="auth-field-label" data-kid="1-6-3-3-2-1">
+                        Email address
+                    </div>
+                    <div class="auth-field-value" data-kid="1-6-3-3-2-2">
+                        alex@example.com
+                    </div>
+                </div>
+            </div>
+            <div class="auth-field" data-kid="1-6-3-4">
+                <i class="ti ti-lock" data-kid="1-6-3-4-1">
+                </i>
+                <div class="auth-field-copy" data-kid="1-6-3-4-2">
+                    <div class="auth-field-label" data-kid="1-6-3-4-2-1">
+                        Password
+                    </div>
+                    <div class="auth-field-value" data-kid="1-6-3-4-2-2">
+                        ••••••••••
+                    </div>
+                </div>
+                <i class="ti ti-eye" data-kid="1-6-3-4-3" style="color:var(--muted)">
+                </i>
+            </div>
+            <div class="auth-submit" data-kid="1-6-3-5">
+                Sign in
+            </div>
+            <div class="auth-foot" data-kid="1-6-3-6">
+                <span data-kid="1-6-3-6-1">
+                    New here?
+                </span>
+                <strong data-kid="1-6-3-6-2">
+                    Create account
+                </strong>
+            </div>
+            <div class="auth-state" data-kid="1-6-3-7">
+                <div class="auth-state-row" data-kid="1-6-3-7-1">
+                    <i class="ti ti-loader-2" data-dynamic="true" data-kid="1-6-3-7-1-1" data-name="loading spinner icon" data-reason="rotated by css animation when visible">
+                    </i>
+                    <span data-dynamic="true" data-kid="1-6-3-7-1-2" data-name="signing in status text" data-reason="text reflects async auth state">
+                        Signing in · quiet inline progress
+                    </span>
+                </div>
+                <div class="auth-state-row error" data-kid="1-6-3-7-2">
+                    <i class="ti ti-alert-circle" data-kid="1-6-3-7-2-1">
+                    </i>
+                    <span data-dynamic="true" data-kid="1-6-3-7-2-2" data-name="error status message" data-reason="text reflects async auth state">
+                        Couldn’t sign in · Try again
+                    </span>
+                </div>
+            </div>
+            <div data-kid="1-6-3-8" style="height:52px">
+            </div>
+            <div class="auth-head" data-kid="1-6-3-9" style="padding-bottom:18px">
+                <h1 data-kid="1-6-3-9-1" style="font-size:25px;line-height:31px">
+                    Set up your profile
+                </h1>
+                <p data-kid="1-6-3-9-2">
+                    This is how people will find you.
+                </p>
+            </div>
+            <div class="auth-field" data-kid="1-6-3-10">
+                <i class="ti ti-badge" data-kid="1-6-3-10-1">
+                </i>
+                <div class="auth-field-copy" data-kid="1-6-3-10-2">
+                    <div class="auth-field-label" data-kid="1-6-3-10-2-1">
+                        Your name
+                    </div>
+                    <div class="auth-field-value muted" data-kid="1-6-3-10-2-2">
+                        Alex Morgan
+                    </div>
+                </div>
+            </div>
+            <div class="auth-field" data-kid="1-6-3-11">
+                <i class="ti ti-at" data-kid="1-6-3-11-1">
+                </i>
+                <div class="auth-field-copy" data-kid="1-6-3-11-2">
+                    <div class="auth-field-label" data-kid="1-6-3-11-2-1">
+                        Username
+                    </div>
+                    <div class="auth-field-value muted" data-kid="1-6-3-11-2-2">
+                        alexm
+                    </div>
+                </div>
+            </div>
+            <div class="auth-submit" data-kid="1-6-3-12">
+                Create profile
+            </div>
+        </div>
+    </section>
+    <section class="snapshot snapshot-states" data-kid="1-7">
+        <div class="board-caption" data-kid="1-7-1">
+            <span data-kid="1-7-1-1">
+                07
+            </span>
+            / states · compact system strip
+        </div>
+        <div class="states-intro" data-kid="1-7-2">
+            <h2 data-kid="1-7-2-1">
+                Quiet, truthful states
+            </h2>
+            <p data-kid="1-7-2-2">
+                Every state uses the same hierarchy: one small cue, one clear sentence, one next step.
+            </p>
+        </div>
+        <div class="state-grid" data-kid="1-7-3">
+            <div class="state-cell" data-kid="1-7-3-1">
+                <i class="ti ti-message-off" data-kid="1-7-3-1-1">
+                </i>
+                <h3 data-kid="1-7-3-1-2">
+                    No conversations yet
+                </h3>
+                <p data-kid="1-7-3-1-3">
+                    Search by username to start one.
+                </p>
+                <span class="state-action" data-kid="1-7-3-1-4">
+                    Search
+                </span>
+            </div>
+            <div class="state-cell" data-kid="1-7-3-2">
+                <i class="ti ti-message-circle" data-kid="1-7-3-2-1">
+                </i>
+                <h3 data-kid="1-7-3-2-2">
+                    No messages yet
+                </h3>
+                <p data-kid="1-7-3-2-3">
+                    Write the first message.
+                </p>
+                <span class="state-action" data-kid="1-7-3-2-4">
+                    Write message
+                </span>
+            </div>
+            <div class="state-cell" data-kid="1-7-3-3">
+                <i class="ti ti-loader-2" data-kid="1-7-3-3-1">
+                </i>
+                <div class="skeleton-line" data-kid="1-7-3-3-2">
+                </div>
+                <div class="skeleton-line short" data-kid="1-7-3-3-3">
+                </div>
+                <p data-kid="1-7-3-3-4">
+                    Loading messages
+                </p>
+            </div>
+            <div class="state-cell error" data-kid="1-7-3-4">
+                <i class="ti ti-alert-circle" data-kid="1-7-3-4-1">
+                </i>
+                <h3 data-kid="1-7-3-4-2">
+                    Couldn’t load messages
+                </h3>
+                <p data-kid="1-7-3-4-3">
+                    Your saved messages are still here.
+                </p>
+                <span class="state-action" data-kid="1-7-3-4-4">
+                    Try again
+                </span>
+            </div>
+            <div class="state-cell" data-kid="1-7-3-5">
+                <i class="ti ti-photo-off" data-kid="1-7-3-5-1">
+                </i>
+                <h3 data-kid="1-7-3-5-2">
+                    No shared media
+                </h3>
+                <p data-kid="1-7-3-5-3">
+                    Photos will appear here.
+                </p>
+            </div>
+            <div class="state-cell" data-kid="1-7-3-6">
+                <i class="ti ti-users-minus" data-kid="1-7-3-6-1">
+                </i>
+                <h3 data-kid="1-7-3-6-2">
+                    No members match
+                </h3>
+                <p data-kid="1-7-3-6-3">
+                    Try a different name.
+                </p>
+                <span class="state-action" data-kid="1-7-3-6-4">
+                    Clear search
+                </span>
+            </div>
+        </div>
+        <div class="note" data-kid="1-7-4">
+            One palette. One rail. No false presence, delivery, or security claims. All primary flows remain recognizably YOKOSU and ready for Compose translation.
+        </div>
+    </section>
+</div>
+</div>
+</body></html>
