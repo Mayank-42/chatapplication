@@ -34,7 +34,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -66,13 +65,24 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
     var showAlertBox by rememberSaveable { mutableStateOf(false) }
     var alertMessage by rememberSaveable { mutableStateOf("Passwords do not match.") }
 
+    val proceedToUserInfo = {
+        if (password == pass || pass.isEmpty()) {
+            authVM.email = email.trim()
+            authVM.password = password
+            navControler.navigate("UserInfo")
+        } else {
+            alertMessage = "Passwords do not match."
+            showAlertBox = true
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.background)
             .imePadding()
     ) {
-        // Quick Theme Toggle Pill in Top-Right
+        // Quick Theme Toggle Pill
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -80,8 +90,8 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                 .padding(top = 12.dp, end = 20.dp)
                 .height(34.dp)
                 .clip(RoundedCornerShape(17.dp))
-                .background(colors.accentTint)
-                .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(17.dp))
+                .background(colors.secondarySurface)
+                .border(1.dp, colors.border, RoundedCornerShape(17.dp))
                 .clickable { ThemeController.nextTheme() }
                 .padding(horizontal = 10.dp),
             contentAlignment = Alignment.Center
@@ -95,7 +105,7 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = ThemeController.currentPalette.subtitle,
+                    text = ThemeController.currentPalette.title,
                     style = MaterialTheme.typography.labelSmall,
                     color = colors.textPrimary,
                     fontSize = 11.sp
@@ -119,13 +129,13 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Refined Brand Icon Halo
+            // Icon Halo
             Box(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(CircleShape)
                     .background(colors.accentTint)
-                    .border(1.dp, colors.accent.copy(alpha = 0.3f), CircleShape),
+                    .border(1.dp, colors.accent.copy(alpha = 0.4f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -148,18 +158,18 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
             )
 
             Text(
-                text = "Join YOKOSU messaging",
+                text = "Register to start messaging",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.textMuted,
-                modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 28.dp)
             )
 
             // Email Field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email address", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("name@example.com", color = colors.textMuted.copy(alpha = 0.6f)) },
+                label = { Text("Email", style = MaterialTheme.typography.bodyMedium) },
+                placeholder = { Text("Enter email", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.MailOutline,
@@ -194,7 +204,7 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("••••••••", color = colors.textMuted.copy(alpha = 0.6f)) },
+                placeholder = { Text("Enter password", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Lock,
@@ -229,8 +239,8 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
             OutlinedTextField(
                 value = pass,
                 onValueChange = { pass = it },
-                label = { Text("Confirm password", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("••••••••", color = colors.textMuted.copy(alpha = 0.6f)) },
+                label = { Text("Confirm Password", style = MaterialTheme.typography.bodyMedium) },
+                placeholder = { Text("Confirm password", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Lock,
@@ -246,18 +256,7 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (email.isNotBlank() && password.isNotBlank()) {
-                            if (password == pass) {
-                                authVM.email = email.trim()
-                                authVM.password = password
-                                navControler.navigate("UserInfo")
-                            } else {
-                                alertMessage = "Passwords do not match."
-                                showAlertBox = true
-                            }
-                        }
-                    }
+                    onDone = { proceedToUserInfo() }
                 ),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -275,35 +274,22 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // Continue Button
-            val isFormValid = email.isNotBlank() && password.isNotBlank() && pass.isNotBlank()
+            // Continue Button - Clickable as original!
             Button(
-                onClick = {
-                    if (password == pass) {
-                        authVM.email = email.trim()
-                        authVM.password = password
-                        navControler.navigate("UserInfo")
-                    } else {
-                        alertMessage = "Passwords do not match."
-                        showAlertBox = true
-                    }
-                },
-                enabled = isFormValid,
+                onClick = { proceedToUserInfo() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.accent,
-                    contentColor = colors.surface,
-                    disabledContainerColor = colors.secondarySurface,
-                    disabledContentColor = colors.textMuted
+                    contentColor = colors.surface
                 )
             ) {
                 Text(
                     text = "Continue",
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (isFormValid) colors.surface else colors.textMuted
+                    color = Color.White
                 )
             }
 
@@ -336,7 +322,7 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                 onDismissRequest = { showAlertBox = false },
                 title = {
                     Text(
-                        text = "Validation Error",
+                        text = "Registration",
                         style = MaterialTheme.typography.titleMedium,
                         color = colors.textPrimary
                     )
@@ -360,61 +346,6 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
                 containerColor = colors.surface,
                 shape = RoundedCornerShape(20.dp)
             )
-        }
-    }
-}
-
-/**
- * Legacy compatibility wrapper for existing call signatures if any.
- */
-@Composable
-fun surf(
-    navControl: NavController,
-    size: Int = 60,
-    task: String = "Enter Text here",
-    wantTextField: Boolean = true,
-    words: String,
-    onWordChange: (String) -> Unit,
-    onButtonClick: () -> Unit = {}
-) {
-    val colors = ChatTheme.colors
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .height(size.dp),
-        color = colors.surface,
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border)
-    ) {
-        if (wantTextField) {
-            OutlinedTextField(
-                value = words,
-                onValueChange = onWordChange,
-                placeholder = { Text(text = task, color = colors.textMuted) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedTextColor = colors.textPrimary,
-                    unfocusedTextColor = colors.textPrimary
-                )
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onButtonClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = task,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = colors.accent
-                )
-            }
         }
     }
 }

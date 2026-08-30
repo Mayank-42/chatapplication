@@ -31,10 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,10 +66,8 @@ fun UserInfo(
     var username by rememberSaveable { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val canProceed = name.isNotBlank() && username.isNotBlank() && !isLoading
-
     val submitForm = {
-        if (canProceed) {
+        if (!isLoading) {
             isLoading = true
             viewMode.userinsert(userInfo(0, name.trim(), username.trim()))
             authVM.sigUp(authVM.email, authVM.password, name.trim(), username.trim()) { success ->
@@ -90,7 +85,7 @@ fun UserInfo(
             .background(colors.background)
             .imePadding()
     ) {
-        // Quick Theme Toggle Pill in Top-Right
+        // Quick Theme Toggle Pill
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -98,8 +93,8 @@ fun UserInfo(
                 .padding(top = 12.dp, end = 20.dp)
                 .height(34.dp)
                 .clip(RoundedCornerShape(17.dp))
-                .background(colors.accentTint)
-                .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(17.dp))
+                .background(colors.secondarySurface)
+                .border(1.dp, colors.border, RoundedCornerShape(17.dp))
                 .clickable { ThemeController.nextTheme() }
                 .padding(horizontal = 10.dp),
             contentAlignment = Alignment.Center
@@ -113,7 +108,7 @@ fun UserInfo(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = ThemeController.currentPalette.subtitle,
+                    text = ThemeController.currentPalette.title,
                     style = MaterialTheme.typography.labelSmall,
                     color = colors.textPrimary,
                     fontSize = 11.sp
@@ -142,7 +137,7 @@ fun UserInfo(
                     .size(68.dp)
                     .clip(CircleShape)
                     .background(colors.accentTint)
-                    .border(1.dp, colors.accent.copy(alpha = 0.3f), CircleShape),
+                    .border(1.dp, colors.accent.copy(alpha = 0.4f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -156,7 +151,7 @@ fun UserInfo(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Personalize Profile",
+                text = "Profile Info",
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontWeight = FontWeight.Light,
                     fontSize = 28.sp
@@ -165,18 +160,18 @@ fun UserInfo(
             )
 
             Text(
-                text = "Choose how you appear to others",
+                text = "Enter your display name and username",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.textMuted,
-                modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 28.dp)
             )
 
             // Full Name Input
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Display name", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("Your Name", color = colors.textMuted.copy(alpha = 0.6f)) },
+                label = { Text("Name", style = MaterialTheme.typography.bodyMedium) },
+                placeholder = { Text("Your name", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Badge,
@@ -206,12 +201,12 @@ fun UserInfo(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Username Input with @ prefix
+            // Username Input
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it.filter { char -> !char.isWhitespace() } },
+                onValueChange = { username = it },
                 label = { Text("Username", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("username", color = colors.textMuted.copy(alpha = 0.6f)) },
+                placeholder = { Text("Username", color = colors.textMuted.copy(alpha = 0.5f)) },
                 prefix = {
                     Text(
                         text = "@",
@@ -254,81 +249,29 @@ fun UserInfo(
             // Get Started Button
             Button(
                 onClick = { submitForm() },
-                enabled = canProceed,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.accent,
-                    contentColor = colors.surface,
-                    disabledContainerColor = colors.secondarySurface,
-                    disabledContentColor = colors.textMuted
+                    contentColor = colors.surface
                 )
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(22.dp),
-                        color = colors.surface,
+                        color = Color.White,
                         strokeWidth = 2.dp
                     )
                 } else {
                     Text(
                         text = "Get Started",
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (canProceed) colors.surface else colors.textMuted
+                        color = Color.White
                     )
                 }
             }
-        }
-    }
-}
-
-/**
- * Legacy compatibility wrapper for existing call signatures if any.
- */
-@Composable
-fun help(
-    name: String,
-    wantPrefix: Boolean = false,
-    input: String,
-    onWordsChange: (String) -> Unit,
-    onButtonClick: () -> Unit = {}
-) {
-    val colors = ChatTheme.colors
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 6.dp)
-            .height(60.dp),
-        color = colors.surface,
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            TextField(
-                value = input,
-                onValueChange = onWordsChange,
-                placeholder = { Text(text = name, color = colors.textMuted) },
-                prefix = if (wantPrefix) {
-                    { Text(text = "@ ", color = colors.accent) }
-                } else null,
-                colors = TextFieldDefaults.colors(
-                    unfocusedTextColor = colors.textPrimary,
-                    focusedTextColor = colors.textPrimary,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 }

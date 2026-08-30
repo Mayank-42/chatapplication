@@ -69,8 +69,24 @@ fun ShowSignIn(
     var email by rememberSaveable { mutableStateOf("") }
     var pass by rememberSaveable { mutableStateOf("") }
     var showErrorBox by rememberSaveable { mutableStateOf(false) }
-    var errorMessage by rememberSaveable { mutableStateOf("Invalid credentials. Please verify and try again.") }
+    var errorMessage by rememberSaveable { mutableStateOf("Invalid credentials. Please check your details and try again.") }
     var isLoading by remember { mutableStateOf(false) }
+
+    val executeLogin = {
+        if (!isLoading) {
+            isLoading = true
+            authVM.login(email.trim(), pass) { response, userId ->
+                isLoading = false
+                if (response.isSuccessful && userId != null) {
+                    onLoginSuccess(userId)
+                } else {
+                    errorMessage = response.errorBody()?.string()?.takeIf { it.isNotBlank() }
+                        ?: "Invalid credentials. Please check your details and try again."
+                    showErrorBox = true
+                }
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -78,7 +94,7 @@ fun ShowSignIn(
             .background(colors.background)
             .imePadding()
     ) {
-        // Quick Theme Toggle Pill in Top-Right
+        // Quick Theme Toggle Pill
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -86,8 +102,8 @@ fun ShowSignIn(
                 .padding(top = 12.dp, end = 20.dp)
                 .height(34.dp)
                 .clip(RoundedCornerShape(17.dp))
-                .background(colors.accentTint)
-                .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(17.dp))
+                .background(colors.secondarySurface)
+                .border(1.dp, colors.border, RoundedCornerShape(17.dp))
                 .clickable { ThemeController.nextTheme() }
                 .padding(horizontal = 10.dp),
             contentAlignment = Alignment.Center
@@ -101,7 +117,7 @@ fun ShowSignIn(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = ThemeController.currentPalette.subtitle,
+                    text = ThemeController.currentPalette.title,
                     style = MaterialTheme.typography.labelSmall,
                     color = colors.textPrimary,
                     fontSize = 11.sp
@@ -124,13 +140,13 @@ fun ShowSignIn(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Refined Brand Header Icon Halo
+            // Brand Icon Halo
             Box(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(CircleShape)
                     .background(colors.accentTint)
-                    .border(1.dp, colors.accent.copy(alpha = 0.3f), CircleShape),
+                    .border(1.dp, colors.accent.copy(alpha = 0.4f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -153,18 +169,18 @@ fun ShowSignIn(
             )
 
             Text(
-                text = "Quiet luxury messaging",
+                text = "Sign in to your account",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.textMuted,
-                modifier = Modifier.padding(top = 4.dp, bottom = 36.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 32.dp)
             )
 
             // Email Input
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email address", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("name@example.com", color = colors.textMuted.copy(alpha = 0.6f)) },
+                label = { Text("Email", style = MaterialTheme.typography.bodyMedium) },
+                placeholder = { Text("Enter email", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.MailOutline,
@@ -199,7 +215,7 @@ fun ShowSignIn(
                 value = pass,
                 onValueChange = { pass = it },
                 label = { Text("Password", style = MaterialTheme.typography.bodyMedium) },
-                placeholder = { Text("••••••••", color = colors.textMuted.copy(alpha = 0.6f)) },
+                placeholder = { Text("Enter password", color = colors.textMuted.copy(alpha = 0.5f)) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Lock,
@@ -215,21 +231,7 @@ fun ShowSignIn(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (email.isNotBlank() && pass.isNotBlank() && !isLoading) {
-                            isLoading = true
-                            authVM.login(email.trim(), pass) { response, userId ->
-                                isLoading = false
-                                if (response.isSuccessful && userId != null) {
-                                    onLoginSuccess(userId)
-                                } else {
-                                    errorMessage = response.errorBody()?.string()?.takeIf { it.isNotBlank() }
-                                        ?: "Invalid credentials. Please verify and try again."
-                                    showErrorBox = true
-                                }
-                            }
-                        }
-                    }
+                    onDone = { executeLogin() }
                 ),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -247,44 +249,29 @@ fun ShowSignIn(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // Primary Sign In Button
+            // Sign In Button - Always clickable just like original!
             Button(
-                onClick = {
-                    if (email.isNotBlank() && pass.isNotBlank() && !isLoading) {
-                        isLoading = true
-                        authVM.login(email.trim(), pass) { response, userId ->
-                            isLoading = false
-                            if (response.isSuccessful && userId != null) {
-                                onLoginSuccess(userId)
-                            } else {
-                                showErrorBox = true
-                            }
-                        }
-                    }
-                },
-                enabled = email.isNotBlank() && pass.isNotBlank() && !isLoading,
+                onClick = { executeLogin() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.accent,
-                    contentColor = colors.surface,
-                    disabledContainerColor = colors.secondarySurface,
-                    disabledContentColor = colors.textMuted
+                    contentColor = colors.surface
                 )
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(22.dp),
-                        color = colors.surface,
+                        color = Color.White,
                         strokeWidth = 2.dp
                     )
                 } else {
                     Text(
                         text = "Sign In",
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (email.isNotBlank() && pass.isNotBlank()) colors.surface else colors.textMuted
+                        color = Color.White
                     )
                 }
             }
@@ -312,13 +299,13 @@ fun ShowSignIn(
             }
         }
 
-        // Refined Error Alert Dialog
+        // Error Dialog
         if (showErrorBox) {
             AlertDialog(
                 onDismissRequest = { showErrorBox = false },
                 title = {
                     Text(
-                        text = "Authentication Error",
+                        text = "Sign In Error",
                         style = MaterialTheme.typography.titleMedium,
                         color = colors.textPrimary
                     )
@@ -333,7 +320,7 @@ fun ShowSignIn(
                 confirmButton = {
                     TextButton(onClick = { showErrorBox = false }) {
                         Text(
-                            text = "Dismiss",
+                            text = "OK",
                             style = MaterialTheme.typography.labelLarge,
                             color = colors.accent
                         )
@@ -342,62 +329,6 @@ fun ShowSignIn(
                 containerColor = colors.surface,
                 shape = RoundedCornerShape(20.dp)
             )
-        }
-    }
-}
-
-/**
- * Legacy compatibility wrapper for existing call signatures if any.
- */
-@Composable
-fun surface(
-    navControl: NavController,
-    size: Int = 60,
-    task: String = "Enter Text here",
-    wantTextField: Boolean = true,
-    viewMode: databaseVM,
-    words: String,
-    onWordsChange: (String) -> Unit,
-    onButtonClick: () -> Unit = {}
-) {
-    val colors = ChatTheme.colors
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .height(size.dp),
-        color = colors.surface,
-        shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, colors.border)
-    ) {
-        if (wantTextField) {
-            OutlinedTextField(
-                value = words,
-                onValueChange = onWordsChange,
-                placeholder = { Text(text = task, color = colors.textMuted) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedTextColor = colors.textPrimary,
-                    unfocusedTextColor = colors.textPrimary
-                )
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onButtonClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = task,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = colors.accent
-                )
-            }
         }
     }
 }
