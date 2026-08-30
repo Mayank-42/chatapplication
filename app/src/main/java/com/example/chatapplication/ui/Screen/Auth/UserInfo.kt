@@ -2,9 +2,11 @@ package com.example.chatapplication.ui.Screen.Auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AlternateEmail
 import androidx.compose.material.icons.rounded.Badge
+import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,6 +55,7 @@ import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.ui.theme.ChatTheme
+import com.example.chatapplication.ui.theme.ThemeController
 
 @Composable
 fun UserInfo(
@@ -82,13 +88,51 @@ fun UserInfo(
         modifier = Modifier
             .fillMaxSize()
             .background(colors.background)
-            .imePadding(),
-        contentAlignment = Alignment.Center
+            .imePadding()
     ) {
+        // Quick Theme Toggle Pill in Top-Right
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+                .padding(top = 12.dp, end = 20.dp)
+                .height(34.dp)
+                .clip(RoundedCornerShape(17.dp))
+                .background(colors.accentTint)
+                .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(17.dp))
+                .clickable { ThemeController.nextTheme() }
+                .padding(horizontal = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(colors.accent)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = ThemeController.currentPalette.subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.textPrimary,
+                    fontSize = 11.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Rounded.ColorLens,
+                    contentDescription = "Switch Theme",
+                    tint = colors.accent,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 28.dp),
+                .padding(horizontal = 28.dp)
+                .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

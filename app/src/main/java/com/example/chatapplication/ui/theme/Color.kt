@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.Color
  * All palettes adhere strictly to:
  * ~85% Neutral (Pearl, Soft Stone, Surface)
  * ~10% Typography (Graphite, Muted Slate)
- * ~5% Accent (Soft Lavender, Nordic Sage, Cashmere, Slate, Rose)
+ * ~5% Accent (Soft Lavender, Nordic Sage, Cashmere, Slate, Rose, Olive, Terracotta, Obsidian)
  *
- * NO Orange. NO Pure Black. NO Neon colors.
+ * NO Loud Orange. NO Neon Colors. NO Clutter.
  */
 
-// --- Default Flagship: Quiet Lavender ---
+// --- Base Tokens ---
 val PearlBackground = Color(0xFFF7F7F5)
 val WhiteSurface = Color(0xFFFFFFFF)
 val SoftStone = Color(0xFFEEEDEA)
@@ -37,7 +37,18 @@ val BubbleOutgoingText = Color(0xFF29282D)
 val SoftDanger = Color(0xFFD46868)
 val SoftDangerTint = Color(0xFFFBEAEA)
 
-// --- Backward compatibility aliases ---
+// --- Harmonic Group Sender Colors (Derived for Group Chats) ---
+val GroupSenderColors = listOf(
+    Color(0xFF7B72A9),
+    Color(0xFF5B8574),
+    Color(0xFF8C7365),
+    Color(0xFF537385),
+    Color(0xFF916574),
+    Color(0xFF6B7E63),
+    Color(0xFF8E6A62)
+)
+
+// Backward compatibility aliases
 val Purple80 = SoftLavender
 val PurpleGrey80 = LavenderTint
 val Pink80 = SoftSage

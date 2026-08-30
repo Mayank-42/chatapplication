@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.ChatBubbleOutline
+import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Person
@@ -61,6 +62,7 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.ui.components.AvatarView
 import com.example.chatapplication.ui.components.EmptyStateView
 import com.example.chatapplication.ui.theme.ChatTheme
+import com.example.chatapplication.ui.theme.ThemeController
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,7 +164,7 @@ fun HomeScreen(
                 .padding(paddingValues)
                 .statusBarsPadding()
         ) {
-            // Top Section: Large Heading + Profile Avatar & Actions
+            // Top Section: Large Heading + Theme Switcher & Actions
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,18 +182,48 @@ fun HomeScreen(
                         color = colors.textPrimary
                     )
                     Text(
-                        text = "${userinfoo.userInfo.size} active contacts",
+                        text = "${userinfoo.userInfo.size} active contacts • ${ThemeController.currentPalette.title}",
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.textMuted
                     )
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Quick Theme Cycling Pill
+                    Box(
+                        modifier = Modifier
+                            .height(36.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(colors.accentTint)
+                            .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(18.dp))
+                            .clickable { ThemeController.nextTheme() }
+                            .padding(horizontal = 10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(colors.accent)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Icon(
+                                imageVector = Icons.Rounded.ColorLens,
+                                contentDescription = "Cycle Theme",
+                                tint = colors.accent,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     // New Chat Action
                     IconButton(
                         onClick = { navControl.navigate("GropChatSearch") },
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
                             .background(colors.secondarySurface.copy(alpha = 0.7f))
                     ) {
@@ -203,7 +235,7 @@ fun HomeScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     // Current User Profile Avatar
                     Box(
@@ -217,7 +249,7 @@ fun HomeScreen(
                         AvatarView(
                             imageUrl = currentUser?.photo_url,
                             name = currentUser?.name ?: "You",
-                            size = 40.dp,
+                            size = 38.dp,
                             showOnlineIndicator = true,
                             isOnline = true
                         )

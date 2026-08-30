@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +36,7 @@ import com.example.chatapplication.ui.theme.ChatTheme
  * - Outgoing: Subtle Accent Tint background with Graphite text
  * - Tailored organic corner radii (18dp with 4dp tail)
  * - Clean timestamps & status checkmarks
- * - Sender attribution for group chats
+ * - Sender attribution with harmonic colors for group chats
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -45,6 +46,7 @@ fun ChatBubble(
     timestamp: String,
     isOutgoing: Boolean,
     senderName: String? = null,
+    senderColor: Color? = null,
     onLongClick: () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
@@ -83,8 +85,8 @@ fun ChatBubble(
             if (!isOutgoing && !senderName.isNullOrBlank()) {
                 Text(
                     text = senderName,
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
-                    color = colors.accentDark,
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                    color = senderColor ?: colors.accentDark,
                     modifier = Modifier.padding(start = 8.dp, bottom = 3.dp)
                 )
             }

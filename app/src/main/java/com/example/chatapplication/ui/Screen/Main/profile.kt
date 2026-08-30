@@ -29,10 +29,12 @@ import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.ColorLens
+import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material.icons.rounded.NotificationsNone
+import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PersonOutline
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.AlertDialog
@@ -67,6 +69,7 @@ import com.example.chatapplication.ui.components.DraggableBackButton
 import com.example.chatapplication.ui.theme.ChatTheme
 import com.example.chatapplication.ui.theme.LuxuryPalette
 import com.example.chatapplication.ui.theme.ThemeController
+import com.example.chatapplication.ui.theme.getColorsForPalette
 import kotlinx.coroutines.launch
 
 @Composable
@@ -184,34 +187,47 @@ fun profileScreen(
                 modifier = Modifier.padding(top = 2.dp, bottom = 24.dp)
             )
 
-            // --- Multi-Theme Selection Section ---
-            ProfileSectionCard(title = "APPEARANCE & COLOR THEMES") {
+            // --- Multi-Theme Selection Studio ---
+            ProfileSectionCard(title = "COLOR THEMES & AESTHETICS") {
                 Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = "Quiet Luxury Palettes",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = colors.textPrimary
-                    )
-                    Text(
-                        text = "Choose a curated aesthetic to style every screen across the app.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colors.textMuted,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 12.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Quiet Luxury Studio",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = colors.textPrimary
+                            )
+                            Text(
+                                text = "8 curated color palettes styled across every screen",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colors.textMuted
+                            )
+                        }
 
+                        Icon(
+                            imageVector = Icons.Rounded.Palette,
+                            contentDescription = null,
+                            tint = colors.accent,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Live Interactive Theme Cards
                     LuxuryPalette.entries.forEach { palette ->
                         val isSelected = ThemeController.currentPalette == palette
-                        ThemePaletteRow(
+                        ThemePaletteCard(
                             palette = palette,
                             isSelected = isSelected,
                             onSelect = { ThemeController.currentPalette = palette }
                         )
                         if (palette != LuxuryPalette.entries.last()) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                thickness = 0.5.dp,
-                                color = colors.subtleDivider
-                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }
@@ -360,72 +376,104 @@ fun profileScreen(
 }
 
 /**
- * Interactive Theme Palette Row with Swatches
+ * Interactive Theme Palette Card with Swatches and Mini Bubble Preview
  */
 @Composable
-private fun ThemePaletteRow(
+private fun ThemePaletteCard(
     palette: LuxuryPalette,
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    val colors = ChatTheme.colors
+    val currentColors = ChatTheme.colors
+    val pColors = getColorsForPalette(palette)
 
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onSelect)
-            .background(if (isSelected) colors.accentTint.copy(alpha = 0.4f) else Color.Transparent)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .clip(RoundedCornerShape(14.dp))
+            .border(
+                width = if (isSelected) 1.5.dp else 1.dp,
+                color = if (isSelected) currentColors.accent else currentColors.border.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(14.dp)
+            )
+            .clickable(onClick = onSelect),
+        color = if (isSelected) currentColors.accentTint.copy(alpha = 0.35f) else currentColors.surface,
+        shape = RoundedCornerShape(14.dp)
     ) {
-        // Dual-swatch circle
-        Box(
+        Row(
             modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(palette.secondaryPreview)
-                .border(1.dp, colors.border, CircleShape),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Theme Swatch Pair
             Box(
                 modifier = Modifier
-                    .size(18.dp)
+                    .size(38.dp)
                     .clip(CircleShape)
-                    .background(palette.previewColor)
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = palette.title,
-                style = MaterialTheme.typography.titleSmall,
-                color = colors.textPrimary
-            )
-            Text(
-                text = palette.description,
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.textMuted,
-                maxLines = 1
-            )
-        }
-
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(colors.accent),
+                    .background(palette.secondaryPreview)
+                    .border(1.dp, currentColors.border, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Check,
-                    contentDescription = "Active Theme",
-                    tint = colors.surface,
-                    modifier = Modifier.size(16.dp)
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clip(CircleShape)
+                        .background(palette.previewColor)
                 )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = palette.title,
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                        color = currentColors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(palette.secondaryPreview)
+                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                    ) {
+                        Text(
+                            text = palette.subtitle,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = currentColors.textPrimary,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = palette.description,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = currentColors.textMuted,
+                    maxLines = 1
+                )
+            }
+
+            // Selection Checkmark
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(currentColors.accent),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = "Active Theme",
+                        tint = currentColors.surface,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }

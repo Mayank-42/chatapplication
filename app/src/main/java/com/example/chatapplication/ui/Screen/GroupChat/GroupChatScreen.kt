@@ -55,6 +55,8 @@ import com.example.chatapplication.ui.components.DraggableBackButton
 import com.example.chatapplication.ui.components.EmptyStateView
 import com.example.chatapplication.ui.components.LuxuryComposer
 import com.example.chatapplication.ui.theme.ChatTheme
+import com.example.chatapplication.ui.theme.GroupSenderColors
+import kotlin.math.abs
 
 @Composable
 fun GroupChatScreen(
@@ -218,12 +220,15 @@ fun GroupChatScreen(
                 ) {
                     items(messagesList.reversed(), key = { it.id }) { ele ->
                         val isOutgoing = ele.sender_Id == currentUserId
+                        val senderIdx = abs(ele.sender_Id.hashCode()) % GroupSenderColors.size
+                        val senderColor = GroupSenderColors[senderIdx]
 
                         ChatBubble(
                             message = ele.message,
                             timestamp = ele.date,
                             isOutgoing = isOutgoing,
                             senderName = if (!isOutgoing) ele.sender_Id.take(8) else null,
+                            senderColor = senderColor,
                             onLongClick = {
                                 selectedMessageForDelete = ele
                             }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material.icons.rounded.PersonAdd
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.ui.theme.ChatTheme
+import com.example.chatapplication.ui.theme.ThemeController
 
 @Composable
 fun ShowShinUp(navControler: NavController, authVM: loginVM) {
@@ -67,13 +70,51 @@ fun ShowShinUp(navControler: NavController, authVM: loginVM) {
         modifier = Modifier
             .fillMaxSize()
             .background(colors.background)
-            .imePadding(),
-        contentAlignment = Alignment.Center
+            .imePadding()
     ) {
+        // Quick Theme Toggle Pill in Top-Right
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+                .padding(top = 12.dp, end = 20.dp)
+                .height(34.dp)
+                .clip(RoundedCornerShape(17.dp))
+                .background(colors.accentTint)
+                .border(1.dp, colors.accent.copy(alpha = 0.3f), RoundedCornerShape(17.dp))
+                .clickable { ThemeController.nextTheme() }
+                .padding(horizontal = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(colors.accent)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = ThemeController.currentPalette.subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.textPrimary,
+                    fontSize = 11.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Rounded.ColorLens,
+                    contentDescription = "Switch Theme",
+                    tint = colors.accent,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 28.dp)
+                .align(Alignment.Center)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
