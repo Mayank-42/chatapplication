@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.fontStyle
 import android.R.attr.password
 import android.R.attr.text
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -138,6 +140,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                 )
                 TextButton(onClick = {navControler.navigate("register")})
                 {Text(text="Register",
+                    color= MaterialTheme.colorScheme.tertiary,
                     fontStyle = FontStyle.Italic,
 
                 ) }
