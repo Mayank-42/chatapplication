@@ -92,6 +92,9 @@
         LaunchedEffect(Unit) {
             userinfoo.getinfo()
         }
+        LaunchedEffect(Unit) {
+            conversationInfo.startConversationRealtime()
+        }
 
         var id by rememberSaveable {mutableStateOf("") }
         LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
