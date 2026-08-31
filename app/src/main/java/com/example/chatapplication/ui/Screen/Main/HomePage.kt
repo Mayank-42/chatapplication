@@ -1,318 +1,982 @@
-    package com.example.chatapplication.ui.Screen.Main
+package com.example.chatapplication.ui.Screen.Main
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.Viewmodel.convoVM
+import com.example.chatapplication.Data.local.TokenManager
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 
-    import android.os.Build
-    import androidx.annotation.RequiresApi
-    import java.time.LocalTime
-    import androidx.compose.foundation.Image
-    import androidx.compose.foundation.background
-    import androidx.compose.foundation.border
-    import androidx.compose.foundation.clickable
-    import androidx.compose.foundation.layout.Arrangement
-    import androidx.compose.foundation.layout.Box
-    import androidx.compose.foundation.layout.Column
-    import androidx.compose.foundation.layout.Row
-    import androidx.compose.foundation.layout.Spacer
-    import androidx.compose.foundation.layout.fillMaxSize
-    import androidx.compose.foundation.layout.fillMaxWidth
-    import androidx.compose.foundation.layout.height
-    import androidx.compose.foundation.layout.padding
-    import androidx.compose.foundation.layout.size
-    import androidx.compose.foundation.layout.width
-    import androidx.compose.foundation.lazy.LazyColumn
-    import androidx.compose.foundation.lazy.items
-    import androidx.compose.foundation.shape.CircleShape
-    import androidx.compose.foundation.shape.RoundedCornerShape
-    import androidx.compose.material.icons.Icons
-    import androidx.compose.material.icons.filled.AccountBox
-    import androidx.compose.material.icons.filled.Groups
-    import androidx.compose.material.icons.filled.Logout
-    import androidx.compose.material.icons.filled.Search
-    import androidx.compose.material3.BottomAppBar
-    import androidx.compose.material3.ExperimentalMaterial3Api
-    import androidx.compose.material3.Icon
-    import androidx.compose.material3.MaterialTheme
-    import androidx.compose.material3.MediumTopAppBar
-    import androidx.compose.material3.NavigationBar
-    import androidx.compose.material3.Scaffold
-    import androidx.compose.material3.Surface
-    import androidx.compose.material3.Text
-    import androidx.compose.material3.TextField
-    import androidx.compose.material3.TextFieldDefaults
-    import androidx.compose.material3.TopAppBar
-    import androidx.compose.material3.TopAppBarDefaults
-    import androidx.compose.runtime.Composable
-    import androidx.compose.runtime.LaunchedEffect
-    import androidx.compose.runtime.collectAsState
-    import androidx.compose.runtime.getValue
-    import androidx.compose.runtime.mutableStateOf
-    import androidx.compose.runtime.produceState
-    import androidx.compose.runtime.rememberCoroutineScope
-    import androidx.compose.runtime.saveable.rememberSaveable
-    import androidx.compose.runtime.setValue
-    import androidx.compose.ui.Alignment
-    import androidx.compose.ui.Modifier
-    import androidx.compose.ui.draw.clip
-    import androidx.compose.ui.draw.scale
-    import androidx.compose.ui.graphics.Color
-    import androidx.compose.ui.input.nestedscroll.nestedScroll
-    import androidx.compose.ui.layout.ContentScale
-    import androidx.compose.ui.res.painterResource
-    import androidx.compose.ui.text.font.FontStyle
-    import androidx.compose.ui.text.font.FontWeight
-    import androidx.compose.ui.tooling.preview.Preview
-    import androidx.compose.ui.unit.dp
-    import androidx.compose.ui.unit.sp
-    import androidx.navigation.NavController
-    import coil3.compose.AsyncImage
-    import com.example.chatapplication.Data.local.TokenManager
-    import com.example.chatapplication.Data.Viewmodel.UserInfo
-    import com.example.chatapplication.Data.Viewmodel.convoVM
-    import com.example.chatapplication.Data.local.tables.userInfo
-    import com.example.chatapplication.R
-    import kotlinx.coroutines.launch
-    import kotlinx.datetime.format.DateTimeFormat
-    import java.text.SimpleDateFormat
-    import java.time.format.DateTimeFormatter
-    import java.util.Locale
+// ============================================================
+// APP COLORS
+// ============================================================
+
+private val HomeBlack = Color(0xFF000000)
+private val HomeWhite = Color(0xFFFFFFFF)
+private val HomeBlue = Color(0xFF3B82F6)
+
+private val HomeTile = Color(0xFF111111)
+private val HomeMuted = Color(0xFF9CA3AF)
+private val HomeBorder = Color(0xFF242424)
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun HomeScreen(navControl: NavController,
-                   tokenManager: TokenManager,
-                   userinfoo: UserInfo,
-                   onLoginSuccess: () -> Unit,
-                   conversationInfo: convoVM
-    ){
+// ============================================================
+// HOME SCREEN
+// ============================================================
 
-        val scope=rememberCoroutineScope()
-    //    var userName by rememberSaveable { mutableStateOf("") }
-        LaunchedEffect(Unit) {
-            userinfoo.getinfo()
-        }
-        LaunchedEffect(Unit) {
-            conversationInfo.startConversationRealtime()
-        }
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    navControl: NavController,
+    tokenManager: TokenManager,
+    userinfoo: UserInfo,
+    onLoginSuccess: () -> Unit,
+    conversationInfo: convoVM
+) {
 
-        var id by rememberSaveable {mutableStateOf("") }
-        LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
+    val scope = rememberCoroutineScope()
 
-        val currentTime = LocalTime.now()
 
-        val greetingMessage = when {
-            currentTime < LocalTime.NOON -> "Good Morning"
-            currentTime < LocalTime.of(18, 0) -> "Good Afternoon"
-            else -> "Good Evening"
-        }
+    // ========================================================
+    // EXISTING LOGIC
+    // ========================================================
 
-        val userName =userinfoo.userInfo
-        val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
+    LaunchedEffect(Unit) {
+        userinfoo.getinfo()
+    }
 
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    LaunchedEffect(Unit) {
+        conversationInfo.startConversationRealtime()
+    }
 
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                MediumTopAppBar(
 
-                        title = { Text(text = """HI 
-                            |${greetingMessage} ${"mayank"} """.trimMargin()) },
+    var id by rememberSaveable {
+        mutableStateOf("")
+    }
 
-                    modifier= Modifier.clip(shape=RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp)),
-                            scrollBehavior = scrollBehavior
+    LaunchedEffect(Unit) {
+        id = tokenManager.getUserId() ?: ""
+    }
+
+
+    // ========================================================
+    // GREETING
+    // ========================================================
+
+    val currentTime = LocalTime.now()
+
+    val greetingMessage = when {
+
+        currentTime < LocalTime.NOON ->
+            "Good Morning"
+
+        currentTime < LocalTime.of(18, 0) ->
+            "Good Afternoon"
+
+        else ->
+            "Good Evening"
+    }
+
+
+    // ========================================================
+    // CONVERSATIONS
+    // ========================================================
+
+    val conversations by conversationInfo
+        .privateConversations
+        .collectAsState(initial = emptyList())
+
+
+    // ========================================================
+    // COLLAPSING TOP BAR
+    // ========================================================
+
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+
+    // ========================================================
+    // SCAFFOLD
+    // ========================================================
+
+    Scaffold(
+
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(
+                scrollBehavior.nestedScrollConnection
+            ),
+
+        containerColor = HomeBlack,
+
+
+        // ====================================================
+        // TOP APP BAR
+        // ====================================================
+
+        topBar = {
+
+            MediumTopAppBar(
+
+                title = {
+
+                    Column {
+
+                        // BIG HI
+                        Text(
+                            text = "HI",
+
+                            color = HomeBlue,
+
+                            fontSize = 24.sp,
+
+                            fontWeight = FontWeight.ExtraBold
+                        )
+
+                        // GREETING
+                        Text(
+                            text = greetingMessage,
+
+                            color = HomeWhite,
+
+                            fontSize = 28.sp,
+
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                },
+
+
+                colors =
+                    TopAppBarDefaults.mediumTopAppBarColors(
+
+                        containerColor = HomeBlack,
+
+                        scrolledContainerColor = HomeBlack,
+
+                        titleContentColor = HomeWhite
+                    ),
+
+
+                scrollBehavior = scrollBehavior
+            )
+        },
+
+
+        // ====================================================
+        // BOTTOM NAVIGATION
+        // ====================================================
+
+        bottomBar = {
+
+            HomeBottomNavigation(
+
+                onGroupsClick = {
+
+                    navControl.navigate(
+                        "GroupPage"
                     )
+                },
 
-                }, bottomBar = {
-                NavigationBar(
-                    modifier = Modifier/*.padding(bottom= 20.dp,start=10.dp,end=10.dp)*/.clip(
-                        RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
-                    )
-                ) {
-                    Row(modifier=Modifier.fillMaxWidth()
-                        .padding(start=5.dp, end = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-    //                    horizontalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(modifier=Modifier.width(40.dp))
-                    Icon(
-                        imageVector = Icons.Default.Groups,
-                        contentDescription = null,
-                        modifier = Modifier
-    //                        .padding(end=170.dp)
-                            .size(40.dp)
-                            .clickable {
-                                navControl.navigate("GroupPage")
-    //                            tokenManager.clearTokens()
-    //                            onLoginSuccess()
+                onLogoutClick = {
 
-                        }
-                    )
-                    Spacer(modifier=Modifier.width(100.dp))
-                            Icon(
-                                imageVector = Icons.Default.Logout,
-                                contentDescription = null,
-                                modifier = Modifier.size(40.dp).clickable {
-                                    scope.launch {
-                                        tokenManager.clearTokens()
-    //                                    navControl.navigate("SignIn")
-                                        onLoginSuccess()
-                                    }
-                                }
+                    scope.launch {
+
+                        tokenManager.clearTokens()
+
+                        onLoginSuccess()
+                    }
+                },
+
+                onProfileClick = {
+
+                    scope.launch {
+
+                        if (id.isNotBlank()) {
+
+                            navControl.navigate(
+                                "profileScreen/$id"
                             )
+                        }
+                    }
+                }
+            )
+        }
 
-                        Spacer(modifier=Modifier.width(100.dp))
-                        Icon(
-                            imageVector = Icons.Default.AccountBox,
-                            contentDescription = null,
-                            modifier = Modifier.size(40.dp).clickable {
-                                scope.launch {
-                                    if (id.length != 0) {
-                                        navControl.navigate("profileScreen/$id")
+    ) { paddingValues ->
+
+
+        // ====================================================
+        // MAIN CONTENT
+        // ====================================================
+
+        Box(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .background(HomeBlack)
+                .padding(paddingValues)
+        ) {
+
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+
+                // ==================================================
+                // SEARCH BAR
+                // ==================================================
+
+                HomeSearchBar(
+
+                    onClick = {
+
+                        navControl.navigate(
+                            "SearchBarPage"
+                        )
+                    }
+                )
+
+
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+
+
+                // ==================================================
+                // CONVERSATION LIST
+                // ==================================================
+
+                LazyColumn(
+
+                    modifier = Modifier.fillMaxSize(),
+
+                    contentPadding = PaddingValues(
+
+                        start = 12.dp,
+
+                        end = 12.dp,
+
+                        bottom = 24.dp
+                    ),
+
+                    verticalArrangement =
+                        Arrangement.spacedBy(11.dp)
+                ) {
+
+                    items(
+
+                        items = conversations,
+
+                        key = {
+                            it.conversationId
+                        }
+
+                    ) { ele ->
+
+
+                        // ==================================================
+                        // UNREAD COUNT
+                        // ==================================================
+
+                        val unreadCount by produceState(
+
+                            initialValue =
+                                ele.unread_count,
+
+                            key1 =
+                                ele.conversationId,
+
+                            key2 =
+                                id
+
+                        ) {
+
+                            if (id.isNotBlank()) {
+
+                                conversationInfo
+                                    .getUnreadCount(
+
+                                        conversationId =
+                                            ele.conversationId,
+
+                                        myUserId =
+                                            id
+
+                                    )
+                                    .collect {
+
+                                        value = it
                                     }
-                                }
+                            }
+                        }
+
+
+                        // ==================================================
+                        // TIME DEBUG
+                        // ==================================================
+
+                        println(
+                            "HOME TIME DEBUG: " +
+                                    "conversation=${ele.conversationId}, " +
+                                    "lastTime=${ele.lastTime}"
+                        )
+
+
+                        // ==================================================
+                        // CONVERSATION TILE
+                        // ==================================================
+
+                        ConversationTile(
+
+                            name =
+                                ele.name ?: "",
+
+                            image =
+                                ele.Image,
+
+                            lastMessage =
+                                ele.lastMessage ?: "",
+
+                            time =
+                                formatConversationTime(
+                                    ele.lastTime
+                                ),
+
+                            unreadCount =
+                                unreadCount,
+
+                            onClick = {
+
+                                navControl.navigate(
+                                    "chatScreen/${ele.conversationId}"
+                                )
                             }
                         )
-    //
-               }
-
+                    }
+                }
             }
-
-                }){paddingValues ->
-           Box(modifier=Modifier.fillMaxSize().background(Color.Black).padding(paddingValues)) {
-               Column() {
-               Surface(
-                   color=Color.White,
-                   modifier = Modifier.fillMaxWidth()
-                   .padding(start=10.dp,end=10.dp,top=4.dp)
-                   .clip(shape=RoundedCornerShape(30.dp))
-                   .background(Color.White)
-                       .height(52.dp)
-                   .clickable{ navControl.navigate("SearchBarPage")}
-               ) {
-                           Row(modifier = Modifier.fillMaxSize().padding(start=10.dp), verticalAlignment = Alignment.CenterVertically){
-                               Icon(
-                                   imageVector = Icons.Default.Search,
-                                   contentDescription = null,
-                                   tint =Color.Black
-                               )
-                               Spacer(modifier = Modifier.width(15.dp))
-                               Text(text="Search user by UserName ('')")
-                           }
-                       }
-
-
-
-                   LazyColumn() {
-    //                   items(userinfoo.userInfo) { ele ->
-                           items(conversations) { ele ->
-                               println(
-                                   "HOME UI: conversation=${ele.conversationId}, " +
-                                           "SERVER UNREAD=${ele.unread_count}"
-                               )
-                               val unreadCount by produceState(initialValue = ele.unread_count, key1 = ele.conversationId, key2 = id
-                               ) {
-                                   if (id.isNotBlank()) {
-                                       conversationInfo.getUnreadCount(conversationId = ele.conversationId, myUserId = id)
-                                           .collect {
-                                               println(
-                                                   "LOCAL UNREAD: conversation=${ele.conversationId}, count=$it"
-                                               )
-                                               value = it
-                                           }
-                                   }
-                               }
-                           Surface(
-                               modifier = Modifier.fillMaxWidth().padding(start = 10.dp, 10.dp).height(80.dp)
-                                   .clickable {navControl.navigate("chatScreen/${ele.conversationId}")},
-                               color = Color.White,
-                               shape = RoundedCornerShape(35)
-
-                           ) {
-                               Row(
-                                   modifier = Modifier.fillMaxSize(),
-                                   verticalAlignment = Alignment.CenterVertically
-                               ) {
-                                   AsyncImage(
-                                       model = ele.Image,
-                                       contentDescription = "profile image",
-                                       contentScale = ContentScale.Crop,
-                                       modifier = Modifier.size(50.dp).clip(CircleShape)
-                                           .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                   )
-                                   println("HOME IMAGE = ${ele.Image}")
-                                   Box(contentAlignment = Alignment.CenterStart) {
-                                       Column() {
-                                           Text(
-                                               text =ele.name?:"",
-                                               fontSize = 25.sp,
-                                               fontWeight = FontWeight.SemiBold
-                                           )
-                                           Text(
-                                               text = ele.lastMessage?:"",
-                                               fontSize = 16.sp,
-                                               maxLines = 1
-                                           )
-                                       }
-                                   }
-                               }
-                               Box(
-                                   modifier = Modifier.fillMaxSize().padding(end = 40.dp),
-                                   contentAlignment = Alignment.TopEnd
-                               ) {
-
-                                   Text( text =
-                                       formatConversationTime(ele.lastTime), fontStyle = FontStyle.Italic)
-                               }
-                               if(unreadCount!=0)
-                               Box(
-                                   modifier = Modifier.fillMaxSize().padding(end = 40.dp),
-                                   contentAlignment = Alignment.CenterEnd
-                               ) {
-                                   Text(text=unreadCount.toString(),
-                                       fontStyle = FontStyle.Italic,
-                                       fontWeight = FontWeight.SemiBold,
-                                       modifier=Modifier
-    //                    .size(20.dp)
-                                           .clip(CircleShape)
-                                           .border(1.dp,Color.Green,CircleShape)
-                                           .background(Color.Red)
-                                           .padding(5.dp)
-                                   )
-                               }
-                           }
-                       }
-                   }
-
-
-           }
-            }
-
         }
     }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun formatConversationTime(timestamp: String?): String {
+}
 
-        if (timestamp.isNullOrBlank()) return ""
 
-        return try {
-            val dateTime = java.time.LocalDateTime.parse(timestamp)
+// ================================================================
+// SEARCH
+// ================================================================
 
-            val formatter = java.time.format.DateTimeFormatter
-                .ofPattern("hh:mm a")
+@Composable
+private fun HomeSearchBar(
+    onClick: () -> Unit
+) {
 
-            dateTime.format(formatter)
+    Surface(
 
-        } catch (e: Exception) {
-            println("TIME FORMAT ERROR = ${e.message}")
-            ""
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 10.dp
+            )
+            .height(56.dp)
+            .clickable {
+                onClick()
+            },
+
+        color = HomeTile,
+
+        shape = RoundedCornerShape(18.dp),
+
+        border =
+            androidx.compose.foundation.BorderStroke(
+                width = 1.dp,
+                color = HomeBorder
+            )
+    ) {
+
+        Row(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 16.dp
+                ),
+
+            verticalAlignment =
+                Alignment.CenterVertically
+        ) {
+
+            Icon(
+
+                imageVector =
+                    Icons.Default.Search,
+
+                contentDescription =
+                    "Search",
+
+                tint = HomeBlue,
+
+                modifier = Modifier.size(23.dp)
+            )
+
+
+            Spacer(
+                modifier = Modifier.width(12.dp)
+            )
+
+
+            Text(
+
+                text =
+                    "Search user by username",
+
+                color =
+                    HomeMuted,
+
+                fontSize = 15.sp
+            )
         }
+    }
+}
+
+
+// ================================================================
+// CONVERSATION TILE
+// ================================================================
+
+@Composable
+private fun ConversationTile(
+
+    name: String,
+
+    image: String?,
+
+    lastMessage: String,
+
+    time: String,
+
+    unreadCount: Int,
+
+    onClick: () -> Unit
+
+) {
+
+    Surface(
+
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(92.dp)
+            .clickable {
+                onClick()
+            },
+
+        color = HomeTile,
+
+        shape = RoundedCornerShape(22.dp),
+
+        border =
+            androidx.compose.foundation.BorderStroke(
+                width = 1.dp,
+                color = HomeBorder
+            )
+    ) {
+
+        Row(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 14.dp,
+                    vertical = 10.dp
+                ),
+
+            verticalAlignment =
+                Alignment.CenterVertically
+        ) {
+
+
+            // ==================================================
+            // PROFILE IMAGE
+            // ==================================================
+
+            Box(
+                modifier = Modifier.size(56.dp)
+            ) {
+
+                AsyncImage(
+
+                    model = image,
+
+                    contentDescription =
+                        "profile image",
+
+                    contentScale =
+                        ContentScale.Crop,
+
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .border(
+                            width = 1.5.dp,
+
+                            // BLUE BORDER
+                            // subtle enough to blend
+                            // but still visible
+                            color = HomeBlue,
+
+                            shape = CircleShape
+                        )
+                )
+            }
+
+
+            Spacer(
+                modifier = Modifier.width(14.dp)
+            )
+
+
+            // ==================================================
+            // MESSAGE AREA
+            // ==================================================
+
+            Column(
+
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(
+                        top = 2.dp
+                    )
+            ) {
+
+
+                // ------------------------------------------------
+                // USER NAME
+                // SMALL
+                // ------------------------------------------------
+
+                Text(
+
+                    text =
+                        if (name.isBlank())
+                            "Unknown"
+                        else
+                            name,
+
+                    color =
+                        HomeMuted,
+
+                    fontSize = 12.sp,
+
+                    fontWeight =
+                        FontWeight.Medium,
+
+                    maxLines = 1,
+
+                    modifier =
+                        Modifier.padding(
+                            start = 2.dp
+                        )
+                )
+
+
+                Spacer(
+                    modifier = Modifier.height(5.dp)
+                )
+
+
+                // ------------------------------------------------
+                // LAST MESSAGE
+                // BIG
+                // LADDER / INDENT
+                // ------------------------------------------------
+
+                Text(
+
+                    text =
+                        if (lastMessage.isBlank())
+                            "No messages yet"
+                        else
+                            lastMessage,
+
+                    color =
+                        HomeWhite,
+
+                    fontSize = 16.sp,
+
+                    fontWeight =
+                        FontWeight.Medium,
+
+                    maxLines = 1,
+
+                    modifier =
+                        Modifier.padding(
+                            start = 10.dp,
+                            end = 4.dp
+                        )
+                )
+            }
+
+
+            Spacer(
+                modifier = Modifier.width(8.dp)
+            )
+
+
+            // ==================================================
+            // TIME + UNREAD
+            // ==================================================
+
+            Column(
+
+                horizontalAlignment =
+                    Alignment.End,
+
+                verticalArrangement =
+                    Arrangement.Center
+            ) {
+
+
+                // ------------------------------------------------
+                // TIME
+                // ------------------------------------------------
+
+                Text(
+
+                    text = time,
+
+                    color =
+                        if (unreadCount > 0)
+                            HomeBlue
+                        else
+                            HomeMuted,
+
+                    fontSize = 11.sp,
+
+                    fontWeight =
+                        if (unreadCount > 0)
+                            FontWeight.SemiBold
+                        else
+                            FontWeight.Normal
+                )
+
+
+                // ------------------------------------------------
+                // UNREAD BADGE
+                // ------------------------------------------------
+
+                if (unreadCount > 0) {
+
+                    Spacer(
+                        modifier = Modifier.height(6.dp)
+                    )
+
+
+                    Box(
+
+                        modifier = Modifier
+                            .size(29.dp)
+                            .clip(CircleShape)
+                            .background(HomeBlue),
+
+                        contentAlignment =
+                            Alignment.Center
+                    ) {
+
+                        Text(
+
+                            text =
+                                if (unreadCount > 99)
+                                    "99+"
+                                else
+                                    unreadCount.toString(),
+
+                            color =
+                                HomeWhite,
+
+                            fontSize = 10.sp,
+
+                            fontWeight =
+                                FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// ================================================================
+// BOTTOM NAVIGATION
+// ================================================================
+
+@Composable
+private fun HomeBottomNavigation(
+
+    onGroupsClick: () -> Unit,
+
+    onLogoutClick: () -> Unit,
+
+    onProfileClick: () -> Unit
+
+) {
+
+    Surface(
+
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+                bottom = 12.dp
+            )
+            .height(68.dp)
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(30.dp)
+            ),
+
+        color = HomeWhite,
+
+        shape = RoundedCornerShape(30.dp)
+    ) {
+
+        Row(
+
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 18.dp
+                ),
+
+            verticalAlignment =
+                Alignment.CenterVertically,
+
+            horizontalArrangement =
+                Arrangement.SpaceEvenly
+        ) {
+
+
+            // ==================================================
+            // GROUPS
+            // ==================================================
+
+            HomeNavigationButton(
+
+                icon = {
+
+                    Icon(
+
+                        imageVector =
+                            Icons.Default.Groups,
+
+                        contentDescription =
+                            "Groups",
+
+                        tint =
+                            HomeBlack,
+
+                        modifier =
+                            Modifier.size(27.dp)
+                    )
+                },
+
+                onClick =
+                    onGroupsClick
+            )
+
+
+            // ==================================================
+            // LOGOUT
+            // ==================================================
+
+            HomeNavigationButton(
+
+                icon = {
+
+                    Icon(
+
+                        imageVector =
+                            Icons.Default.Logout,
+
+                        contentDescription =
+                            "Logout",
+
+                        tint =
+                            HomeBlack,
+
+                        modifier =
+                            Modifier.size(26.dp)
+                    )
+                },
+
+                onClick =
+                    onLogoutClick
+            )
+
+
+            // ==================================================
+            // PROFILE
+            // ==================================================
+
+            HomeNavigationButton(
+
+                icon = {
+
+                    Icon(
+
+                        imageVector =
+                            Icons.Default.AccountBox,
+
+                        contentDescription =
+                            "Profile",
+
+                        tint =
+                            HomeBlue,
+
+                        modifier =
+                            Modifier.size(28.dp)
+                    )
+                },
+
+                onClick =
+                    onProfileClick
+            )
+        }
+    }
+}
+
+
+// ================================================================
+// BOTTOM NAV ITEM
+// ================================================================
+
+@Composable
+private fun HomeNavigationButton(
+
+    icon: @Composable () -> Unit,
+
+    onClick: () -> Unit
+
+) {
+
+    Box(
+
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable {
+                onClick()
+            },
+
+        contentAlignment =
+            Alignment.Center
+    ) {
+
+        icon()
+    }
+}
+
+
+// ================================================================
+// TIME FORMAT
+// ================================================================
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun formatConversationTime(
+    timestamp: String?
+): String {
+
+    if (timestamp.isNullOrBlank()) {
+        return ""
     }
 
 
-    //@Preview
-    //@Composable
-    //fun show(){
-    //    HomeScreen()
-    //}
+    return try {
+
+        val dateTime =
+            LocalDateTime.parse(
+                timestamp
+            )
+
+
+        val formatter =
+            DateTimeFormatter.ofPattern(
+                "hh:mm a"
+            )
+
+
+        dateTime.format(
+            formatter
+        )
+
+    } catch (e: Exception) {
+
+        println(
+            "TIME FORMAT ERROR = ${e.message}"
+        )
+
+        ""
+    }
+}
