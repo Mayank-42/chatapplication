@@ -56,6 +56,7 @@
     import androidx.compose.ui.draw.scale
     import androidx.compose.ui.graphics.Color
     import androidx.compose.ui.input.nestedscroll.nestedScroll
+    import androidx.compose.ui.layout.ContentScale
     import androidx.compose.ui.res.painterResource
     import androidx.compose.ui.text.font.FontStyle
     import androidx.compose.ui.text.font.FontWeight
@@ -71,7 +72,9 @@
     import com.example.chatapplication.R
     import kotlinx.coroutines.launch
     import kotlinx.datetime.format.DateTimeFormat
+    import java.text.SimpleDateFormat
     import java.time.format.DateTimeFormatter
+    import java.util.Locale
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -105,6 +108,7 @@
         val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
 
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 topBar = {
@@ -230,9 +234,11 @@
                                    AsyncImage(
                                        model = ele.Image,
                                        contentDescription = "profile image",
+                                       contentScale = ContentScale.Crop,
                                        modifier = Modifier.size(50.dp).clip(CircleShape)
                                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                    )
+                                   println("HOME IMAGE = ${ele.Image}")
                                    Box(contentAlignment = Alignment.CenterStart) {
                                        Column() {
                                            Text(
@@ -254,7 +260,7 @@
                                ) {
 
                                    Text( text =
-                                       ele.lastTime?:"", fontStyle = FontStyle.Italic)
+                                       formatConversationTime(ele.lastTime), fontStyle = FontStyle.Italic)
                                }
                                if(unreadCount!=0)
                                Box(
@@ -280,6 +286,24 @@
            }
             }
 
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatConversationTime(timestamp: String?): String {
+
+        if (timestamp.isNullOrBlank()) return ""
+
+        return try {
+            val dateTime = java.time.LocalDateTime.parse(timestamp)
+
+            val formatter = java.time.format.DateTimeFormatter
+                .ofPattern("hh:mm a")
+
+            dateTime.format(formatter)
+
+        } catch (e: Exception) {
+            println("TIME FORMAT ERROR = ${e.message}")
+            ""
         }
     }
 
