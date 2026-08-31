@@ -1,6 +1,5 @@
 package com.example.chatapplication.ui.Screen.GroupChat
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,16 +47,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
-import com.example.chatapplication.R
+
+
+private val GroupBlack = Color.Black
+private val GroupWhite = Color.White
+private val GroupBlue = Color(0xFF3B82F6)
+private val GroupGrey = Color(0xFF9CA3AF)
+private val GroupTile = Color(0xFF111111)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,41 +85,52 @@ fun GroupChatSearch(
         mutableStateOf(false)
     }
 
-    /*
-     * We only need to request company users when this screen opens.
-     */
     LaunchedEffect(Unit) {
         infoo.getCompanyUsers()
     }
 
-    /*
-     * Show the next button only when at least one user
-     * has actually been selected.
-     */
     showIcon = save.selectedUserId.isNotEmpty()
 
     Scaffold(
-
+        containerColor = GroupBlack,
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Color.White
+                    containerColor = GroupBlack,
+                    titleContentColor = GroupWhite,
+                    navigationIconContentColor = GroupWhite,
+                    actionIconContentColor = GroupWhite
                 ),
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            nav.popBackStack()
+                        },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = GroupWhite
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 title = {
                     Text(
-                        text = "Add Group Member"
+                        text = "Add Group Member",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             )
         }
-
     ) { paddingValues ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(GroupBlack)
                 .padding(paddingValues)
         ) {
 
@@ -127,7 +143,8 @@ fun GroupChatSearch(
                         .height(50.dp)
                         .clip(
                             RoundedCornerShape(20.dp)
-                        )
+                        ),
+                    color = GroupTile
                 ) {
 
                     Row(
@@ -139,7 +156,8 @@ fun GroupChatSearch(
                                 nav.popBackStack()
                             },
                             colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = Color.Transparent
+                                containerColor = Color.Transparent,
+                                contentColor = GroupWhite
                             )
                         ) {
 
@@ -157,7 +175,8 @@ fun GroupChatSearch(
                             },
                             placeholder = {
                                 Text(
-                                    text = "Add Member"
+                                    text = "Add Member",
+                                    color = GroupGrey
                                 )
                             },
                             modifier = Modifier.weight(1f),
@@ -178,15 +197,15 @@ fun GroupChatSearch(
                                 unfocusedContainerColor = Color.Transparent,
                                 focusedContainerColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedTextColor = GroupWhite,
+                                unfocusedTextColor = GroupWhite,
+                                cursorColor = GroupBlue
                             )
                         )
                     }
                 }
 
-                /*
-                 * Search result
-                 */
                 val ans = infoo.UserExsist
 
                 if (isSearched) {
@@ -212,7 +231,7 @@ fun GroupChatSearch(
                                     .clip(
                                         RoundedCornerShape(8.dp)
                                     ),
-                                color = Color.White
+                                color = GroupTile
                             ) {
 
                                 Row(
@@ -220,15 +239,9 @@ fun GroupChatSearch(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
 
-                                    Image(
-                                        painter = painterResource(
-                                            R.drawable.example
-                                        ),
-                                        contentDescription = "profile image",
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .size(50.dp)
-                                            .clip(CircleShape)
+                                    UserProfileImage(
+                                        imageUrl = searchedUser.photo_url,
+                                        name = searchedUser.name
                                     )
 
                                     Column(
@@ -237,13 +250,16 @@ fun GroupChatSearch(
 
                                         Text(
                                             text = searchedUser.name,
+                                            color = GroupWhite,
                                             fontSize = 20.sp,
                                             fontWeight = FontWeight.SemiBold
                                         )
 
                                         Text(
                                             text = searchedUser.role
-                                                ?: "No designation"
+                                                ?: "No designation",
+                                            color = GroupGrey,
+                                            fontSize = 14.sp
                                         )
                                     }
 
@@ -266,7 +282,6 @@ fun GroupChatSearch(
                                 }
                             }
                         }
-
                     } else {
 
                         Surface(
@@ -280,7 +295,7 @@ fun GroupChatSearch(
                                 .clip(
                                     RoundedCornerShape(8.dp)
                                 ),
-                            color = Color.White
+                            color = GroupTile
                         ) {
 
                             Row(
@@ -288,19 +303,25 @@ fun GroupChatSearch(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
 
-                                Image(
-                                    painter = painterResource(
-                                        R.drawable.example
-                                    ),
-                                    contentDescription = "profile image",
+                                Box(
                                     modifier = Modifier
                                         .padding(10.dp)
-                                        .size(50.dp)
+                                        .size(40.dp)
                                         .clip(CircleShape)
-                                )
+                                        .background(GroupBlue),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "?",
+                                        color = GroupWhite,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
 
                                 Text(
                                     text = "User not found",
+                                    color = GroupWhite,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -315,25 +336,23 @@ fun GroupChatSearch(
 
                     Text(
                         text = "Your Colleague",
-                        color = Color.Gray,
+                        color = GroupGrey,
                         fontSize = 15.sp,
                         modifier = Modifier.padding(
-                            start = 5.dp
+                            start = 10.dp
                         )
                     )
                 }
 
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = GroupTile
                 )
 
                 Spacer(
                     modifier = Modifier.height(20.dp)
                 )
 
-                /*
-                 * Company users, grouped by role priority.
-                 */
                 officeCoWorker(
                     userinfoo = infoo,
                     list = save.selectedUserId,
@@ -364,13 +383,15 @@ fun GroupChatSearch(
                     FloatingActionButton(
                         onClick = {
                             nav.navigate("GroupName")
-                        }
+                        },
+                        containerColor = GroupBlue,
+                        contentColor = GroupBlack
                     ) {
 
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
                             contentDescription = "Continue",
-                            tint = Color.Black
+                            tint = GroupBlack
                         )
                     }
                 }
@@ -378,7 +399,6 @@ fun GroupChatSearch(
         }
     }
 }
-
 
 @Composable
 fun officeCoWorker(
@@ -391,9 +411,6 @@ fun officeCoWorker(
 
         userinfoo.sortedCompanyUsers.forEach { (_, users) ->
 
-            /*
-             * Get role name from the users in this group.
-             */
             item {
 
                 Text(
@@ -401,7 +418,7 @@ fun officeCoWorker(
                         .firstOrNull()
                         ?.role
                         ?: "Other",
-                    color = Color.Gray,
+                    color = GroupGrey,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(
@@ -429,7 +446,7 @@ fun officeCoWorker(
                         )
                         .height(80.dp)
                         .clickable { },
-                    color = Color.White,
+                    color = GroupTile,
                     shape = RoundedCornerShape(35.dp)
                 ) {
 
@@ -438,19 +455,9 @@ fun officeCoWorker(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Image(
-                            painter = painterResource(
-                                R.drawable.example
-                            ),
-                            contentDescription = "profile image",
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(CircleShape)
-                                .border(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.primary,
-                                    CircleShape
-                                )
+                        UserProfileImage(
+                            imageUrl = ele.photo_url,
+                            name = ele.name
                         )
 
                         Column(
@@ -461,17 +468,20 @@ fun officeCoWorker(
 
                             Text(
                                 text = ele.name,
+                                color = GroupWhite,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
 
                             Text(
                                 text = ele.role ?: "No designation",
+                                color = GroupGrey,
                                 fontSize = 14.sp
                             )
 
                             Text(
                                 text = ele.created_at ?: "",
+                                color = GroupGrey,
                                 fontSize = 11.sp,
                                 fontStyle = FontStyle.Italic
                             )
@@ -491,6 +501,53 @@ fun officeCoWorker(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun UserProfileImage(
+    imageUrl: String?,
+    name: String
+) {
+
+    Box(
+        modifier = Modifier
+            .padding(start = 10.dp)
+            .size(50.dp)
+            .clip(CircleShape)
+            .background(GroupBlue)
+            .border(
+                width = 1.5.dp,
+                color = GroupBlue,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+
+        if (!imageUrl.isNullOrBlank()) {
+
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "Profile image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+            )
+
+        } else {
+
+            Text(
+                text = name
+                    .trim()
+                    .firstOrNull()
+                    ?.uppercase()
+                    ?: "?",
+                color = GroupWhite,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

@@ -346,7 +346,8 @@ class MainActivity : ComponentActivity() {
                         composable("GroupName") {
                             GroupName(
                                 navController,
-                                save
+                                save,
+                                userInfovm
                             )
                         }
 

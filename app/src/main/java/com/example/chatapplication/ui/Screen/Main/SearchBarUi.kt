@@ -188,7 +188,7 @@ fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
                                 modifier = Modifier.fillMaxWidth()
                                     .height(60.dp)
                                     .padding(start = 5.dp, end = 5.dp)
-//                                    .clickable { navControl.navigate("ChatScreen") }
+                                    .clickable { navControl.navigate("ChatScreen") }
                                     .clip(shape = RoundedCornerShape(8.dp)),
                                 color = Color.White
                             ) {
