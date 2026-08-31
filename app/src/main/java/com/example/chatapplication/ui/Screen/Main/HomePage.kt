@@ -62,7 +62,10 @@ import com.example.chatapplication.Data.local.TokenManager
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 // ============================================================
@@ -125,18 +128,13 @@ fun HomeScreen(
     val currentTime = LocalTime.now()
 
     val greetingMessage = when {
-
         currentTime < LocalTime.NOON ->
             "Good Morning"
-
         currentTime < LocalTime.of(18, 0) ->
             "Good Afternoon"
-
         else ->
             "Good Evening"
     }
-
-
     // ========================================================
     // CONVERSATIONS
     // ========================================================
@@ -150,14 +148,7 @@ fun HomeScreen(
     // COLLAPSING TOP BAR
     // ========================================================
 
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
-
-    // ========================================================
-    // SCAFFOLD
-    // ========================================================
-
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
 
         modifier = Modifier
@@ -165,97 +156,61 @@ fun HomeScreen(
             .nestedScroll(
                 scrollBehavior.nestedScrollConnection
             ),
-
         containerColor = HomeBlack,
-
-
         // ====================================================
         // TOP APP BAR
         // ====================================================
 
         topBar = {
-
             MediumTopAppBar(
-
                 title = {
-
                     Column {
-
                         // BIG HI
                         Text(
                             text = "HI",
-
                             color = HomeBlue,
-
                             fontSize = 24.sp,
-
                             fontWeight = FontWeight.ExtraBold
                         )
-
                         // GREETING
                         Text(
                             text = greetingMessage,
-
                             color = HomeWhite,
-
                             fontSize = 28.sp,
-
                             fontWeight = FontWeight.SemiBold
                         )
                     }
                 },
-
-
                 colors =
                     TopAppBarDefaults.mediumTopAppBarColors(
-
                         containerColor = HomeBlack,
-
                         scrolledContainerColor = HomeBlack,
-
                         titleContentColor = HomeWhite
                     ),
-
-
                 scrollBehavior = scrollBehavior
             )
         },
-
-
         // ====================================================
         // BOTTOM NAVIGATION
         // ====================================================
-
         bottomBar = {
-
             HomeBottomNavigation(
-
                 onGroupsClick = {
-
                     navControl.navigate(
                         "GroupPage"
                     )
                 },
 
                 onLogoutClick = {
-
                     scope.launch {
-
                         tokenManager.clearTokens()
-
                         onLoginSuccess()
                     }
                 },
-
                 onProfileClick = {
-
                     scope.launch {
-
                         if (id.isNotBlank()) {
-
-                            navControl.navigate(
-                                "profileScreen/$id"
-                            )
+                            navControl.navigate("profileScreen/$id")
                         }
                     }
                 }
@@ -263,14 +218,7 @@ fun HomeScreen(
         }
 
     ) { paddingValues ->
-
-
-        // ====================================================
-        // MAIN CONTENT
-        // ====================================================
-
         Box(
-
             modifier = Modifier
                 .fillMaxSize()
                 .background(HomeBlack)
@@ -280,16 +228,12 @@ fun HomeScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-
-
                 // ==================================================
                 // SEARCH BAR
                 // ==================================================
 
                 HomeSearchBar(
-
                     onClick = {
-
                         navControl.navigate(
                             "SearchBarPage"
                         )
@@ -297,116 +241,63 @@ fun HomeScreen(
                 )
 
 
-                Spacer(
-                    modifier = Modifier.height(16.dp)
-                )
-
-
+                Spacer(modifier = Modifier.height(16.dp))
                 // ==================================================
                 // CONVERSATION LIST
                 // ==================================================
 
                 LazyColumn(
-
                     modifier = Modifier.fillMaxSize(),
-
                     contentPadding = PaddingValues(
-
                         start = 12.dp,
-
                         end = 12.dp,
-
                         bottom = 24.dp
                     ),
 
-                    verticalArrangement =
-                        Arrangement.spacedBy(11.dp)
+                    verticalArrangement = Arrangement.spacedBy(11.dp)
                 ) {
 
                     items(
-
                         items = conversations,
-
                         key = {
                             it.conversationId
                         }
-
                     ) { ele ->
-
-
                         // ==================================================
                         // UNREAD COUNT
                         // ==================================================
-
                         val unreadCount by produceState(
-
-                            initialValue =
-                                ele.unread_count,
-
-                            key1 =
-                                ele.conversationId,
-
-                            key2 =
-                                id
-
+                            initialValue = ele.unread_count,
+                            key1 = ele.conversationId,
+                            key2 = id
                         ) {
 
                             if (id.isNotBlank()) {
-
                                 conversationInfo
-                                    .getUnreadCount(
-
-                                        conversationId =
-                                            ele.conversationId,
-
-                                        myUserId =
-                                            id
-
-                                    )
+                                    .getUnreadCount(ele.conversationId, id)
                                     .collect {
-
                                         value = it
                                     }
                             }
                         }
-
-
-                        // ==================================================
-                        // TIME DEBUG
-                        // ==================================================
-
                         println(
                             "HOME TIME DEBUG: " +
                                     "conversation=${ele.conversationId}, " +
                                     "lastTime=${ele.lastTime}"
                         )
-
-
                         // ==================================================
                         // CONVERSATION TILE
                         // ==================================================
 
                         ConversationTile(
-
-                            name =
-                                ele.name ?: "",
-
-                            image =
-                                ele.Image,
-
-                            lastMessage =
-                                ele.lastMessage ?: "",
-
+                            name = ele.name ?: "",
+                            image = ele.Image,
+                            lastMessage = ele.lastMessage ?: "",
                             time =
-                                formatConversationTime(
-                                    ele.lastTime
-                                ),
-
-                            unreadCount =
-                                unreadCount,
+                                formatConversationTime(ele.lastTime),
+                            unreadCount = unreadCount,
 
                             onClick = {
-
                                 navControl.navigate(
                                     "chatScreen/${ele.conversationId}"
                                 )
@@ -428,9 +319,7 @@ fun HomeScreen(
 private fun HomeSearchBar(
     onClick: () -> Unit
 ) {
-
     Surface(
-
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -444,9 +333,7 @@ private fun HomeSearchBar(
             },
 
         color = HomeTile,
-
         shape = RoundedCornerShape(18.dp),
-
         border =
             androidx.compose.foundation.BorderStroke(
                 width = 1.dp,
@@ -467,207 +354,128 @@ private fun HomeSearchBar(
         ) {
 
             Icon(
-
-                imageVector =
-                    Icons.Default.Search,
-
-                contentDescription =
-                    "Search",
-
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
                 tint = HomeBlue,
-
                 modifier = Modifier.size(23.dp)
             )
-
-
             Spacer(
                 modifier = Modifier.width(12.dp)
             )
-
-
             Text(
-
                 text =
                     "Search user by username",
-
                 color =
                     HomeMuted,
-
                 fontSize = 15.sp
             )
         }
     }
 }
-
-
 // ================================================================
 // CONVERSATION TILE
 // ================================================================
-
 @Composable
 private fun ConversationTile(
-
     name: String,
-
     image: String?,
-
     lastMessage: String,
-
     time: String,
-
     unreadCount: Int,
-
     onClick: () -> Unit
 
 ) {
-
     Surface(
-
         modifier = Modifier
             .fillMaxWidth()
             .height(92.dp)
             .clickable {
                 onClick()
             },
-
         color = HomeTile,
-
         shape = RoundedCornerShape(22.dp),
-
         border =
             androidx.compose.foundation.BorderStroke(
                 width = 1.dp,
                 color = HomeBorder
             )
     ) {
-
         Row(
-
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     horizontal = 14.dp,
                     vertical = 10.dp
                 ),
-
-            verticalAlignment =
-                Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-
             // ==================================================
             // PROFILE IMAGE
             // ==================================================
-
             Box(
                 modifier = Modifier.size(56.dp)
             ) {
-
                 AsyncImage(
-
                     model = image,
-
-                    contentDescription =
-                        "profile image",
-
-                    contentScale =
-                        ContentScale.Crop,
-
+                    contentDescription = "profile image",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape)
                         .border(
                             width = 1.5.dp,
-
                             // BLUE BORDER
                             // subtle enough to blend
                             // but still visible
                             color = HomeBlue,
-
                             shape = CircleShape
                         )
                 )
             }
-
-
-            Spacer(
-                modifier = Modifier.width(14.dp)
-            )
-
-
+            Spacer(modifier = Modifier.width(14.dp))
             // ==================================================
             // MESSAGE AREA
             // ==================================================
-
             Column(
-
                 modifier = Modifier
                     .weight(1f)
                     .padding(
                         top = 2.dp
                     )
             ) {
-
-
                 // ------------------------------------------------
                 // USER NAME
                 // SMALL
                 // ------------------------------------------------
-
                 Text(
-
                     text =
                         if (name.isBlank())
                             "Unknown"
                         else
                             name,
-
                     color =
                         HomeMuted,
-
                     fontSize = 12.sp,
-
-                    fontWeight =
-                        FontWeight.Medium,
-
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
-
-                    modifier =
-                        Modifier.padding(
-                            start = 2.dp
-                        )
+                    modifier = Modifier.padding(start = 2.dp)
                 )
-
-
-                Spacer(
-                    modifier = Modifier.height(5.dp)
-                )
-
-
+                Spacer(modifier = Modifier.height(5.dp))
                 // ------------------------------------------------
                 // LAST MESSAGE
                 // BIG
                 // LADDER / INDENT
                 // ------------------------------------------------
-
                 Text(
-
                     text =
                         if (lastMessage.isBlank())
                             "No messages yet"
                         else
                             lastMessage,
-
-                    color =
-                        HomeWhite,
-
+                    color = HomeWhite,
                     fontSize = 16.sp,
-
-                    fontWeight =
-                        FontWeight.Medium,
-
+                    fontWeight = FontWeight.Medium,
                     maxLines = 1,
-
                     modifier =
                         Modifier.padding(
                             start = 10.dp,
@@ -675,88 +483,48 @@ private fun ConversationTile(
                         )
                 )
             }
-
-
-            Spacer(
-                modifier = Modifier.width(8.dp)
-            )
-
-
+            Spacer(modifier = Modifier.width(8.dp))
             // ==================================================
             // TIME + UNREAD
             // ==================================================
-
             Column(
-
-                horizontalAlignment =
-                    Alignment.End,
-
-                verticalArrangement =
-                    Arrangement.Center
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
             ) {
-
-
                 // ------------------------------------------------
                 // TIME
                 // ------------------------------------------------
-
                 Text(
-
                     text = time,
-
                     color =
                         if (unreadCount > 0)
                             HomeBlue
                         else
                             HomeMuted,
-
                     fontSize = 11.sp,
-
                     fontWeight =
                         if (unreadCount > 0)
                             FontWeight.SemiBold
                         else
                             FontWeight.Normal
                 )
-
-
                 // ------------------------------------------------
                 // UNREAD BADGE
                 // ------------------------------------------------
-
                 if (unreadCount > 0) {
-
-                    Spacer(
-                        modifier = Modifier.height(6.dp)
-                    )
-
-
+                    Spacer(modifier = Modifier.height(6.dp))
                     Box(
-
                         modifier = Modifier
                             .size(29.dp)
                             .clip(CircleShape)
                             .background(HomeBlue),
-
-                        contentAlignment =
-                            Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
-
                         Text(
-
-                            text =
-                                if (unreadCount > 99)
-                                    "99+"
-                                else
-                                    unreadCount.toString(),
-
-                            color =
-                                HomeWhite,
-
+                            text =unreadCount.toString(),
+                            color = HomeWhite,
                             fontSize = 10.sp,
-
-                            fontWeight =
-                                FontWeight.Bold
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -764,19 +532,13 @@ private fun ConversationTile(
         }
     }
 }
-
-
 // ================================================================
 // BOTTOM NAVIGATION
 // ================================================================
-
 @Composable
 private fun HomeBottomNavigation(
-
     onGroupsClick: () -> Unit,
-
     onLogoutClick: () -> Unit,
-
     onProfileClick: () -> Unit
 
 ) {
@@ -798,142 +560,81 @@ private fun HomeBottomNavigation(
             ),
 
         color = HomeWhite,
-
         shape = RoundedCornerShape(30.dp)
     ) {
-
         Row(
-
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     horizontal = 18.dp
                 ),
-
-            verticalAlignment =
-                Alignment.CenterVertically,
-
-            horizontalArrangement =
-                Arrangement.SpaceEvenly
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-
-
             // ==================================================
             // GROUPS
             // ==================================================
-
             HomeNavigationButton(
-
                 icon = {
-
                     Icon(
-
-                        imageVector =
-                            Icons.Default.Groups,
-
-                        contentDescription =
-                            "Groups",
-
-                        tint =
-                            HomeBlack,
-
-                        modifier =
-                            Modifier.size(27.dp)
+                        imageVector = Icons.Default.Groups,
+                        contentDescription = "Groups",
+                        tint = HomeBlack,
+                        modifier = Modifier.size(27.dp)
                     )
                 },
-
-                onClick =
-                    onGroupsClick
+                onClick = onGroupsClick
             )
-
-
             // ==================================================
             // LOGOUT
             // ==================================================
-
             HomeNavigationButton(
-
                 icon = {
-
                     Icon(
-
-                        imageVector =
-                            Icons.Default.Logout,
-
-                        contentDescription =
-                            "Logout",
-
-                        tint =
-                            HomeBlack,
-
-                        modifier =
-                            Modifier.size(26.dp)
+                        imageVector = Icons.Default.Logout,
+                        contentDescription = "Logout",
+                        tint = HomeBlack,
+                        modifier = Modifier.size(26.dp)
                     )
                 },
-
-                onClick =
-                    onLogoutClick
+                onClick = onLogoutClick
             )
-
-
             // ==================================================
             // PROFILE
             // ==================================================
-
             HomeNavigationButton(
-
                 icon = {
-
                     Icon(
-
                         imageVector =
                             Icons.Default.AccountBox,
-
-                        contentDescription =
-                            "Profile",
-
-                        tint =
-                            HomeBlue,
-
-                        modifier =
-                            Modifier.size(28.dp)
+                        contentDescription = "Profile",
+                        tint = HomeBlue,
+                        modifier = Modifier.size(28.dp)
                     )
                 },
-
-                onClick =
-                    onProfileClick
+                onClick = onProfileClick
             )
         }
     }
 }
-
-
 // ================================================================
 // BOTTOM NAV ITEM
 // ================================================================
-
 @Composable
 private fun HomeNavigationButton(
-
     icon: @Composable () -> Unit,
-
     onClick: () -> Unit
 
 ) {
-
     Box(
-
         modifier = Modifier
             .size(48.dp)
             .clip(CircleShape)
             .clickable {
                 onClick()
             },
-
-        contentAlignment =
-            Alignment.Center
+        contentAlignment = Alignment.Center
     ) {
-
         icon()
     }
 }
@@ -947,36 +648,25 @@ private fun HomeNavigationButton(
 fun formatConversationTime(
     timestamp: String?
 ): String {
-
     if (timestamp.isNullOrBlank()) {
         return ""
     }
-
-
     return try {
-
-        val dateTime =
-            LocalDateTime.parse(
-                timestamp
+        val instant =
+            OffsetDateTime
+                .parse(timestamp)
+                .toInstant()
+        val localDateTime =
+            instant.atZone(
+                ZoneId.of("Asia/Kolkata")
             )
-
-
         val formatter =
             DateTimeFormatter.ofPattern(
                 "hh:mm a"
             )
-
-
-        dateTime.format(
-            formatter
-        )
-
-    } catch (e: Exception) {
-
-        println(
-            "TIME FORMAT ERROR = ${e.message}"
-        )
-
+        localDateTime.format(formatter)
+    } catch (e: DateTimeParseException) {
+        println("TIME FORMAT ERROR = ${e.message}")
         ""
     }
 }
