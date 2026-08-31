@@ -61,7 +61,6 @@ import coil3.compose.rememberAsyncImagePainter
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.local.tables.GroupInfo
 import com.example.chatapplication.R
-import com.example.chatapplication.ui.Screen.Auth.surface
 import io.ktor.websocket.Frame
 
 @OptIn(ExperimentalMaterial3Api::class)

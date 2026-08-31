@@ -1,8 +1,5 @@
 package com.example.chatapplication.ui.Screen.Auth
 
-import android.R.attr.fontStyle
-import android.R.attr.password
-import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,12 +9,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -34,188 +37,340 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
-import com.example.chatapplication.Data.local.tables.userLoginInfo
 
 @Composable
-fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM,onLoginSuccess: (String) -> Unit){
-    var email by rememberSaveable{mutableStateOf("")}
-    var pass by rememberSaveable{mutableStateOf("")}
-    var showErrorBox by rememberSaveable { mutableStateOf(false)}
-    Box(modifier= Modifier.fillMaxSize()
-                            .background(color=Color.Black),
-        contentAlignment= Alignment.Center
+fun ShowSignIn(
+    navControler: NavController,
+    viewMode: databaseVM,
+    authVM: loginVM,
+    onLoginSuccess: (String) -> Unit
+) {
 
-     ){
-        Column(horizontalAlignment = Alignment.CenterHorizontally){
-        Icon(imageVector = Icons.Default.Face,
-            contentDescription = null,
-            tint=Color.White,
-            modifier=Modifier
+    var email by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var pass by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var showErrorBox by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var passwordVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val blue = Color(0xFF3B82F6)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .imePadding(),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
-//                .border(1.dp, MaterialTheme.colorScheme.primary,CircleShape),
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
+            // Logo
+            Icon(
+                imageVector = Icons.Default.Face,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
             )
-//            Spacer(modifier=Modifier.height(30.dp))
-            Text(text="YOKOSU",color=Color.White,fontSize=36.sp, fontWeight = FontWeight.SemiBold, modifier=Modifier.padding(25.dp))
-            surface(navControl=navControler,task="Enter your Email", viewMode = viewMode,words=email, onWordsChange = {email=it})
-            Spacer(modifier=Modifier.height(30.dp))
-            surface(navControl=navControler,task="Enter your pasword ", viewMode = viewMode,words=pass, onWordsChange = {pass=it})
-            Spacer(modifier=Modifier.height(30.dp))
-            surface(navControl=navControler,
-                80, "Sign In",
-                false,
-                viewMode = viewMode,
-                "",{},
-                onButtonClick = {
 
-                    authVM.login(email, pass){ response,userId ->
+            // App name
+            Text(
+                text = "YOKOSU",
+                color = Color.White,
+                fontSize = 36.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(25.dp)
+            )
 
-                        if (response.isSuccessful && userId != null) {
-                            onLoginSuccess(userId)
-                        } else {
+            // =========================
+            // EMAIL
+            // =========================
 
-                            showErrorBox = true
+            AuthTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                },
+                placeholder = "Enter your Email",
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email",
+                        tint = Color.Gray
+                    )
+                }
+            )
+
+            Spacer(
+                modifier = Modifier.height(20.dp)
+            )
+
+            // =========================
+            // PASSWORD
+            // =========================
+
+            AuthTextField(
+                value = pass,
+                onValueChange = {
+                    pass = it
+                },
+                placeholder = "Enter your password",
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Password",
+                        tint = Color.Gray
+                    )
+                },
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+
+                    TextButton(
+                        onClick = {
+                            passwordVisible = !passwordVisible
                         }
+                    ) {
+                        Text(
+                            text = if (passwordVisible) {
+                                "HIDE"
+                            } else {
+                                "SHOW"
+                            },
+                            color = blue,
+                            fontSize = 12.sp
+                        )
                     }
+                }
+            )
 
-//                    if (authVM.userLoggedIn) {
-//                        viewMode.logininsert(
-//                            userLoginInfo(
-//                                Email = email,
-//                                password = pass
-//                            )
-//                        )
-//                        navControler.navigate("Home")
-//
-//                    }
-//                    else{
-//                        showErrorBox=true
-//                    }
-                })
-                    if(showErrorBox){
-                        AlertDialog(
-                            onDismissRequest = {
-                                showErrorBox = false
-                            },
+            Spacer(
+                modifier = Modifier.height(25.dp)
+            )
 
-                            title = {
-                                Text(text = "Wrong")
-                            },
+            // =========================
+            // SIGN IN BUTTON
+            // =========================
 
-                            text = {
-                                Text(text = "Something is wrong")
-                            },
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 35.dp,
+                        end = 35.dp
+                    )
+                    .height(80.dp),
+                color = Color.White,
+                shape = RoundedCornerShape(16.dp)
+            ) {
 
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        showErrorBox = false
-                                    }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable {
+
+                            // YOUR EXISTING LOGIN LOGIC
+                            authVM.login(email, pass) {
+                                    response, userId ->
+
+                                if (
+                                    response.isSuccessful &&
+                                    userId != null
                                 ) {
-                                    Text(text = "OK")
+
+                                    onLoginSuccess(userId)
+
+                                } else {
+
+                                    showErrorBox = true
                                 }
                             }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Text(
+                        text = "Sign In",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        color = Color.Black
+                    )
+                }
+            }
+
+            // =========================
+            // ERROR DIALOG
+            // =========================
+
+            if (showErrorBox) {
+
+                AlertDialog(
+                    onDismissRequest = {
+                        showErrorBox = false
+                    },
+
+                    title = {
+                        Text(
+                            text = "Wrong"
                         )
-//                        AlertDialog(
-//                            onDismissRequest ={ showErrorBox=false},
-//                                    title={Text(text="wrong")},
-//                            text={Text(text="Something is wrong")},
-//                            confirmButton {
-//                                TextButton(onClick={showErrorBox=true}) {Text(text="ok") }
-//                            },
-//                        )
+                    },
+
+                    text = {
+                        Text(
+                            text = "Something is wrong"
+                        )
+                    },
+
+                    confirmButton = {
+
+                        TextButton(
+                            onClick = {
+                                showErrorBox = false
+                            }
+                        ) {
+
+                            Text(
+                                text = "OK"
+                            )
+                        }
                     }
-            val blue=Color(0xFF3B82F6)
+                )
+            }
+
+            // =========================
+            // REGISTER
+            // =========================
+
             Row {
+
                 Text(
                     text = "Not a User?",
                     color = Color.White,
-                    modifier = Modifier.padding(top=15.dp)
+                    modifier = Modifier.padding(top = 15.dp)
                 )
-                TextButton(onClick = {navControler.navigate("register")})
-                {Text(text="Register",
-                    color= blue,
-                    fontStyle = FontStyle.Italic,
 
-                ) }
+                TextButton(
+                    onClick = {
+                        navControler.navigate("register")
+                    }
+                ) {
+
+                    Text(
+                        text = "Register",
+                        color = blue,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
             }
         }
-
     }
-
 }
+
+
+// =====================================================
+// REUSABLE AUTH TEXT FIELD
+// =====================================================
+
 @Composable
-fun surface(navControl:NavController ,
-            size:Int=60,
-            task:String="Enter Text here",
-            wantTextField:Boolean=true,
-            viewMode : databaseVM,
-            words :String,
-            onWordsChange:(String)->Unit,
-            onButtonClick: () -> Unit = {}
+fun AuthTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    visualTransformation: VisualTransformation =
+        VisualTransformation.None
 ) {
 
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(start = 35.dp,   end = 35.dp)
-            .height(size.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 35.dp,
+                end = 35.dp
+            )
+            .height(65.dp),
         color = Color.White,
         shape = RoundedCornerShape(16.dp)
-
     ) {
-        if(wantTextField) {
-            OutlinedTextField(
-                value = words,
-                onValueChange = { onWordsChange(it)},
-                placeholder = { Text(text = "$task", fontSize = 20.sp) },
 
-                colors = TextFieldDefaults.colors(
+        OutlinedTextField(
+            value = value,
 
-                    // Removes the gray background
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
+            onValueChange = {
+                onValueChange(it)
+            },
 
-                    // Removes the bottom indicator line
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
+            modifier = Modifier.fillMaxSize(),
 
-                    // Text colors
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
+            singleLine = true,
 
-                    // Placeholder color
-                    unfocusedPlaceholderColor = Color.Gray,
-                    focusedPlaceholderColor = Color.Gray,
-
-                    // Cursor
-                    cursorColor = Color.Black
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    fontSize = 18.sp,
+                    color = Color.Gray
                 )
+            },
+
+            leadingIcon = leadingIcon,
+
+            trailingIcon = trailingIcon,
+
+            visualTransformation = visualTransformation,
+
+            colors = TextFieldDefaults.colors(
+
+                // Background
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+
+                // Remove border
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+
+                // Text
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+
+                // Placeholder
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray,
+
+                // Cursor
+                cursorColor = Color(0xFF3B82F6)
             )
-        }
-        else{
+        )
 
-            //Box(modifier=Modifier.fillMaxSize().clickable{navControl.navigate("Home");viewMode.logininsert(userLoginInfo(Email=words, password = words))}, contentAlignment = Alignment.Center){
-         Box(modifier=Modifier.fillMaxSize().clickable{onButtonClick()}, contentAlignment = Alignment.Center){
-            Text(text="$task", fontWeight = FontWeight.Bold, fontSize = 30.sp )
 
-            }
-
-        }
     }
-
 }
 
-
-//@Preview(showSystemUi = true,uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-//@Composable
-//fun show(){
-//    ChatApplicationTheme {   // <-- Your app's theme name
-//        ShowSignIn(navController : NavController)
-//    }
-//}
