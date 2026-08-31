@@ -1,7 +1,9 @@
     package com.example.chatapplication.ui.Screen.Main
 
 
-
+    import android.os.Build
+    import androidx.annotation.RequiresApi
+    import java.time.LocalTime
     import androidx.compose.foundation.Image
     import androidx.compose.foundation.background
     import androidx.compose.foundation.border
@@ -30,6 +32,7 @@
     import androidx.compose.material3.ExperimentalMaterial3Api
     import androidx.compose.material3.Icon
     import androidx.compose.material3.MaterialTheme
+    import androidx.compose.material3.MediumTopAppBar
     import androidx.compose.material3.NavigationBar
     import androidx.compose.material3.Scaffold
     import androidx.compose.material3.Surface
@@ -37,6 +40,7 @@
     import androidx.compose.material3.TextField
     import androidx.compose.material3.TextFieldDefaults
     import androidx.compose.material3.TopAppBar
+    import androidx.compose.material3.TopAppBarDefaults
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.collectAsState
@@ -51,6 +55,7 @@
     import androidx.compose.ui.draw.clip
     import androidx.compose.ui.draw.scale
     import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.input.nestedscroll.nestedScroll
     import androidx.compose.ui.res.painterResource
     import androidx.compose.ui.text.font.FontStyle
     import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +69,11 @@
     import com.example.chatapplication.Data.local.tables.userInfo
     import com.example.chatapplication.R
     import kotlinx.coroutines.launch
+    import kotlinx.datetime.format.DateTimeFormat
+    import java.time.format.DateTimeFormatter
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun HomeScreen(navControl: NavController,
@@ -73,7 +82,6 @@
                    onLoginSuccess: () -> Unit,
                    conversationInfo: convoVM
     ){
-
 
         val scope=rememberCoroutineScope()
     //    var userName by rememberSaveable { mutableStateOf("") }
@@ -84,14 +92,28 @@
         var id by rememberSaveable {mutableStateOf("") }
         LaunchedEffect(Unit) { id=tokenManager.getUserId()?:""}
 
+        val currentTime = LocalTime.now()
+
+        val greetingMessage = when {
+            currentTime < LocalTime.NOON -> "Good Morning"
+            currentTime < LocalTime.of(18, 0) -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+
+        val userName =userinfoo.userInfo
         val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
 
-            Scaffold(topBar = {
-                    TopAppBar(
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+            Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                MediumTopAppBar(
 
-                        title = { Text(text = "mai kyaa mewo") },
+                        title = { Text(text = """HI 
+                            |${greetingMessage} ${"mayank"} """.trimMargin()) },
 
-                    modifier= Modifier.clip(shape=RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp))
+                    modifier= Modifier.clip(shape=RoundedCornerShape(bottomStart = 15.dp, bottomEnd = 15.dp)),
+                            scrollBehavior = scrollBehavior
                     )
 
                 }, bottomBar = {
@@ -205,7 +227,7 @@
                                    verticalAlignment = Alignment.CenterVertically
                                ) {
                                    Image(
-                                       painter = painterResource(R.drawable.example),
+                                       painter = painterResource(ele.Image),
                                        contentDescription = "profile image",
                                        modifier = Modifier.size(50.dp).clip(CircleShape)
                                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
@@ -220,7 +242,8 @@
                                            )
                                            Text(
                                                text = ele.lastMessage?:"",
-                                               fontSize = 16.sp
+                                               fontSize = 16.sp,
+                                               maxLines = 1
                                            )
                                        }
                                    }
@@ -230,7 +253,8 @@
                                    contentAlignment = Alignment.TopEnd
                                ) {
 
-                                   Text(text = ele.lastTime?:"", fontStyle = FontStyle.Italic)
+                                   Text( text = formatConversationDate(
+                                       ele.lastTime), fontStyle = FontStyle.Italic)
                                }
                                if(unreadCount!=0)
                                Box(

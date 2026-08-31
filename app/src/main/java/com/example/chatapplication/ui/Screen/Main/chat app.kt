@@ -84,10 +84,10 @@ fun chatScreen(navControl: NavController,
     val dragThreshold = with(density) {
         200.dp.toPx()
     }
-    if(dragDistance>=dragThreshold){
-        navControl.popBackStack("Home",false)
-    }
 
+    var hasNavigated by remember {
+        mutableStateOf(false)
+    }
 //    LaunchedEffect(conversationId) {
 //        currentUserId = tokenManager.getUserId() ?: ""
 //        msg.startRealtime(conversationId)
@@ -151,11 +151,12 @@ fun chatScreen(navControl: NavController,
             detectHorizontalDragGestures(
                 onHorizontalDrag = { change, dragAmount ->
                     change.consume()
-                    if (dragAmount > 0) {
+                    if (dragAmount > 0&& !hasNavigated) {
                         dragDistance += dragAmount
                     }
-                    if (dragDistance >= 200f) {
-                        navControl.popBackStack()
+                    if(dragDistance>=dragThreshold){
+                        hasNavigated = true
+                        navControl.popBackStack("Home",false)
                     }
                 },
                 onDragEnd = { dragDistance = 0f },
