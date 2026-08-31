@@ -1,7 +1,5 @@
 package com.example.chatapplication.ui.Screen.GroupChat
 
-import android.R.attr.contentDescription
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,15 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.GroupAdd
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -38,115 +36,233 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.convoVM
-import com.example.chatapplication.R
-import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 
+private val GroupBlack = Color.Black
+private val GroupWhite = Color.White
+private val GroupBlue = Color(0xFF3B82F6)
+private val GroupGrey = Color(0xFF9CA3AF)
+private val GroupTile = Color(0xFF111111)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupPage(nav: NavController,save: GroupChatVM,convoInfo: convoVM){
+fun GroupPage(
+    nav: NavController,
+    save: GroupChatVM,
+    convoInfo: convoVM
+){
     val groups by save.gettingGroupinfo.collectAsState(initial = emptyList())
     val conversations by convoInfo.groupConversations.collectAsState(initial = emptyList())
+
     Scaffold(
+        containerColor = GroupBlack,
         topBar = {
             TopAppBar(
-                colors= TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                    ),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = GroupBlack,
+                    titleContentColor = GroupWhite,
+                    navigationIconContentColor = GroupWhite,
+                    actionIconContentColor = GroupWhite
+                ),
                 navigationIcon = {
-                    IconButton(onClick = {nav.popBackStack()}) {
-                    Icon(
-                        imageVector=Icons.Default.ArrowBack,
-                        contentDescription = null
-                    )
-                    }
-                },
-                title = {Text(text="Group Chat")},
-                actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(
+                        onClick = {
+                            nav.popBackStack()
+                        }
+                    ) {
                         Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Localized description"
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null
                         )
                     }
-
-
                 },
-
-                modifier=Modifier.fillMaxWidth().background(Color.Black)
-
+                title = {
+                    Text(
+                        text = "Group Chat",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = { }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = GroupWhite
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
-
         }
+    ) { paddingValues ->
 
-    ) {paddingValues ->
-        Box(modifier=Modifier.padding(paddingValues).fillMaxSize().background(Color.Black)){
-            Column(modifier = Modifier.fillMaxSize()){
-                LazyColumn() {
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(GroupBlack)
+        ){
+
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ){
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+
                     items(conversations) { ele ->
 
-                GropChatTile(ele.name?:"",nav,ele.conversationId,ele.lastMessage?:"",ele.lastTime?:"")
+                        GropChatTile(
+                            Gname = ele.name ?: "",
+                            nav = nav,
+                            id = ele.conversationId,
+                            lastMesage = ele.lastMessage ?: "",
+                            time = ele.lastTime ?: ""
+                        )
                     }
                 }
-            Box(modifier=Modifier.fillMaxSize()
-                .padding(end=35.dp, bottom = 60.dp),
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        end = 25.dp,
+                        bottom = 25.dp
+                    ),
                 contentAlignment = Alignment.BottomEnd
             ){
-                FloatingActionButton(onClick = {nav.navigate("GropChatSearch")}){
+
+                FloatingActionButton(
+                    onClick = {
+                        nav.navigate("GropChatSearch")
+                    },
+                    containerColor = GroupBlue,
+                    contentColor = GroupBlack,
+                    shape = CircleShape
+                ){
+
                     Icon(
                         imageVector = Icons.Default.GroupAdd,
-                        contentDescription = null,
-                        tint=Color.Black
+                        contentDescription = "Create Group",
+                        tint = GroupBlack
                     )
                 }
             }
-
-            }
         }
-
     }
-
 }
+
 @Composable
-fun GropChatTile(Gname:String,nav: NavController,id:String,lastMesage:String="this is goup is created by somone",time:String){
-    Surface(modifier=Modifier.fillMaxWidth().height(70.dp).clickable(onClick = {nav.navigate("GroupChatScreen/${id}")})){
-        Row(verticalAlignment = Alignment.CenterVertically){
-            Image(
-                painter= painterResource(R.drawable.example),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier =Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .border(1.dp,Color.White,CircleShape)
+fun GropChatTile(
+    Gname: String,
+    nav: NavController,
+    id: String,
+    lastMesage: String = "this is goup is created by somone",
+    time: String
+){
 
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(78.dp)
+            .padding(
+                horizontal = 10.dp,
+                vertical = 4.dp
             )
-            Column(modifier = Modifier.padding(start=10.dp)){
-             Text(text=Gname, fontSize = 25.sp)
-                Text(text=lastMesage,modifier=Modifier.padding(start=10.dp))
+            .clickable(
+                onClick = {
+                    nav.navigate("GroupChatScreen/${id}")
+                }
+            ),
+        color = GroupTile,
+        shape = RoundedCornerShape(14.dp)
+    ){
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    horizontal = 12.dp,
+                    vertical = 8.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .background(GroupBlue)
+                    .border(
+                        width = 1.5.dp,
+                        color = GroupBlue,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ){
+
+                Text(
+                    text = Gname
+                        .trim()
+                        .firstOrNull()
+                        ?.uppercase()
+                        ?: "G",
+                    color = GroupWhite,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 13.dp)
+            ){
+
+                Text(
+                    text = Gname,
+                    color = GroupWhite,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
+                )
+
+                Text(
+                    text = lastMesage,
+                    color = GroupGrey,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    modifier = Modifier.padding(
+                        top = 4.dp,
+                        start = 3.dp
+                    )
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .width(55.dp)
+                    .padding(start = 5.dp),
+                contentAlignment = Alignment.TopEnd
+            ){
+
+                Text(
+                    text = time,
+                    color = GroupGrey,
+                    fontSize = 11.sp,
+                    maxLines = 1
+                )
+            }
         }
-            Box(modifier=Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd){
-            Text(text=time,modifier=Modifier.padding(start=50.dp))
-            }
     }
-
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun showScrenn(){
-//    GroupPage()
-//}

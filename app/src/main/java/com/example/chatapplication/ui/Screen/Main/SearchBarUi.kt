@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.R
+import kotlinx.coroutines.delay
 
 @Composable
 fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
@@ -68,6 +69,17 @@ fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+
+    LaunchedEffect(userName) {
+        if (userName.isNotBlank()) {
+            delay(1000)
+
+            if (userName.isNotBlank()) {
+                userEsist.isExsist(userName)
+                isSearched = true
+            }
+        }
     }
 
         Box(modifier= Modifier.fillMaxSize().background(Color.Black)){
@@ -176,7 +188,7 @@ fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
                                 modifier = Modifier.fillMaxWidth()
                                     .height(60.dp)
                                     .padding(start = 5.dp, end = 5.dp)
-                                    .clickable { navControl.navigate("ChatScreen") }
+//                                    .clickable { navControl.navigate("ChatScreen") }
                                     .clip(shape = RoundedCornerShape(8.dp)),
                                 color = Color.White
                             ) {

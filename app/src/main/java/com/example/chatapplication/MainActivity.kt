@@ -292,7 +292,8 @@ class MainActivity : ComponentActivity() {
                                     conversationId =
                                         conversationId,
                                     messageInfoVM,
-                                    tokenManager
+                                    tokenManager,
+                                    convoInfoVM
                                 )
                             }
                         }
@@ -343,7 +344,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("GroupName") {
-
                             GroupName(
                                 navController,
                                 save
@@ -364,7 +364,8 @@ class MainActivity : ComponentActivity() {
                                     conversationId,
                                     messageInfoVM,
                                     tokenManager,
-                                    save
+                                    save,
+                                    convoInfoVM
                                 )
                             }
                         }

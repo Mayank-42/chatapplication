@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.MsgVM
+import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.GroupInfo
@@ -61,8 +62,8 @@ fun GroupChatScreen(navControl: NavController,
                     viewMode: databaseVM,
                     conversationId:String?,
                     msg: MsgVM,
-                  tokenManager: TokenManager, save: GroupChatVM){
-    chatScreen(navControl,viewMode,conversationId?:"",msg,tokenManager)
+                  tokenManager: TokenManager, save: GroupChatVM,convo:convoVM){
+    chatScreen(navControl,viewMode,conversationId?:"",msg,tokenManager,convo)
 //    val showInfo by save.gettingGroupinfo.collectAsState(initial=emptyList())
 //    var currentUserId by rememberSaveable { mutableStateOf("") }
 //

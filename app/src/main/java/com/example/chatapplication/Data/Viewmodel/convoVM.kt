@@ -87,6 +87,13 @@ fun startConversationRealtime() {
     }
 }
 
+    suspend fun getConversationById(
+        conversationId: String
+    ): com.example.chatapplication.Data.network.response.ConversationResponse? {
+        return repo.getConversationById(conversationId)
+            .body()
+            ?.firstOrNull()
+    }
 fun syncConversations() {
     viewModelScope.launch {
         try {

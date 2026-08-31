@@ -1,8 +1,5 @@
 package com.example.chatapplication.ui.Screen.Main
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -10,16 +7,14 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,39 +44,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.MsgVM
-import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
-import com.example.chatapplication.R
-import kotlinx.coroutines.launch
-
-// ============================================================
-// COLORS
-// ============================================================
 
 private val ChatBlack = Color(0xFF000000)
 private val ChatWhite = Color(0xFFFFFFFF)
 private val ChatBlue = Color(0xFF3B82F6)
-
 private val ChatMuted = Color(0xFF9CA3AF)
 private val ChatIncoming = Color(0xFFF4F4F4)
 private val ChatInput = Color(0xFFFFFFFF)
-
-
-// ============================================================
-// CHAT SCREEN
-// ============================================================
 
 @Composable
 fun chatScreen(
@@ -89,21 +70,24 @@ fun chatScreen(
     viewMode: databaseVM,
     conversationId: String,
     msg: MsgVM,
-    tokenManager: TokenManager
+    tokenManager: TokenManager,
+    convo: convoVM
 ) {
-
-    // ---------------------------------------------------------
-    // CURRENT USER
-    // ---------------------------------------------------------
-
     var currentUserId by rememberSaveable {
         mutableStateOf("")
     }
 
+    var receiverName by rememberSaveable {
+        mutableStateOf("")
+    }
 
-    // ---------------------------------------------------------
-    // SWIPE-BACK
-    // ---------------------------------------------------------
+    var receiverRole by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var receiverImage by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
 
     var dragDistance by remember {
         mutableFloatStateOf(0f)
@@ -119,18 +103,9 @@ fun chatScreen(
         mutableStateOf(false)
     }
 
-
-    // ---------------------------------------------------------
-    // INITIAL LOAD
-    // ---------------------------------------------------------
-
     LaunchedEffect(conversationId) {
-
-        println(
-            "CHAT SCREEN: conversationId = $conversationId"
-        )
-
         try {
+            println("CHAT SCREEN: conversationId = $conversationId")
 
             currentUserId =
                 tokenManager.getUserId() ?: ""
@@ -143,24 +118,42 @@ fun chatScreen(
                 conversationId
             )
 
-            println(
-                "CHAT SCREEN: local sync started"
-            )
-
             if (currentUserId.isNotBlank()) {
-                msg.markMessagesAsRead(conversationId, currentUserId)
+                msg.markMessagesAsRead(
+                    conversationId,
+                    currentUserId
+                )
+            }
+
+            val conversation =
+                convo.getConversationById(
+                    conversationId
+                )
+
+            if (conversation != null) {
+                receiverName =
+                    conversation.name ?: ""
+
+                receiverImage =
+                    conversation.Image
+
+                println(
+                    "CHAT HEADER NAME = ${conversation.name}"
+                )
+
+                println(
+                    "CHAT HEADER IMAGE = ${conversation.Image}"
+                )
             }
 
         } catch (e: Exception) {
-            println("CHAT SCREEN ERROR: ${e.message}")
+            println(
+                "CHAT SCREEN ERROR = ${e.message}"
+            )
+
             e.printStackTrace()
         }
     }
-
-
-    // ---------------------------------------------------------
-    // MESSAGES
-    // ---------------------------------------------------------
 
     val task by viewMode
         .getConversation(conversationId)
@@ -168,80 +161,30 @@ fun chatScreen(
             initial = emptyList()
         )
 
+    val lastSentMessageId =
+        task.lastOrNull {
+            it.sender_Id == currentUserId
+        }?.id
 
-    // ---------------------------------------------------------
-    // DEBUG
-    // ---------------------------------------------------------
-
-    LaunchedEffect(task) {
-
-        println("CHAT UI: ROOM FLOW EMITTED")
-
-        println("CHAT UI: MESSAGE COUNT = ${task.size}")
-
-        task.forEach {
-            println(
-                "CHAT UI MESSAGE: " +
-                        "id=${it.id}, " +
-                        "message=${it.message}, " +
-                        "status=${it.status}"
+    LaunchedEffect(task.size) {
+        if (currentUserId.isNotBlank()) {
+            msg.markMessagesAsRead(
+                conversationId,
+                currentUserId
             )
         }
     }
-
-
-    // ---------------------------------------------------------
-    // LAST SENT MESSAGE
-    // ---------------------------------------------------------
-
-    val lastSentMessageId =
-        task
-            .lastOrNull {
-                it.sender_Id == currentUserId
-            }
-            ?.id
-
-
-    // ---------------------------------------------------------
-    // MARK AS READ
-    // ---------------------------------------------------------
-
-    LaunchedEffect(task.size) {
-
-        if (currentUserId.isNotBlank()) {
-
-            msg.markMessagesAsRead(conversationId, currentUserId)
-        }
-    }
-
-
-    // ---------------------------------------------------------
-    // INPUT
-    // ---------------------------------------------------------
 
     var textingg by rememberSaveable {
         mutableStateOf("")
     }
 
-
-    // =========================================================
-    // MAIN
-    // =========================================================
-
     Box(
-
         modifier = Modifier
             .fillMaxSize()
             .background(ChatBlack)
-
-            // -------------------------------------------------
-            // KEEP YOUR SWIPE BACK LOGIC
-            // -------------------------------------------------
-
             .pointerInput(Unit) {
-
                 detectHorizontalDragGestures(
-
                     onHorizontalDrag = {
                             change,
                             dragAmount ->
@@ -252,19 +195,13 @@ fun chatScreen(
                             dragAmount > 0 &&
                             !hasNavigated
                         ) {
-
                             dragDistance +=
                                 dragAmount
                         }
 
-                        if (
-                            dragDistance >=
-                            dragThreshold
+                        if (dragDistance >= dragThreshold
                         ) {
-
-                            hasNavigated =
-                                true
-
+                            hasNavigated = true
                             navControl.popBackStack(
                                 "Home",
                                 false
@@ -273,127 +210,91 @@ fun chatScreen(
                     },
 
                     onDragEnd = {
-
                         dragDistance = 0f
                     },
 
                     onDragCancel = {
-
                         dragDistance = 0f
                     }
                 )
             }
     ) {
 
-
-        // =====================================================
-        // MAIN COLUMN
-        // =====================================================
-
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
 
-
-            // =================================================
-            // CHAT HEADER
-            // =================================================
-
             ChatHeader(
-                onBackClick = {
+                name =
+                    if (
+                        receiverName.isBlank()
+                    ) {
+                        "User"
+                    } else {
+                        receiverName
+                    },
 
+                role =
+                    receiverRole,
+
+                image =
+                    receiverImage,
+
+                onBackClick = {
                     navControl.popBackStack()
                 }
             )
 
-
-            // =================================================
-            // MESSAGE AREA
-            // =================================================
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+
+                contentAlignment = Alignment.BottomEnd
             ) {
 
                 LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
 
-                    modifier =
-                        Modifier.fillMaxSize(),
-
-                reverseLayout = true,
+                    reverseLayout = true,
 
                     contentPadding =
-                        androidx.compose.foundation.layout
-                            .PaddingValues(
-                                top = 12.dp,
-                                bottom = 12.dp,
-                                start = 10.dp,
-                                end = 10.dp
-                            ),
+                        PaddingValues(
+                            top = 12.dp,
+                            bottom = 12.dp,
+                            start = 10.dp,
+                            end = 10.dp
+                        ),
 
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp,Alignment.Bottom)
                 ) {
+                    items(task.reversed()) { ele ->
 
-                    items(
-                        task.reversed()
-                    ) { ele ->
-                        // =================================================
-                        // MY MESSAGE
-                        // =================================================
-
-                        if (ele.sender_Id == currentUserId) {
+                        if (
+                            ele.sender_Id == currentUserId
+                        ) {
 
                             SentMessageBubble(
-
-                                message =
-                                    ele.message,
+                                message = ele.message,
 
                                 status =
-                                    if (
-                                        ele.id ==
-                                        lastSentMessageId
-                                    ) {
+                                    if (ele.id == lastSentMessageId) {
                                         ele.status
                                     } else {
                                         null
                                     },
-
-                                // Replace this with the real
-                                // message timestamp property
                                 time = null,
-
                                 onLongClick = {
-
-                                    viewMode.delete(
-                                        ele
-                                    )
+                                    viewMode.delete(ele)
                                 }
                             )
 
-
                         } else {
-
-
-                            // =================================================
-                            // RECEIVED MESSAGE
-                            // =================================================
-
                             ReceivedMessageBubble(
-
-                                message =
-                                    ele.message,
-
-                                // Replace this with the real
-                                // message timestamp property
+                                message = ele.message,
                                 time = null,
-
                                 onLongClick = {
-
-                                    viewMode.delete(
-                                        ele
-                                    )
+                                    viewMode.delete(ele)
                                 }
                             )
                         }
@@ -401,18 +302,10 @@ fun chatScreen(
                 }
             }
 
-
-            // =================================================
-            // MESSAGE INPUT
-            // =================================================
-
             ChatInputBar(
-
                 text = textingg,
 
-                onTextChange = {
-                    textingg = it
-                },
+                onTextChange = { textingg = it },
 
                 onSend = {
                     if (textingg.isNotBlank()) {
@@ -425,20 +318,19 @@ fun chatScreen(
     }
 }
 
-
-// =============================================================
-// CHAT HEADER
-// =============================================================
-
 @Composable
 private fun ChatHeader(
+    name: String,
+    role: String,
+    image: String?,
     onBackClick: () -> Unit
 ) {
-
     Surface(
-
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(
+                top = 24.dp
+            ),
 
         color = ChatBlack,
 
@@ -446,7 +338,6 @@ private fun ChatHeader(
     ) {
 
         Row(
-
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -457,11 +348,6 @@ private fun ChatHeader(
             verticalAlignment =
                 Alignment.CenterVertically
         ) {
-
-
-            // -------------------------------------------------
-            // BACK BUTTON
-            // -------------------------------------------------
 
             Box(
                 modifier = Modifier
@@ -475,31 +361,40 @@ private fun ChatHeader(
                             onBackClick()
                         }
                     ),
-                contentAlignment = Alignment.Center
+
+                contentAlignment =
+                    Alignment.Center
             ) {
+
                 Icon(
                     imageVector =
                         Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = ChatWhite,
-                    modifier = Modifier.size(22.dp)
+
+                    contentDescription =
+                        "Back",
+
+                    tint =
+                        ChatWhite,
+
+                    modifier =
+                        Modifier.size(22.dp)
                 )
             }
 
-
             Spacer(
-                modifier = Modifier.width(12.dp)
+                modifier =
+                    Modifier.width(12.dp)
             )
 
-
-            // -------------------------------------------------
-            // USER IMAGE
-            // -------------------------------------------------
-
             AsyncImage(
-                model = null,
-                contentDescription = "Profile image",
-                contentScale = ContentScale.Crop,
+                model = image,
+
+                contentDescription =
+                    "Profile image",
+
+                contentScale =
+                    ContentScale.Crop,
+
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
@@ -510,61 +405,56 @@ private fun ChatHeader(
                     )
             )
 
-
             Spacer(
-                modifier = Modifier.width(12.dp)
+                modifier =
+                    Modifier.width(12.dp)
             )
-
-
-            // -------------------------------------------------
-            // USER NAME
-            // -------------------------------------------------
 
             Column {
 
                 Text(
-                    text = "Chat",
-                    color = ChatWhite,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                Text(
-
-                    text = "Conversation",
+                    text = name,
 
                     color =
-                        ChatMuted,
+                        ChatWhite,
 
-                    fontSize = 12.sp
+                    fontSize =
+                        18.sp,
+
+                    fontWeight =
+                        FontWeight.SemiBold
                 )
+
+                if (
+                    role.isNotBlank()
+                ) {
+
+                    Text(
+                        text = role,
+
+                        color =
+                            ChatMuted,
+
+                        fontSize =
+                            12.sp
+                    )
+                }
             }
         }
     }
 }
 
-
-// =============================================================
-// SENT MESSAGE
-// =============================================================
-
 @Composable
 private fun SentMessageBubble(
-
     message: String,
-
     status: String?,
-
     time: String?,
-
     onLongClick: () -> Unit
 ) {
-
     Column(
-
-        modifier = Modifier.fillMaxWidth(),
-
-        horizontalAlignment = Alignment.End
+        modifier =
+            Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End,
     ) {
 
         Row(
@@ -580,12 +470,15 @@ private fun SentMessageBubble(
                     )
                     .combinedClickable(
                         onClick = {},
+
                         onLongClick = {
                             onLongClick()
                         }
                     ),
 
-                color = ChatBlue,
+                color =
+                    ChatBlue,
+
                 shape =
                     RoundedCornerShape(
                         topStart = 10.dp,
@@ -596,31 +489,28 @@ private fun SentMessageBubble(
             ) {
 
                 Column(
-
-                    modifier = Modifier.padding(
-                        start = 14.dp,
-                        top = 10.dp,
-                        end = 12.dp,
-                        bottom = 8.dp
-                    )
+                    modifier =
+                        Modifier.padding(
+                            start = 14.dp,
+                            top = 10.dp,
+                            end = 12.dp,
+                            bottom = 8.dp
+                        )
                 ) {
 
                     Text(
-
-                        text = message,
+                        text =
+                            message,
 
                         color =
                             ChatWhite,
 
-                        fontSize = 16.sp,
+                        fontSize =
+                            16.sp,
 
-                        lineHeight = 22.sp
+                        lineHeight =
+                            22.sp
                     )
-
-
-                    // -----------------------------------------
-                    // TIME
-                    // -----------------------------------------
 
                     if (
                         !time.isNullOrBlank()
@@ -632,15 +522,16 @@ private fun SentMessageBubble(
                         )
 
                         Text(
-
-                            text = time,
+                            text =
+                                time,
 
                             color =
                                 ChatWhite.copy(
                                     alpha = 0.70f
                                 ),
 
-                            fontSize = 10.sp,
+                            fontSize =
+                                10.sp,
 
                             modifier =
                                 Modifier.align(
@@ -652,23 +543,19 @@ private fun SentMessageBubble(
             }
         }
 
-
-        // -----------------------------------------------------
-        // STATUS
-        // -----------------------------------------------------
-
         if (
             !status.isNullOrBlank()
         ) {
 
             Text(
-
-                text = status,
+                text =
+                    status,
 
                 color =
                     ChatMuted,
 
-                fontSize = 10.sp,
+                fontSize =
+                    10.sp,
 
                 fontStyle =
                     FontStyle.Italic,
@@ -686,38 +573,27 @@ private fun SentMessageBubble(
     }
 }
 
-
-// =============================================================
-// RECEIVED MESSAGE
-// =============================================================
-
 @Composable
 private fun ReceivedMessageBubble(
-
     message: String,
-
     time: String?,
-
     onLongClick: () -> Unit
 ) {
-
     Column(
-
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier.fillMaxWidth(),
 
         horizontalAlignment =
             Alignment.Start
     ) {
 
         Surface(
-
             modifier = Modifier
                 .padding(
                     start = 4.dp,
                     end = 60.dp
                 )
                 .combinedClickable(
-
                     onClick = {},
 
                     onLongClick = {
@@ -738,31 +614,28 @@ private fun ReceivedMessageBubble(
         ) {
 
             Column(
-
-                modifier = Modifier.padding(
-                    start = 14.dp,
-                    top = 10.dp,
-                    end = 12.dp,
-                    bottom = 8.dp
-                )
+                modifier =
+                    Modifier.padding(
+                        start = 14.dp,
+                        top = 10.dp,
+                        end = 12.dp,
+                        bottom = 8.dp
+                    )
             ) {
 
                 Text(
-
-                    text = message,
+                    text =
+                        message,
 
                     color =
                         Color.Black,
 
-                    fontSize = 16.sp,
+                    fontSize =
+                        16.sp,
 
-                    lineHeight = 22.sp
+                    lineHeight =
+                        22.sp
                 )
-
-
-                // -----------------------------------------
-                // TIME
-                // -----------------------------------------
 
                 if (
                     !time.isNullOrBlank()
@@ -774,13 +647,14 @@ private fun ReceivedMessageBubble(
                     )
 
                     Text(
-
-                        text = time,
+                        text =
+                            time,
 
                         color =
                             Color.Gray,
 
-                        fontSize = 10.sp,
+                        fontSize =
+                            10.sp,
 
                         modifier =
                             Modifier.align(
@@ -793,26 +667,18 @@ private fun ReceivedMessageBubble(
     }
 }
 
-
-// =============================================================
-// INPUT BAR
-// =============================================================
-
 @Composable
 private fun ChatInputBar(
-
     text: String,
-
     onTextChange: (String) -> Unit,
-
     onSend: () -> Unit
 ) {
-
     Box(
-
         modifier = Modifier
             .fillMaxWidth()
-            .background(ChatBlack)
+            .background(
+                ChatBlack
+            )
             .imePadding()
             .padding(
                 start = 10.dp,
@@ -823,8 +689,8 @@ private fun ChatInputBar(
     ) {
 
         Surface(
-
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier.fillMaxWidth(),
 
             color =
                 ChatInput,
@@ -838,14 +704,9 @@ private fun ChatInputBar(
                     Modifier.fillMaxWidth()
             ) {
 
-
-                // -------------------------------------------------
-                // TEXT FIELD
-                // -------------------------------------------------
-
                 TextField(
-
-                    value = text,
+                    value =
+                        text,
 
                     onValueChange =
                         onTextChange,
@@ -853,7 +714,6 @@ private fun ChatInputBar(
                     placeholder = {
 
                         Text(
-
                             text =
                                 "Write a message...",
 
@@ -896,44 +756,36 @@ private fun ChatInputBar(
                             )
                 )
 
-
-                // -------------------------------------------------
-                // SEND BUTTON
-                // -------------------------------------------------
-
                 Button(
+                    onClick =
+                        onSend,
 
-                    onClick = onSend,
-
-                    modifier = Modifier
-                        .align(
-                            Alignment.BottomEnd
-                        )
-                        .padding(
-                            end = 6.dp,
-                            bottom = 6.dp
-                        )
-                        .size(48.dp),
+                    modifier =
+                        Modifier
+                            .align(
+                                Alignment.BottomEnd
+                            )
+                            .padding(
+                                end = 6.dp,
+                                bottom = 6.dp
+                            )
+                            .size(48.dp),
 
                     shape =
                         CircleShape,
 
-                    contentPadding = androidx.compose
-                        .foundation
-                        .layout
-                        .PaddingValues(0.dp),
+                    contentPadding =
+                        PaddingValues(0.dp),
 
                     colors =
                         ButtonDefaults
                             .buttonColors(
-
                                 containerColor =
                                     ChatBlue
                             )
                 ) {
 
                     Icon(
-
                         imageVector =
                             Icons.Default.Send,
 
@@ -942,7 +794,6 @@ private fun ChatInputBar(
 
                         tint =
                             ChatWhite,
-
                         modifier =
                             Modifier.size(21.dp)
                     )
