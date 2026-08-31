@@ -55,6 +55,12 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:Strin
 
     val currentUser = user.userInfo.firstOrNull { it.id == id }
 
+    var userid by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+
+    userid = token.getUserId()?:""
+    }
+
 //    var idd by rememberSaveable {mutableStateOf("") }
 //    LaunchedEffect(Unit) { idd=token.getUserId()?:""}
 
@@ -84,7 +90,7 @@ fun profileScreen(nav: NavController,user: UserInfo,token: TokenManager,id:Strin
             val bytes =
                 inputStream?.readBytes()
             if (bytes != null) {
-                user.uploadImg(id, bytes)
+                user.uploadImg(userid, bytes)
             }
 
             println("Image bytes: ${bytes?.size}")
