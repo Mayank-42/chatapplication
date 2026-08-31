@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -62,7 +63,7 @@ fun GroupPage(
     Scaffold(
         containerColor = GroupBlack,
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = GroupBlack,
                     titleContentColor = GroupWhite,
@@ -88,17 +89,17 @@ fun GroupPage(
                         fontWeight = FontWeight.SemiBold
                     )
                 },
-                actions = {
-                    IconButton(
-                        onClick = { }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = GroupWhite
-                        )
-                    }
-                },
+//                actions = {
+//                    IconButton(
+//                        onClick = { }
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Search,
+//                            contentDescription = "Search",
+//                            tint = GroupWhite
+//                        )
+//                    }
+//                },
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -71,38 +71,28 @@ fun ShowShinUp(
 
     // Scroll state for keyboard
     val scrollState = rememberScrollState()
-
-
+        //valid character
+    val passwordPattern = Regex("^[A-Za-z0-9!@#\\$%^&*()_+\\-=\\[\\]{};':\"|<>?,./`~]+$")
     // --------------------------------------------------
     // REMOVE POPUP AFTER 2000 MILLISECONDS
     // --------------------------------------------------
-
     LaunchedEffect(popupMessage) {
-
         if (popupMessage != null) {
-
-            delay(2000L)
-
+            delay(2000)
             popupMessage = null
         }
     }
-
-
     // --------------------------------------------------
     // MAIN SCREEN
     // --------------------------------------------------
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-
-
         // ==================================================
         // SCROLLABLE SIGNUP CONTENT
         // ==================================================
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -112,140 +102,85 @@ fun ShowShinUp(
                     top = 40.dp,
                     bottom = 30.dp
                 ),
-
             horizontalAlignment = Alignment.CenterHorizontally,
-
             verticalArrangement = Arrangement.Center
         ) {
-
-
             // --------------------------------------------------
             // LOGO
             // --------------------------------------------------
-
             Icon(
                 imageVector = Icons.Default.Face6,
-
                 contentDescription = null,
-
                 tint = Color.White,
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp)
             )
-
-
             // --------------------------------------------------
             // TITLE
             // --------------------------------------------------
-
             Text(
                 text = "Set up your Account",
-
                 color = Color.White,
-
                 fontSize = 36.sp,
-
                 fontWeight = FontWeight.SemiBold,
-
                 modifier = Modifier.padding(
                     top = 15.dp,
                     bottom = 30.dp
                 )
             )
-
-
             // ==================================================
             // EMAIL
             // ==================================================
-
             signupTextField(
-
                 value = email,
-
                 onValueChange = {
                     email = it
                 },
-
                 placeholder = "Enter your Email",
-
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.Email,
-
                         contentDescription = "Email"
                     )
                 }
             )
-
-
-            Spacer(
-                modifier = Modifier.height(20.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(20.dp))
             // ==================================================
             // PASSWORD
             // ==================================================
-
             signupTextField(
-
                 value = password,
-
                 onValueChange = {
                     password = it
                 },
-
                 placeholder = "Enter your Password",
-
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.Lock,
-
                         contentDescription = "Password"
                     )
                 }
             )
-
-
-            Spacer(
-                modifier = Modifier.height(20.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(20.dp))
             // ==================================================
             // CONFIRM PASSWORD
             // ==================================================
 
             signupTextField(
-
                 value = pass,
-
                 onValueChange = {
                     pass = it
                 },
-
                 placeholder = "Confirm your Password",
-
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.Lock,
-
                         contentDescription = "Confirm Password"
                     )
                 }
             )
-
-
-            Spacer(
-                modifier = Modifier.height(25.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(25.dp))
             // ==================================================
             // CONTINUE BUTTON
             // ==================================================
@@ -285,70 +220,50 @@ fun ShowShinUp(
                                 password.isBlank() ||
                                 pass.isBlank()
                             ) {
-
-                                popupMessage =
-                                    "Missing credentials"
+                                popupMessage = "Missing credentials"
                             }
-
-
                             // ------------------------------------------
                             // 2. CHECK EMAIL FORMAT
                             // ------------------------------------------
-
                             else if (!email.contains("@")) {
-
-                                popupMessage =
-                                    "Wrong format"
+                                popupMessage = "Wrong format"
                             }
-
-
+                            else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()){
+                                popupMessage="Invalid email id "
+                            }
                             // ------------------------------------------
                             // 3. CHECK PASSWORD LENGTH
                             // ------------------------------------------
-
                             else if (password.length < 6) {
-
-                                popupMessage =
-                                    "Password should be at least 6 characters"
+                                popupMessage = "Password should be at least 6 characters"
                             }
-
-
+                                else if(password.length>12){
+                                    popupMessage="reduce the ${password.length-12} charecter for valid password"
+                            }
                             // ------------------------------------------
                             // 4. CHECK PASSWORD MATCH
                             // ------------------------------------------
-
                             else if (password != pass) {
-
-                                popupMessage =
-                                    "Password mismatch"
+                                popupMessage = "Password mismatch"
                             }
-
-
+                             else if(!passwordPattern.matches(password)){
+                                popupMessage = "Password carry invalid character"
+                            }
                             // ------------------------------------------
                             // 5. EVERYTHING IS VALID
                             // ------------------------------------------
-
                             else {
-
                                 authVM.email = email
-
                                 authVM.password = password
-
                                 navControler.navigate("UserInfo")
                             }
                         },
-
                         modifier = Modifier.fillMaxSize()
                     ) {
-
                         Text(
-
                             text = "Continue",
-
                             color = Color.Black,
-
                             fontWeight = FontWeight.Bold,
-
                             fontSize = 24.sp
                         )
                     }
@@ -356,40 +271,29 @@ fun ShowShinUp(
             }
 
 
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(10.dp))
             // ==================================================
             // SIGN IN
             // ==================================================
-
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
                     text = "Already a User?",
-
                     color = Color.White
                 )
 
 
                 TextButton(
-
                     onClick = {
-
-                        navControler.navigate("SignIn")
+                        navControler.popBackStack()
                     }
                 ) {
 
                     Text(
-
                         text = "Sign In",
-
                         color = Color(0xFF3B82F6),
-
                         fontStyle = FontStyle.Italic
                     )
                 }
@@ -439,34 +343,20 @@ fun ShowShinUp(
                     // ------------------------------------------
 
                     Icon(
-
                         imageVector = Icons.Default.Warning,
-
                         contentDescription = "Warning",
-
                         tint = Color.Red,
-
                         modifier = Modifier.size(22.dp)
                     )
-
-
-                    Spacer(
-                        modifier = Modifier.width(10.dp)
-                    )
-
-
+                    Spacer(modifier = Modifier.width(10.dp))
                     // ------------------------------------------
                     // ERROR MESSAGE
                     // ------------------------------------------
 
                     Text(
-
                         text = popupMessage ?: "",
-
                         color = Color.Black,
-
                         fontSize = 15.sp,
-
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -484,19 +374,13 @@ fun ShowShinUp(
 fun signupTextField(
 
     value: String,
-
     onValueChange: (String) -> Unit,
-
     placeholder: String,
-
     icon: @Composable () -> Unit
-
 ) {
 
     OutlinedTextField(
-
         value = value,
-
         onValueChange = {
             onValueChange(it)
         },
@@ -514,15 +398,12 @@ fun signupTextField(
 
             Text(
                 text = placeholder,
-
                 fontSize = 18.sp
             )
         },
 
         leadingIcon = icon,
-
         shape = RoundedCornerShape(16.dp),
-
         colors = OutlinedTextFieldDefaults.colors(
 
             // ------------------------------------------
@@ -530,50 +411,30 @@ fun signupTextField(
             // ------------------------------------------
 
             focusedContainerColor = Color.White,
-
             unfocusedContainerColor = Color.White,
-
-
             // ------------------------------------------
             // TEXT
             // ------------------------------------------
-
             focusedTextColor = Color.Black,
-
             unfocusedTextColor = Color.Black,
-
-
             // ------------------------------------------
             // PLACEHOLDER
             // ------------------------------------------
-
             focusedPlaceholderColor = Color.Gray,
-
             unfocusedPlaceholderColor = Color.Gray,
-
-
             // ------------------------------------------
             // ICON
             // ------------------------------------------
-
             focusedLeadingIconColor = Color.Black,
-
             unfocusedLeadingIconColor = Color.Gray,
-
-
             // ------------------------------------------
             // CURSOR
             // ------------------------------------------
-
             cursorColor = Color.Black,
-
-
             // ------------------------------------------
             // BORDER
             // ------------------------------------------
-
             focusedBorderColor = Color.Black,
-
             unfocusedBorderColor = Color.Transparent
         )
     )

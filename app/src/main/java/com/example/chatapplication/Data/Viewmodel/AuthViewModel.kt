@@ -119,7 +119,7 @@ class loginVM( private val reposatory: AuthReposatory,
         name: String,
         username: String,
         role:String,
-        onResult: (Boolean) -> Unit
+        onResult: (Boolean,Int) -> Unit
     ) {
         viewModelScope.launch {
 
@@ -135,7 +135,7 @@ class loginVM( private val reposatory: AuthReposatory,
                 println("SIGNUP FAILED: ${signupResponse.code()}")
                 println("ERROR: ${signupResponse.errorBody()?.string()}")
 
-                onResult(false)
+                onResult(false, signupResponse.code())
                 return@launch
             }
 
@@ -151,7 +151,7 @@ class loginVM( private val reposatory: AuthReposatory,
                 println("LOGIN AFTER SIGNUP FAILED: ${loginResponse.code()}")
                 println("ERROR: ${loginResponse.errorBody()?.string()}")
 
-                onResult(false)
+                onResult(false,loginResponse.code())
                 return@launch
             }
 
@@ -171,7 +171,7 @@ class loginVM( private val reposatory: AuthReposatory,
 
             println("SIGNUP + LOGIN SUCCESS")
             // Only now tell MainActivity that authentication is ready.
-            onResult(true)
+            onResult(true,loginResponse.code())
         }
     }
     fun refreshSession() {

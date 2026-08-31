@@ -100,6 +100,8 @@ fun UserInfo(
     val scrollState = rememberScrollState()
 
 
+
+
     // =========================================================
     // SIGN UP FUNCTION
     // =========================================================
@@ -113,53 +115,35 @@ fun UserInfo(
     // =========================================================
 
     fun signUpUser() {
-
         // -----------------------------------------------------
         // NAME
         // -----------------------------------------------------
-
         if (name.isBlank()) {
-
             popupMessage = "Name is required"
             showPopup = true
-
             return
         }
-
-
         // -----------------------------------------------------
         // USERNAME
         // -----------------------------------------------------
-
         if (username.isBlank()) {
-
             popupMessage = "Username is required"
             showPopup = true
-
             return
         }
-
-
         // -----------------------------------------------------
         // ROLE
         // -----------------------------------------------------
-
         if (
-            role.isBlank() ||
-            role == "Choose your role"
+            role.isBlank() || role == "Choose your role"
         ) {
-
             popupMessage = "Please choose your role"
             showPopup = true
-
             return
         }
-
-
         // -----------------------------------------------------
         // EVERYTHING IS VALID
         // -----------------------------------------------------
-
         viewMode.userinsert(
             userInfo(
                 0,
@@ -167,18 +151,18 @@ fun UserInfo(
                 username
             )
         )
-
         authVM.sigUp(
             authVM.email,
             authVM.password,
             name,
             username,
             role
-        ) { success ->
-
+        ) { success ,responseCode ->
             if (success) {
-
                 onLoginSuccess()
+            }else if (responseCode == 500) {
+                popupMessage = "Username already exists"
+                showPopup = true
             }
         }
     }
@@ -212,116 +196,66 @@ fun UserInfo(
                 ),
 
             horizontalAlignment = Alignment.CenterHorizontally,
-
             verticalArrangement = Arrangement.Center
         ) {
-
-
             // =================================================
             // ICON
             // =================================================
-
             Icon(
                 imageVector = Icons.Default.Face6,
-
                 contentDescription = null,
-
                 tint = Color.White,
-
                 modifier = Modifier.size(85.dp)
             )
-
-
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(10.dp))
             // =================================================
             // TITLE
             // =================================================
-
             Text(
                 text = "Complete your profile",
-
                 color = Color.White,
-
                 fontSize = 32.sp,
-
                 fontWeight = FontWeight.SemiBold
             )
-
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Tell us a little about yourself",
-
                 color = Color.LightGray,
-
                 fontSize = 15.sp
             )
-
-
-            Spacer(
-                modifier = Modifier.height(30.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(30.dp))
             // =================================================
             // NAME
             // =================================================
-
             userInfoField(
                 value = name,
-
                 onValueChange = {
                     name = it
                 },
-
                 placeholder = "Enter your Name",
-
                 leadingIcon = {
-
                     Icon(
                         imageVector = Icons.Outlined.Person,
-
                         contentDescription = "Name"
                     )
                 }
             )
 
 
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(18.dp))
             // =================================================
             // ROLE
             // =================================================
-
             roleDropBox(
                 role = role,
-
                 onRoleChange = {
                     role = it
                 }
             )
-
-
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(18.dp))
             // =================================================
             // USERNAME
             // =================================================
-
             userInfoField(
                 value = username,
 
@@ -330,37 +264,26 @@ fun UserInfo(
                 },
 
                 placeholder = "Enter your Username",
-
                 showPrefix = true,
-
                 imeAction = ImeAction.Send,
-
                 onImeAction = {
-
                     // Keyboard Send
                     signUpUser()
                 },
 
                 leadingIcon = {
-
                     Icon(
                         imageVector = Icons.Default.AccountBox,
-
                         contentDescription = "Username"
                     )
                 }
             )
 
 
-            Spacer(
-                modifier = Modifier.height(28.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(28.dp))
             // =================================================
             // SIGN UP BUTTON
             // =================================================
-
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -374,10 +297,8 @@ fun UserInfo(
                     },
 
                 color = Color.White,
-
                 shape = RoundedCornerShape(16.dp)
             ) {
-
                 Box(
                     modifier = Modifier.fillMaxSize(),
 
@@ -386,32 +307,21 @@ fun UserInfo(
 
                     Text(
                         text = "Sign Up",
-
                         color = Color.Black,
-
                         fontSize = 22.sp,
-
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
 
 
-            Spacer(
-                modifier = Modifier.height(15.dp)
-            )
-
-
+            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "Complete all fields to continue",
-
                 color = Color.Gray,
-
                 fontSize = 13.sp
             )
         }
-
-
         // =====================================================
         // TOP WARNING POPUP
         // =====================================================
@@ -419,9 +329,7 @@ fun UserInfo(
         if (showPopup) {
 
             LaunchedEffect(popupMessage) {
-
                 delay(2000)
-
                 showPopup = false
             }
 
@@ -437,9 +345,7 @@ fun UserInfo(
                     .fillMaxWidth(),
 
                 color = Color.White,
-
                 shape = RoundedCornerShape(14.dp),
-
                 shadowElevation = 8.dp
             ) {
 
@@ -453,27 +359,18 @@ fun UserInfo(
 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-
                     // -----------------------------------------
                     // CAUTION ICON
                     // -----------------------------------------
 
                     Icon(
                         imageVector = Icons.Default.Warning,
-
                         contentDescription = "Invalid",
-
                         tint = Color.Black,
-
                         modifier = Modifier.size(22.dp)
                     )
 
-
-                    Spacer(
-                        modifier = Modifier.width(10.dp)
-                    )
-
+                    Spacer(modifier = Modifier.width(10.dp))
 
                     // -----------------------------------------
                     // MESSAGE
@@ -481,11 +378,8 @@ fun UserInfo(
 
                     Text(
                         text = popupMessage,
-
                         color = Color.Black,
-
                         fontSize = 15.sp,
-
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -493,35 +387,22 @@ fun UserInfo(
         }
     }
 }
-
-
 // =================================================================
 // USER INFO TEXT FIELD
 // =================================================================
-
 @Composable
 fun userInfoField(
-
     value: String,
-
     onValueChange: (String) -> Unit,
-
     placeholder: String,
-
     leadingIcon: @Composable () -> Unit,
-
     showPrefix: Boolean = false,
-
     imeAction: ImeAction = ImeAction.Default,
-
     onImeAction: () -> Unit = {}
-
 ) {
 
     TextField(
-
         value = value,
-
         onValueChange = {
             onValueChange(it)
         },
@@ -531,40 +412,26 @@ fun userInfoField(
             .height(65.dp),
 
         singleLine = true,
-
         placeholder = {
-
             Text(
                 text = placeholder,
-
                 fontSize = 17.sp,
-
                 color = Color.Gray
             )
         },
-
         leadingIcon = leadingIcon,
-
-
         // -----------------------------------------------------
         // USERNAME PREFIX
         // -----------------------------------------------------
-
         prefix = {
-
             if (showPrefix) {
-
                 Text(
                     text = "@ ",
-
                     color = Color.Black,
-
                     fontSize = 17.sp
                 )
             }
         },
-
-
         // -----------------------------------------------------
         // KEYBOARD
         // -----------------------------------------------------
@@ -572,11 +439,8 @@ fun userInfoField(
         keyboardOptions = KeyboardOptions(
             imeAction = imeAction
         ),
-
         keyboardActions = KeyboardActions(
-
             onSend = {
-
                 onImeAction()
             }
         ),
@@ -591,21 +455,13 @@ fun userInfoField(
         colors = TextFieldDefaults.colors(
 
             focusedTextColor = Color.Black,
-
             unfocusedTextColor = Color.Black,
-
             focusedContainerColor = Color.White,
-
             unfocusedContainerColor = Color.White,
-
             focusedIndicatorColor = Color.Transparent,
-
             unfocusedIndicatorColor = Color.Transparent,
-
             cursorColor = Color.Black,
-
             focusedLeadingIconColor = Color.Black,
-
             unfocusedLeadingIconColor = Color.Gray
         )
     )
@@ -635,11 +491,9 @@ fun roleDropBox(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-
         // =====================================================
         // ROLE BOX
         // =====================================================
-
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -663,21 +517,15 @@ fun roleDropBox(
 
                 Icon(
                     imageVector = Icons.Default.AccountBox,
-
                     contentDescription = "Role",
-
                     tint = Color.Gray,
-
                     modifier = Modifier.size(24.dp)
                 )
 
-                Spacer(
-                    modifier = Modifier.width(12.dp)
-                )
+                Spacer(modifier = Modifier.width(12.dp))
 
                 Text(
                     text = role,
-
                     color =
                         if (role == "Choose your role") {
                             Color.Gray
@@ -686,7 +534,6 @@ fun roleDropBox(
                         },
 
                     fontSize = 17.sp,
-
                     modifier = Modifier.weight(1f)
                 )
 
@@ -696,11 +543,8 @@ fun roleDropBox(
 
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
-
                     contentDescription = "Select role",
-
                     tint = Color.Black,
-
                     modifier = Modifier
                         .size(28.dp)
                         .rotate(arrowRotation)
@@ -715,28 +559,21 @@ fun roleDropBox(
 
         AnimatedVisibility(
             visible = expanded,
-
             enter =
-                expandVertically() +
-                        fadeIn(),
+                expandVertically() + fadeIn(),
 
             exit =
-                shrinkVertically() +
-                        fadeOut()
+                shrinkVertically() + fadeOut()
         ) {
 
             Column {
-
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
-
                 Surface(
 
                     modifier = Modifier.fillMaxWidth(),
-
                     color = Color.White,
-
                     shape = RoundedCornerShape(16.dp)
                 ) {
 
@@ -746,11 +583,9 @@ fun roleDropBox(
                             role = "Principal Engineer",
 
                             onClick = {
-
                                 onRoleChange(
                                     "Principal Engineer"
                                 )
-
                                 expanded = false
                             }
                         )
@@ -759,18 +594,15 @@ fun roleDropBox(
                             role = "Manager",
 
                             onClick = {
-
                                 onRoleChange(
                                     "Manager"
                                 )
-
                                 expanded = false
                             }
                         )
 
                         roleItem(
                             role = "SDE",
-
                             onClick = {
 
                                 onRoleChange(
@@ -783,13 +615,8 @@ fun roleDropBox(
 
                         roleItem(
                             role = "QA",
-
                             onClick = {
-
-                                onRoleChange(
-                                    "QA"
-                                )
-
+                                onRoleChange("QA")
                                 expanded = false
                             }
                         )
@@ -798,24 +625,15 @@ fun roleDropBox(
                             role = "Product Manager",
 
                             onClick = {
-
-                                onRoleChange(
-                                    "Product Manager"
-                                )
-
+                                onRoleChange("Product Manager")
                                 expanded = false
                             }
                         )
 
                         roleItem(
                             role = "Intern",
-
                             onClick = {
-
-                                onRoleChange(
-                                    "Intern"
-                                )
-
+                                onRoleChange("Intern")
                                 expanded = false
                             }
                         )
@@ -833,33 +651,24 @@ fun roleDropBox(
 
 @Composable
 fun roleItem(
-
     role: String,
-
     onClick: () -> Unit
-
 ) {
 
     Box(
-
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp)
             .clickable {
-
                 onClick()
             }
             .padding(horizontal = 18.dp),
-
         contentAlignment = Alignment.CenterStart
     ) {
 
         Text(
-
             text = role,
-
             color = Color.Black,
-
             fontSize = 16.sp
         )
     }

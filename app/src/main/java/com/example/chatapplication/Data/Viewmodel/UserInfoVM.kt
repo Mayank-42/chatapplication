@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import co.touchlab.kermit.Logger.Companion.a
 import com.example.chatapplication.Data.Repo.AuthReposatory
 import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
