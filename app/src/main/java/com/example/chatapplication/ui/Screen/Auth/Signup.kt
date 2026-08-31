@@ -1,5 +1,7 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.fontStyle
+import android.graphics.Color.blue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -112,6 +114,7 @@ fun ShowShinUp(navControler: NavController,authVM: loginVM){
                 )
                 TextButton(onClick = {navControler.navigate("SignIn")})
                 {Text(text="Sign In",
+                    color=Color(0xFF3B82F6),
                     fontStyle = FontStyle.Italic
                 ) }
             }

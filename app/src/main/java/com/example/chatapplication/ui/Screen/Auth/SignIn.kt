@@ -131,7 +131,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
 //                            },
 //                        )
                     }
-
+            val blue=Color(0xFF3B82F6)
             Row {
                 Text(
                     text = "Not a User?",
@@ -140,7 +140,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                 )
                 TextButton(onClick = {navControler.navigate("register")})
                 {Text(text="Register",
-                    color= MaterialTheme.colorScheme.tertiary,
+                    color= blue,
                     fontStyle = FontStyle.Italic,
 
                 ) }
