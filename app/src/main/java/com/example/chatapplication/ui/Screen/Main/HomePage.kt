@@ -63,6 +63,7 @@
     import androidx.compose.ui.unit.dp
     import androidx.compose.ui.unit.sp
     import androidx.navigation.NavController
+    import coil3.compose.AsyncImage
     import com.example.chatapplication.Data.local.TokenManager
     import com.example.chatapplication.Data.Viewmodel.UserInfo
     import com.example.chatapplication.Data.Viewmodel.convoVM
@@ -226,12 +227,11 @@
                                    modifier = Modifier.fillMaxSize(),
                                    verticalAlignment = Alignment.CenterVertically
                                ) {
-                                   Image(
-                                       painter = painterResource(ele.Image),
+                                   AsyncImage(
+                                       model = ele.Image,
                                        contentDescription = "profile image",
                                        modifier = Modifier.size(50.dp).clip(CircleShape)
                                            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
-
                                    )
                                    Box(contentAlignment = Alignment.CenterStart) {
                                        Column() {
@@ -253,8 +253,8 @@
                                    contentAlignment = Alignment.TopEnd
                                ) {
 
-                                   Text( text = formatConversationDate(
-                                       ele.lastTime), fontStyle = FontStyle.Italic)
+                                   Text( text =
+                                       ele.lastTime?:"", fontStyle = FontStyle.Italic)
                                }
                                if(unreadCount!=0)
                                Box(
