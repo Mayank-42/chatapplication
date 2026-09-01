@@ -99,9 +99,6 @@ fun UserInfo(
 
     val scrollState = rememberScrollState()
 
-
-
-
     // =========================================================
     // SIGN UP FUNCTION
     // =========================================================
@@ -113,7 +110,6 @@ fun UserInfo(
     // call this SAME function.
     //
     // =========================================================
-
     fun signUpUser() {
         // -----------------------------------------------------
         // NAME
@@ -166,35 +162,23 @@ fun UserInfo(
             }
         }
     }
-
-
     // =========================================================
     // MAIN SCREEN
     // =========================================================
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
-
-
         // =====================================================
         // SCROLLABLE CONTENT
         // =====================================================
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .imePadding()
-                .padding(
-                    start = 35.dp,
-                    end = 35.dp,
-                    top = 45.dp,
-                    bottom = 35.dp
-                ),
-
+                .padding(start = 35.dp, end = 35.dp, top = 45.dp, bottom = 35.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -258,7 +242,6 @@ fun UserInfo(
             // =================================================
             userInfoField(
                 value = username,
-
                 onValueChange = {
                     username = it
                 },
@@ -270,7 +253,6 @@ fun UserInfo(
                     // Keyboard Send
                     signUpUser()
                 },
-
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.AccountBox,
@@ -289,10 +271,8 @@ fun UserInfo(
                     .fillMaxWidth()
                     .height(65.dp)
                     .clickable {
-
                         // Button does the EXACT
                         // same operation as keyboard Send.
-
                         signUpUser()
                     },
 
@@ -466,12 +446,9 @@ fun userInfoField(
         )
     )
 }
-
-
 // =================================================================
 // ROLE DROPDOWN
 // =================================================================
-
 @Composable
 fun roleDropBox(
     role: String,
@@ -559,13 +536,9 @@ fun roleDropBox(
 
         AnimatedVisibility(
             visible = expanded,
-            enter =
-                expandVertically() + fadeIn(),
-
-            exit =
-                shrinkVertically() + fadeOut()
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
         ) {
-
             Column {
                 Spacer(
                     modifier = Modifier.height(8.dp)
