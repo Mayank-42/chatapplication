@@ -3,6 +3,7 @@ package com.example.chatapplication.Data.Viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Repo.reposatory
@@ -24,6 +25,8 @@ class convoVM(
     var gettingConvoInfo= repo.getingConvoInfo
 
     private var conversationRealtimeStarted = false
+
+    val onlineUsers = realTimeRepo.onlineUsers
 
     val privateConversations = repo.privateConversations
 
@@ -87,6 +90,39 @@ fun startConversationRealtime() {
     }
 }
 
+    fun startPresence() {
+        viewModelScope.launch {
+            try {
+
+                val userId = token.getUserId()
+
+                if (userId.isNullOrBlank()) {
+                    println("PRESENCE: USER ID IS EMPTY")
+                    return@launch
+                }
+
+                println("PRESENCE: STARTING FOR USER = $userId")
+
+                launch {
+                    try {
+                        realTimeRepo.observePresence()
+                    } catch (e: Exception) {
+                        println("PRESENCE OBSERVE ERROR = ${e.message}")
+                        e.printStackTrace()
+                    }
+                }
+
+                realTimeRepo.subscribePresence(userId)
+
+                println("PRESENCE: STARTED")
+
+            } catch (e: Exception) {
+                println("PRESENCE START ERROR = ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
     suspend fun getConversationById(
         conversationId: String
     ): com.example.chatapplication.Data.network.response.ConversationResponse? {
@@ -132,6 +168,12 @@ fun syncConversations() {
             repo.clearLocalConversations()
             println("CONVO: LOCAL CONVERSATIONS CLEARED")
         }
+    }
+    suspend fun getOtherUserId(
+        conversationIdd: String
+    ): String? {
+
+        return repo.getOtherUserId(conversationIdd)
     }
 }
 class ConvoVMFactory(

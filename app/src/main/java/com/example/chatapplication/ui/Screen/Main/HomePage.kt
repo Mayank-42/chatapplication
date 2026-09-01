@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.R.attr.onClick
 import android.os.Build
 import androidx.annotation.RequiresApi
 
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.local.TokenManager
@@ -139,6 +141,8 @@ fun HomeScreen(
     // ========================================================
 
     val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
+
+    val onlineUsers by conversationInfo.onlineUsers.collectAsState()
 
     // ========================================================
     // COLLAPSING TOP BAR
@@ -275,8 +279,10 @@ fun HomeScreen(
                         // ==================================================
                         // CONVERSATION TILE
                         // ==================================================
+                        val otherUserId = conversationInfo.getOtherUserId(ele.conversationId)
 
                         ConversationTile(
+                            convoId=ele.conversationId,
                             name = ele.name ?: "",
                             image = ele.Image,
                             lastMessage = ele.lastMessage ?: "",
@@ -364,6 +370,7 @@ private fun HomeSearchBar(
 // ================================================================
 @Composable
 private fun ConversationTile(
+    convoId:String,
     name: String,
     image: String?,
     lastMessage: String,

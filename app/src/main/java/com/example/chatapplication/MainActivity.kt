@@ -248,6 +248,7 @@ class MainActivity : ComponentActivity() {
                         println("================================")
 
                         convoInfoVM.startConversationRealtime()
+                        convoInfoVM.startPresence()
                         convoInfoVM.syncConversations()
                         messageInfoVM.startRealtime()
                         userInfovm.getCompanyUsers()
@@ -381,7 +382,6 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         composable("SignIn") {
-
                             ShowSignIn(
                                 navController,
                                 viewModel,

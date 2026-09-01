@@ -3,12 +3,16 @@
     import com.example.chatapplication.Data.DAO.conversationId
     import com.example.chatapplication.Data.local.tables.CinversationId
     import com.example.chatapplication.Data.network.ApiService
+    import com.example.chatapplication.Data.network.clients.SupaBaseClient
     import com.example.chatapplication.Data.network.request.ConversationRequest
     import com.example.chatapplication.Data.network.request.conversationIdRequest
     import com.example.chatapplication.Data.network.request.getOneConversation
     import com.example.chatapplication.Data.network.response.ConversationResponse
+    import io.github.jan.supabase.postgrest.postgrest
     import io.github.jan.supabase.realtime.PostgresAction
+    import kotlinx.serialization.json.buildJsonObject
     import kotlinx.serialization.json.jsonPrimitive
+    import org.slf4j.MDC.put
     import retrofit2.Response
 
     class convoInfoRepo(
@@ -172,5 +176,33 @@
             }
         suspend fun clearLocalConversations() {
             work.deleteAllConversations()
+        }
+        suspend fun getOtherUserId(
+            conversationId: String
+        ): String? {
+
+            return try {
+
+                SupaBaseClient.supabase
+                    .postgrest
+                    .rpc(
+                        function = "get_other_user_id",
+                        parameters = buildJsonObject {
+                            put(
+                                "p_conversation_id",
+                                conversationId
+                            )
+                        }
+                    )
+                    .decodeAs<String>()
+
+            } catch (e: Exception) {
+
+                println(
+                    "OTHER USER ID ERROR = ${e.message}"
+                )
+
+                null
+            }
         }
     }
