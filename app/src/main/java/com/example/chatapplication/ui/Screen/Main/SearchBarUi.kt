@@ -130,15 +130,12 @@ fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
 
                             )
                         }
-
-
                     }
 
                     val ans = userEsist.UserExsist
                     Spacer(modifier = Modifier.height(20.dp))
                     if(isSearched==true) {
                         if (ans?.isExsist == true) {
-
                             Surface(
                                 modifier = Modifier.fillMaxWidth()
                                     .height(60.dp)

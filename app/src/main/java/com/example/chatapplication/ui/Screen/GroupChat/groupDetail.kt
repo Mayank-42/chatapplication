@@ -1,5 +1,15 @@
 package com.example.chatapplication.ui.Screen.GroupChat
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -19,8 +30,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.GroupAdd
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -62,6 +73,9 @@ fun GroupName(
 ) {
     var Gname by rememberSaveable { mutableStateOf("") }
     var Gbio by rememberSaveable { mutableStateOf("") }
+
+    var popupMessage by remember { mutableStateOf<String?>(null) }
+    var ShowpopUp by remember { mutableStateOf<Boolean>(false) }
 
     LaunchedEffect(Unit) {
         infoo.getCompanyUsers()
@@ -242,6 +256,10 @@ fun GroupName(
 
                     Button(
                         onClick = {
+                            if(Gname.isBlank()){
+                                popupMessage="Group name is required"
+                                ShowpopUp=true
+                            }
                             save.createGroup(
                                 Gname,
                                 Gbio
@@ -360,6 +378,69 @@ fun GroupName(
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+        AnimatedVisibility(
+            visible = ShowpopUp,
+            enter = fadeIn(
+                animationSpec = tween(250)
+            ) + scaleIn(
+                initialScale = 0.85f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
+            ) + slideInVertically(
+                initialOffsetY = { -80 },
+                animationSpec = tween(450)
+            ),
+            exit = fadeOut(
+                animationSpec = tween(180)
+            ) + scaleOut(
+                targetScale = 0.9f,
+                animationSpec = tween(180)
+            ) + slideOutVertically(
+                targetOffsetY = { +80 },
+                animationSpec = tween(450)
+            )
+        ) {
+
+            if (popupMessage != null) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = 40.dp, start = 20.dp, end = 20.dp),
+                    color = Color.White,
+                    shape = RoundedCornerShape(14.dp),
+                    shadowElevation = 8.dp
+                ) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // ------------------------------------------
+                        // WARNING ICON
+                        // -----------------------------------------
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = "Warning",
+                            tint = Color.Red,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        // ------------------------------------------
+                        // ERROR MESSAGE
+                        // ------------------------------------------
+                        Text(
+                            text = popupMessage ?: "",
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }

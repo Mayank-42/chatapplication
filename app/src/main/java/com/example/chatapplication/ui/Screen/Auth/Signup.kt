@@ -166,7 +166,6 @@ fun ShowShinUp(
             // ==================================================
             // CONFIRM PASSWORD
             // ==================================================
-
             signupTextField(
                 value = pass,
                 onValueChange = {
@@ -181,12 +180,10 @@ fun ShowShinUp(
                 }
             )
             Spacer(modifier = Modifier.height(25.dp))
-            // ==================================================
+            // ====================================================
             // CONTINUE BUTTON
             // ==================================================
-
             Surface(
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -194,39 +191,31 @@ fun ShowShinUp(
                         end = 35.dp
                     )
                     .height(70.dp),
-
                 color = Color.White,
-
                 shape = RoundedCornerShape(16.dp)
             ) {
 
                 Box(
-
                     modifier = Modifier.fillMaxSize(),
-
                     contentAlignment = Alignment.Center
                 ) {
 
                     TextButton(
-
                         onClick = {
-
                             // ------------------------------------------
                             // 1. CHECK EMPTY FIELDS
                             // ------------------------------------------
-
+                            var msg=isValid(email,password,pass)
                             if (
-                                email.isBlank() ||
-                                password.isBlank() ||
-                                pass.isBlank()
+                                msg!="good"
                             ) {
-                                popupMessage = "Missing credentials"
+                                popupMessage = msg
                             }
                             // ------------------------------------------
                             // 2. CHECK EMAIL FORMAT
                             // ------------------------------------------
                             else if (!email.contains("@")) {
-                                popupMessage = "Wrong format"
+                                popupMessage = "Please enter a valid email address"
                             }
                             else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()){
                                 popupMessage="Invalid email id "
@@ -244,10 +233,10 @@ fun ShowShinUp(
                             // 4. CHECK PASSWORD MATCH
                             // ------------------------------------------
                             else if (password != pass) {
-                                popupMessage = "Password mismatch"
+                                popupMessage = "Passwords do not match"
                             }
                              else if(!passwordPattern.matches(password)){
-                                popupMessage = "Password carry invalid character"
+                                popupMessage = "Password contains an invalid character"
                             }
                             // ------------------------------------------
                             // 5. EVERYTHING IS VALID
@@ -299,16 +288,11 @@ fun ShowShinUp(
                 }
             }
         }
-
-
         // ==================================================
         // FIXED TOP POPUP
         // ==================================================
-
         if (popupMessage != null) {
-
             Surface(
-
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
@@ -317,31 +301,18 @@ fun ShowShinUp(
                         start = 20.dp,
                         end = 20.dp
                     ),
-
                 color = Color.White,
-
                 shape = RoundedCornerShape(14.dp),
-
                 shadowElevation = 8.dp
             ) {
 
                 Row(
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 14.dp
-                        ),
-
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-
                     // ------------------------------------------
                     // WARNING ICON
                     // ------------------------------------------
-
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "Warning",
@@ -393,9 +364,7 @@ fun signupTextField(
             ),
 
         singleLine = true,
-
         placeholder = {
-
             Text(
                 text = placeholder,
                 fontSize = 18.sp
@@ -438,4 +407,12 @@ fun signupTextField(
             unfocusedBorderColor = Color.Transparent
         )
     )
+
+}
+
+fun isValid(email:String,pass:String,con:String):String{
+    if(email.isBlank()&&pass.isBlank()&&con.isBlank()) return "Please enter your email, password, and confirm password"
+    else if(email.isNotBlank()&&pass.isBlank()&&con.isBlank())return "Please enter your password, and confirm password"
+    else if(email.isNotBlank()&&pass.isNotBlank()&&con.isBlank()) return "Please confirm your password"
+    else return "good"
 }

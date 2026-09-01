@@ -71,7 +71,6 @@ import java.time.format.DateTimeParseException
 // ============================================================
 // APP COLORS
 // ============================================================
-
 private val HomeBlack = Color(0xFF000000)
 private val HomeWhite = Color(0xFFFFFFFF)
 private val HomeBlue = Color(0xFF3B82F6)
@@ -139,15 +138,11 @@ fun HomeScreen(
     // CONVERSATIONS
     // ========================================================
 
-    val conversations by conversationInfo
-        .privateConversations
-        .collectAsState(initial = emptyList())
-
+    val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
 
     // ========================================================
     // COLLAPSING TOP BAR
     // ========================================================
-
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
 
@@ -160,7 +155,6 @@ fun HomeScreen(
         // ====================================================
         // TOP APP BAR
         // ====================================================
-
         topBar = {
             MediumTopAppBar(
                 title = {
@@ -200,7 +194,6 @@ fun HomeScreen(
                         "GroupPage"
                     )
                 },
-
                 onLogoutClick = {
                     scope.launch {
                         tokenManager.clearTokens()
@@ -231,7 +224,6 @@ fun HomeScreen(
                 // ==================================================
                 // SEARCH BAR
                 // ==================================================
-
                 HomeSearchBar(
                     onClick = {
                         navControl.navigate(
@@ -239,13 +231,10 @@ fun HomeScreen(
                         )
                     }
                 )
-
-
                 Spacer(modifier = Modifier.height(16.dp))
                 // ==================================================
                 // CONVERSATION LIST
                 // ==================================================
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
@@ -253,10 +242,8 @@ fun HomeScreen(
                         end = 12.dp,
                         bottom = 24.dp
                     ),
-
                     verticalArrangement = Arrangement.spacedBy(11.dp)
                 ) {
-
                     items(
                         items = conversations,
                         key = {

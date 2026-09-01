@@ -45,7 +45,7 @@ fun startConversationRealtime() {
         launch {
             realTimeRepo.conversationMemberInsertFlow().collect{ event ->
                     println("GROUP REALTIME EVENT RECEIVED")
-                println("🔥🔥🔥 CONVERSATION MEMBER INSERT RECEIVED 🔥🔥🔥")
+                println("CONVERSATION MEMBER INSERT RECEIVED")
                     println("GROUP EVENT = ${event.record}")
                     val myUserId = token.getUserId()
                 println("MY USER ID = $myUserId")
