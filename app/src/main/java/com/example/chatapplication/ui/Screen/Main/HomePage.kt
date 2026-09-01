@@ -304,6 +304,12 @@ fun HomeScreen(
     =================================================
     """.trimIndent()
                         )
+                        println(
+                            "HOME ONLINE DEBUG: " +
+                                    "conversation=${ele.conversationId}, " +
+                                    "otherUserId=$otherUserId, " +
+                                    "onlineUsers=$onlineUsers"
+                        )
 
                         ConversationTile(
                             convoId=isOnline,
