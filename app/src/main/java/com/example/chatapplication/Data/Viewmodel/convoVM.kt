@@ -11,6 +11,7 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.CinversationId
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonPrimitive
@@ -174,6 +175,28 @@ fun syncConversations() {
     ): String? {
 
         return repo.getOtherUserId(conversationIdd)
+    }
+    private val conversationUser = MutableStateFlow<Map<String, String>>(emptyMap())
+
+    val conversationUsers = conversationUser
+
+    fun loadOtherUserIds(conversationIds: List<String>) {
+        viewModelScope.launch {
+
+            val result = mutableMapOf<String, String>()
+
+            for (conversationId in conversationIds) {
+
+                val userId =
+                    repo.getOtherUserId(conversationId)
+
+                if (userId != null) {
+                    result[conversationId] = userId
+                }
+            }
+
+            conversationUsers.value = result
+        }
     }
 }
 class ConvoVMFactory(

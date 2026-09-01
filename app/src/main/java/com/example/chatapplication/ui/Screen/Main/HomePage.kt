@@ -141,6 +141,7 @@ fun HomeScreen(
     // ========================================================
 
     val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
+    val conversationUsers by conversationInfo.conversationUsers.collectAsState()
 
     val onlineUsers by conversationInfo.onlineUsers.collectAsState()
 
@@ -279,10 +280,15 @@ fun HomeScreen(
                         // ==================================================
                         // CONVERSATION TILE
                         // ==================================================
-                        val otherUserId = conversationInfo.getOtherUserId(ele.conversationId)
+                        val otherUserId =
+                            conversationUsers[ele.conversationId]
+
+                        val isOnline =
+                            otherUserId != null &&
+                                    onlineUsers.contains(otherUserId)
 
                         ConversationTile(
-                            convoId=ele.conversationId,
+                            convoId=isOnline,
                             name = ele.name ?: "",
                             image = ele.Image,
                             lastMessage = ele.lastMessage ?: "",
@@ -370,7 +376,7 @@ private fun HomeSearchBar(
 // ================================================================
 @Composable
 private fun ConversationTile(
-    convoId:String,
+    convoId: Boolean,
     name: String,
     image: String?,
     lastMessage: String,
@@ -418,10 +424,7 @@ private fun ConversationTile(
                         .clip(CircleShape)
                         .border(
                             width = 1.5.dp,
-                            // BLUE BORDER
-                            // subtle enough to blend
-                            // but still visible
-                            color = HomeBlue,
+                            color= if(convoId) Color.Green else HomeBlue,
                             shape = CircleShape
                         )
                 )
