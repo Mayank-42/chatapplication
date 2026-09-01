@@ -3,7 +3,6 @@ package com.example.chatapplication.ui.Screen.Main
 import android.R.attr.onClick
 import android.os.Build
 import androidx.annotation.RequiresApi
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -57,12 +56,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
-import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.local.TokenManager
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -297,6 +294,16 @@ fun HomeScreen(
                         val isOnline =
                             otherUserId != null &&
                                     onlineUsers.contains(otherUserId)
+                        println(
+                            """
+    ================= ONLINE DEBUG =================
+    CONVERSATION ID = ${ele.conversationId}
+    OTHER USER ID   = $otherUserId
+    ONLINE USERS    = $onlineUsers
+    IS ONLINE       = $isOnline
+    =================================================
+    """.trimIndent()
+                        )
 
                         ConversationTile(
                             convoId=isOnline,

@@ -9,6 +9,7 @@ import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.CinversationId
+import com.example.chatapplication.Data.network.request.conversationIdRequest
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,8 @@ class convoVM(
 //        viewModelScope.launch{
 //            repo.insertConvoInfo(info)
 //        }
+
+
 fun startConversationRealtime() {
     if (conversationRealtimeStarted) {
     println("GROUP: REALTIME ALREADY STARTED")
@@ -171,10 +174,9 @@ fun syncConversations() {
         }
     }
     suspend fun getOtherUserId(
-        conversationIdd: String
+        conversationId: String
     ): String? {
-
-        return repo.getOtherUserId(conversationIdd)
+        return repo.getOtherUserId(conversationId)
     }
     private val conversationUser = MutableStateFlow<Map<String, String>>(emptyMap())
 

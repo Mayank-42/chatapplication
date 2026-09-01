@@ -160,37 +160,42 @@ class RealTimeRepo {
         )
     }
     suspend fun subscribePresence(userId: String) {
-        if (presenceSubscribed) {
-            println("PRESENCE: ALREADY SUBSCRIBED")
-            return
-        }
-        println("PRESENCE: SUBSCRIBING")
+
+        println("PRESENCE: SUBSCRIBING CHANNEL")
+
         presenceChannel.subscribe(
             blockUntilSubscribed = true
         )
+
+        println("PRESENCE: CHANNEL SUBSCRIBED")
+
         presenceChannel.track(
             mapOf(
                 "user_id" to userId
             )
         )
+
+        println("PRESENCE: TRACKED USER = $userId")
+
         presenceSubscribed = true
-        println("PRESENCE: USER $userId IS ONLINE")
     }
     suspend fun observePresence() {
+
+        println("PRESENCE: STARTING OBSERVER")
 
         presenceChannel
             .presenceDataFlow<PresenceState>()
             .collect { presenceList ->
 
+                println("PRESENCE: RAW DATA = $presenceList")
+
                 val users = presenceList
                     .map { it.user_id }
                     .toSet()
 
-                _onlineUsers.value = users
+                println("PRESENCE: USERS = $users")
 
-                println(
-                    "PRESENCE: ONLINE USERS = $users"
-                )
+                _onlineUsers.value = users
             }
     }
 }

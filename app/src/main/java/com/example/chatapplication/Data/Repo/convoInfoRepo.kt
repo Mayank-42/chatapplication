@@ -31,7 +31,7 @@
 
         suspend fun syncConversations(id:String) {
             val request = conversationIdRequest(
-                p_user_id = id
+                p_user_id  = id
             )
             val response = api.getConvoInfo(request)
             if (response.isSuccessful) {
