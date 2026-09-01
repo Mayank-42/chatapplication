@@ -204,6 +204,11 @@ class MainActivity : ComponentActivity() {
                             retroFitClient.apiService
                         )
 
+                    val messageInfoRepo =
+                        MessageRepo(
+                            retroFitClient.apiService,
+                            application.database.dataBaseCall()
+                        )
                     val convoInfoVM: convoVM =
                         viewModel(
                             factory =
@@ -211,15 +216,11 @@ class MainActivity : ComponentActivity() {
                                     convoRepo,
                                     tokenManager,
                                     repo,
+                                    messageInfoRepo,
                                     realtimeRepo
                                 )
                         )
 
-                    val messageInfoRepo =
-                        MessageRepo(
-                            retroFitClient.apiService,
-                            application.database.dataBaseCall()
-                        )
 
                     val messageInfoVM: MsgVM =
                         viewModel(
