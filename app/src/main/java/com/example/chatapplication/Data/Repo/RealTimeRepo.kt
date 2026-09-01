@@ -39,7 +39,12 @@ class RealTimeRepo {
         ) {
             table = "message"
         }
-
+    private val messageUpdateFlow =
+        messageChannel.postgresChangeFlow<PostgresAction.Update>(
+            schema = "public"
+        ) {
+            table = "message"
+        }
     private val conversationMemberFlow =
         conversationMemberChannel.postgresChangeFlow<PostgresAction.Insert>(
             schema = "public"
@@ -68,6 +73,11 @@ class RealTimeRepo {
     fun messageInsertFlow(): Flow<PostgresAction.Insert> {
         println("REALTIME: RETURNING MESSAGE FLOW")
         return messageFlow
+    }
+
+    fun messageUpdateFlow(): Flow<PostgresAction.Update> {
+        println("REALTIME: RETURNING MESSAGE UPDATE FLOW")
+        return messageUpdateFlow
     }
 
 

@@ -6,13 +6,12 @@ import androidx.room3.PrimaryKey
 @Entity
 data class MessageInfo(
     @PrimaryKey
-    var id:String,
+    var id: String,
     var conversationId: String,
-    var sender_Id:String,
-    var reciver_Id:String?,
-    var message:String,
-    var date:String,
-//    var isSeen:Boolean
-    var status: String = "PENDING"
+    var sender_Id: String,
+    var reciver_Id: String?,
+    var message: String,
+    var date: String,
+    var status: String = "SENT"
 ) {
 }
