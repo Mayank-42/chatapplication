@@ -1,9 +1,11 @@
 package com.example.chatapplication.Data.network
 
 import com.example.chatapplication.Data.network.request.ConversationRequest
+import com.example.chatapplication.Data.network.request.ConversationSeenRequest
 import com.example.chatapplication.Data.network.request.CreateGroupRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
+import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
@@ -84,6 +86,16 @@ suspend fun getConvoInfo(
     suspend fun getConversationById(
         @Body request: getOneConversation
     ): Response<List<ConversationResponse>>
+
+    @POST("rpc/mark_message_delivered")
+    suspend fun markMessageDelivered(
+        @Body request: MessageStatusRequest
+    ): Response<Unit>
+
+    @POST("rpc/mark_conversation_seen")
+    suspend fun markConversationSeen(
+        @Body request: ConversationSeenRequest
+    ): Response<Unit>
 
 
 }

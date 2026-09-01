@@ -5,8 +5,10 @@ import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.ConversationRequest
+import com.example.chatapplication.Data.network.request.ConversationSeenRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
+import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import retrofit2.Response
@@ -58,5 +60,25 @@ class MessageRepo(
         )
 
         return getMessage.getOrCreateConversation(request)
+    }
+    suspend fun markMessageDelivered(
+        messageId: String
+    ): Response<Unit> {
+
+        return getMessage.markMessageDelivered(
+            MessageStatusRequest(
+                p_message_id = messageId
+            )
+        )
+    }
+    suspend fun markConversationSeen(
+        conversationId: String
+    ): Response<Unit> {
+
+        return getMessage.markConversationSeen(
+            ConversationSeenRequest(
+                p_conversation_id = conversationId
+            )
+        )
     }
 }

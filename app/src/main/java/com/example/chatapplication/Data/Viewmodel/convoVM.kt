@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.chatapplication.Data.DAO.conversationId
+import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.convoInfoRepo
 import com.example.chatapplication.Data.Repo.reposatory
@@ -21,6 +22,7 @@ class convoVM(
     private var repo: convoInfoRepo,
     private var token: TokenManager,
     private var messageRepo: reposatory,
+    private var msgRepo: MessageRepo,
     private var realTimeRepo: RealTimeRepo
 ): ViewModel(){
 
@@ -184,20 +186,40 @@ fun syncConversations() {
 
     fun loadOtherUserIds(conversationIds: List<String>) {
         viewModelScope.launch {
-
             val result = mutableMapOf<String, String>()
-
             for (conversationId in conversationIds) {
-
-                val userId =
-                    repo.getOtherUserId(conversationId)
-
-                if (userId != null) {
-                    result[conversationId] = userId
-                }
+                val userId = repo.getOtherUserId(conversationId)
+                if (userId != null) { result[conversationId] = userId }
             }
-
             conversationUsers.value = result
+        }
+    }
+
+    fun markMessageDelivered(messageId: String) {
+
+        viewModelScope.launch {
+            try {
+                val response = msgRepo.markMessageDelivered(messageId)
+
+                println("DELIVERED STATUS = ${response.code()}")
+
+            } catch (e: Exception) {
+                println("DELIVERED ERROR = ${e.message}")
+            }
+        }
+    }
+    fun markConversationSeen(conversationId: String) {
+
+        viewModelScope.launch {
+
+            try {
+                val response = msgRepo.markConversationSeen(conversationId)
+
+                println("SEEN STATUS = ${response.code()}")
+
+            } catch (e: Exception) {
+                println("SEEN ERROR = ${e.message}")
+            }
         }
     }
 }
@@ -205,6 +227,7 @@ class ConvoVMFactory(
     private val repo: convoInfoRepo,
     private val tokenManager: TokenManager,
     private var messageRepo: reposatory,
+    private var msgRepo: MessageRepo,
     private var realTimeRepo: RealTimeRepo
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(
@@ -216,6 +239,7 @@ class ConvoVMFactory(
                 repo,
                 tokenManager,
                 messageRepo,
+                msgRepo,
                 realTimeRepo
             ) as T
         }
