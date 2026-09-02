@@ -362,7 +362,7 @@ class MsgVM(
     // SEND MESSAGE
     // ============================================================
     @RequiresApi(Build.VERSION_CODES.O)
-    fun storeMsg(conversationId: String, reciverId:String,message: String
+    fun storeMsg(conversationId: String,message: String
     ) {
         println("STORE MSG: FUNCTION CALLED")
         println("STORE MSG: conversationId = $conversationId")
@@ -411,7 +411,6 @@ class MsgVM(
                     gettingmsg.putMessage(
                         id = messageId,
                         conversationId = conversationId,
-                        receiverId=reciverId,
                         msg = message
                     )
                 println("STORE MSG: HTTP STATUS = ${response.code()}")

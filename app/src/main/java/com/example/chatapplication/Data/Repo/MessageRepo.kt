@@ -17,8 +17,8 @@ class MessageRepo(
     private val getMessage: ApiService,
     private val localWork: operation
 ){
-    suspend fun putMessage(id:String ,conversationId:String, receiverId: String,msg:String):Response<Unit>{
-        val request= MessageInfoRequest(id, conversationId, receiverId,msg)
+    suspend fun putMessage(id:String ,conversationId:String, msg:String):Response<Unit>{
+        val request= MessageInfoRequest(id, conversationId,msg)
         return getMessage.storeMessage(request)
     }
 

@@ -7,8 +7,8 @@ data class MessageInfoRequest(
     val id: String,
     @SerializedName("conversation_id")
     val conversationId: String,
-    @SerializedName("receiver_id")
-    val receiverId: String,
+//    @SerializedName("receiver_id")
+//    val receiverId: String,
 
     @SerializedName("message")
     val message: String
