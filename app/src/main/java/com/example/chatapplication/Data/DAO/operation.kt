@@ -20,7 +20,7 @@ interface operation {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun realtimeInsert(message: MessageInfo)
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun localInsert(msg: List<MessageInfo>)
 
     @Insert

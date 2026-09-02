@@ -137,7 +137,7 @@ class MsgVM(
                                  * The local message should already
                                  * exist as SENT after the API succeeds.
                                  */
-                                "REALTIME: OUR MESSAGE -> LOCAL MESSAGE ALREADY EXISTS"
+                                "SENT"
 
                             } else {
 
@@ -182,7 +182,7 @@ class MsgVM(
 
                         if (senderId == myUserId) {
                             dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
-                            println("REALTIME: OUR MESSAGE -> SENT")
+                            println("REALTIME: OUR MESSAGE -> LOCAL MESSAGE ALREADY EXISTS")
 
                         } else {
                             dbrepo.realtimeInsert(messageInfo)
