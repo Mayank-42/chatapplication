@@ -141,10 +141,7 @@ fun HomeScreen(
 
     LaunchedEffect(conversations) {
 
-        val conversationIds =
-            conversations.map {
-                it.conversationId
-            }
+        val conversationIds = conversations.map { it.conversationId }
 
         if (conversationIds.isNotEmpty()) {
             conversationInfo.loadOtherUserIds(conversationIds)
@@ -280,6 +277,7 @@ fun HomeScreen(
                                     }
                             }
                         }
+//                        val unreadCount = ele.unread_count
                         println(
                             "HOME TIME DEBUG: " +
                                     "conversation=${ele.conversationId}, " +

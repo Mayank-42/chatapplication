@@ -4,6 +4,7 @@ import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.ConversationSeenRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
@@ -11,6 +12,7 @@ import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
 import com.example.chatapplication.Data.network.response.MessageInfoResponse
+import io.github.jan.supabase.auth.auth
 import retrofit2.Response
 
 class MessageRepo(
@@ -45,11 +47,54 @@ class MessageRepo(
             )
         }
 
-    if (localMsgList != null) {
-        println("ROOM SYNC: INSERTING ${localMsgList.size} MESSAGES")
-        localWork.localInsert(localMsgList)
-        println("ROOM SYNC: INSERT COMPLETE")
-    }
+        if (localMsgList != null) {
+
+            println("ROOM SYNC: INSERTING ${localMsgList.size} MESSAGES")
+
+            localWork.localInsert(localMsgList)
+
+            println("ROOM SYNC: INSERT COMPLETE")
+
+            // ------------------------------------------------
+            // Mark newly synced incoming messages DELIVERED
+            // ------------------------------------------------
+            for (message in localMsgList) {
+
+                if (
+                    message.sender_Id !=
+                    SupaBaseClient.supabase.auth.currentUserOrNull()?.id &&
+                    message.status == "SENT"
+                ) {
+
+                    try {
+
+                        println(
+                            "SYNC DELIVERED: MESSAGE ID = ${message.id}"
+                        )
+
+                        val deliveredResponse =
+                            markMessageDelivered(message.id)
+
+                        println(
+                            "SYNC DELIVERED: SERVER STATUS = ${deliveredResponse.code()}"
+                        )
+
+                        println(
+                            "SYNC DELIVERED: ERROR = ${
+                                deliveredResponse.errorBody()?.string()
+                            }"
+                        )
+
+                    } catch (e: Exception) {
+
+                        println(
+                            "SYNC DELIVERED: ERROR = ${e.message}"
+                        )
+
+                    }
+                }
+            }
+        }
     }
     suspend fun getOrCreateConversation(
         otherUserId: String
