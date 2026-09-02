@@ -223,78 +223,78 @@ class MsgVM(
                         println("======================================")
                     }
             }
-                launch {
+            launch {
 
-                    realtimeRepo
-                        .messageUpdateFlow()
-                        .collectLatest { event ->
+                realtimeRepo
+                    .messageUpdateFlow()
+                    .collectLatest { event ->
 
-                            println(
-                                "========== MESSAGE UPDATE =========="
-                            )
+                        println("========== REALTIME MESSAGE UPDATE ==========")
+                        println("REALTIME: MESSAGE UPDATE RECEIVED")
+                        println("REALTIME: UPDATE EVENT = $event")
 
-                            println(
-                                "REALTIME: MESSAGE UPDATE RECEIVED"
-                            )
+                        val record = event.record
 
-                            println(
-                                "REALTIME: UPDATE EVENT = $event"
-                            )
+                        println("REALTIME: UPDATED RECORD = $record")
 
-                            val record = event.record
+                        val messageId =
+                            record["id"]
+                                ?.jsonPrimitive
+                                ?.content
 
-                            println(
-                                "REALTIME: UPDATE RECORD = $record"
-                            )
+                        val status =
+                            record["status"]
+                                ?.jsonPrimitive
+                                ?.content
 
+                        println("REALTIME UPDATE: MESSAGE ID = $messageId")
+                        println("REALTIME UPDATE: STATUS = $status")
 
-                            val messageId =
-                                record["id"]
-                                    ?.jsonPrimitive
-                                    ?.content
+                        if (
+                            messageId.isNullOrBlank()
+                        ) {
+                            println("REALTIME UPDATE: MESSAGE ID IS EMPTY")
+                            return@collectLatest
+                        }
 
-                            val status =
-                                record["status"]
-                                    ?.jsonPrimitive
-                                    ?.content
+                        if (
+                            status.isNullOrBlank()
+                        ) {
+                            println("REALTIME UPDATE: STATUS IS EMPTY")
+                            return@collectLatest
+                        }
 
+                        when (status.uppercase()) {
 
-                            println(
-                                "REALTIME: UPDATED MESSAGE ID = $messageId"
-                            )
+                            "DELIVERED",
+                            "READ",
+                            "SENT" -> {
 
-                            println(
-                                "REALTIME: UPDATED STATUS = $status"
-                            )
-
-
-                            if (
-                                messageId != null &&
-                                status != null
-                            ) {
+                                println(
+                                    "REALTIME UPDATE: ROOM STATUS -> $status"
+                                )
 
                                 dbrepo.updateMessageStatus(
-
                                     messageId = messageId,
-
-                                    status = status
+                                    status = status.uppercase()
                                 )
 
                                 println(
-                                    "ROOM: STATUS UPDATED"
-                                )
-
-                                println(
-                                    "ROOM: $messageId -> $status"
+                                    "REALTIME UPDATE: ROOM UPDATED SUCCESSFULLY"
                                 )
                             }
 
+                            else -> {
 
-                            println(
-                                "===================================="
-                            )
+                                println(
+                                    "REALTIME UPDATE: UNKNOWN STATUS = $status"
+                                )
+                            }
                         }
-                }
+
+                        println("============================================")
+                    }
+            }
 
             // ----------------------------------------------------
             // CONVERSATION REALTIME
