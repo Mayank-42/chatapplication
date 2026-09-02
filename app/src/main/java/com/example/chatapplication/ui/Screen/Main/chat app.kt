@@ -234,12 +234,8 @@ fun chatScreen(
                         receiverName
                     },
 
-                role =
-                    receiverRole,
-
-                image =
-                    receiverImage,
-
+                role = receiverRole,
+                image = receiverImage,
                 onBackClick = {
                     navControl.popBackStack()
                 }
@@ -277,12 +273,15 @@ fun chatScreen(
                             SentMessageBubble(
                                 message = ele.message,
 
-                                status =
-                                    if (ele.id == lastSentMessageId) {
-                                        ele.status
-                                    } else {
-                                        null
-                                    },
+                                if (
+                                    ele.id == task
+                                        .lastOrNull { it.sender_Id == currentUserId }
+                                        ?.id
+                                ) {
+                                    ele.status
+                                } else {
+                                    null
+                                },
                                 time = null,
                                 onLongClick = {
                                     viewMode.delete(ele)
@@ -367,34 +366,21 @@ private fun ChatHeader(
             ) {
 
                 Icon(
-                    imageVector =
-                        Icons.Default.ArrowBack,
-
-                    contentDescription =
-                        "Back",
-
-                    tint =
-                        ChatWhite,
-
-                    modifier =
-                        Modifier.size(22.dp)
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = ChatWhite,
+                    modifier = Modifier.size(22.dp)
                 )
             }
 
             Spacer(
-                modifier =
-                    Modifier.width(12.dp)
+                modifier = Modifier.width(12.dp)
             )
 
             AsyncImage(
                 model = image,
-
-                contentDescription =
-                    "Profile image",
-
-                contentScale =
-                    ContentScale.Crop,
-
+                contentDescription = "Profile image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
@@ -405,28 +391,18 @@ private fun ChatHeader(
                     )
             )
 
-            Spacer(
-                modifier =
-                    Modifier.width(12.dp)
-            )
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column {
 
                 Text(
                     text = name,
-
-                    color =
-                        ChatWhite,
-
-                    fontSize =
-                        18.sp,
-
-                    fontWeight =
-                        FontWeight.SemiBold
+                    color = ChatWhite,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
 
-                if (
-                    role.isNotBlank()
+                if (role.isNotBlank()
                 ) {
 
                     Text(
@@ -476,8 +452,7 @@ private fun SentMessageBubble(
                         }
                     ),
 
-                color =
-                    ChatBlue,
+                color = ChatBlue,
 
                 shape =
                     RoundedCornerShape(
@@ -499,17 +474,10 @@ private fun SentMessageBubble(
                 ) {
 
                     Text(
-                        text =
-                            message,
-
-                        color =
-                            ChatWhite,
-
-                        fontSize =
-                            16.sp,
-
-                        lineHeight =
-                            22.sp
+                        text = message,
+                        color = ChatWhite,
+                        fontSize = 16.sp,
+                        lineHeight = 22.sp
                     )
 
                     if (
@@ -522,21 +490,11 @@ private fun SentMessageBubble(
                         )
 
                         Text(
-                            text =
-                                time,
+                            text = time,
 
-                            color =
-                                ChatWhite.copy(
-                                    alpha = 0.70f
-                                ),
-
-                            fontSize =
-                                10.sp,
-
-                            modifier =
-                                Modifier.align(
-                                    Alignment.End
-                                )
+                            color = ChatWhite.copy(alpha = 0.70f),
+                            fontSize = 10.sp,
+                            modifier = Modifier.align(Alignment.End)
                         )
                     }
                 }

@@ -53,46 +53,30 @@ class MsgVM(
         realtimeStarted = true
 
         viewModelScope.launch {
-
             // ----------------------------------------------------
             // MESSAGE INSERT REALTIME
             // ----------------------------------------------------
-
             launch {
-
                 realtimeRepo
                     .messageInsertFlow()
                     .collectLatest { event ->
-
                         println("========== REALTIME MESSAGE ==========")
                         println("REALTIME: NEW MESSAGE RECEIVED")
                         println("REALTIME: EVENT = $event")
-
                         val record = event.record
-
                         println("REALTIME: RECORD = $record")
-
-
                         // -------------------------------
                         // Get current logged-in user
                         // -------------------------------
-
                         val myUserId = tokenManager.getUserId()
 
                         if (myUserId.isNullOrBlank()) {
-
-                            println(
-                                "REALTIME: MY USER ID IS EMPTY"
-                            )
-
+                            println("REALTIME: MY USER ID IS EMPTY")
                             return@collectLatest
                         }
-
-
                         // -------------------------------
                         // Read message fields
                         // -------------------------------
-
                         val messageId =
                             record["id"]
                                 ?.jsonPrimitive
@@ -122,12 +106,9 @@ class MsgVM(
                             record["message_timestamp"]
                                 ?.jsonPrimitive
                                 ?.content
-
-
                         // -------------------------------
                         // Validate required fields
                         // -------------------------------
-
                         if (
                             messageId == null ||
                             conversationId == null ||
@@ -135,39 +116,17 @@ class MsgVM(
                             message == null ||
                             messageTimestamp == null
                         ) {
-
-                            println(
-                                "REALTIME: MESSAGE RECORD IS INVALID"
-                            )
-
-                            println(
-                                "REALTIME: id = $messageId"
-                            )
-
-                            println(
-                                "REALTIME: conversationId = $conversationId"
-                            )
-
-                            println(
-                                "REALTIME: senderId = $senderId"
-                            )
-
-                            println(
-                                "REALTIME: message = $message"
-                            )
-
-                            println(
-                                "REALTIME: timestamp = $messageTimestamp"
-                            )
-
+                            println("REALTIME: MESSAGE RECORD IS INVALID")
+                            println("REALTIME: id = $messageId")
+                            println("REALTIME: conversationId = $conversationId")
+                            println("REALTIME: senderId = $senderId")
+                            println("REALTIME: message = $message")
+                            println("REALTIME: timestamp = $messageTimestamp")
                             return@collectLatest
                         }
-
-
                         // -------------------------------
                         // Determine local status
                         // -------------------------------
-
                         val status =
                             if (senderId == myUserId) {
 
@@ -191,50 +150,23 @@ class MsgVM(
                             }
 
 
-                        println(
-                            "REALTIME: MY USER ID = $myUserId"
-                        )
-
-                        println(
-                            "REALTIME: SENDER ID = $senderId"
-                        )
-
-                        println(
-                            "REALTIME: RECEIVER ID = $receiverId"
-                        )
-
-                        println(
-                            "REALTIME: STATUS = $status"
-                        )
-
-
+                        println("REALTIME: MY USER ID = $myUserId")
+                        println("REALTIME: SENDER ID = $senderId")
+                        println("REALTIME: RECEIVER ID = $receiverId")
+                        println("REALTIME: STATUS = $status")
                         // -------------------------------
                         // Create Room object
                         // -------------------------------
-
                         val messageInfo = MessageInfo(
-
                             id = messageId,
-
                             conversationId = conversationId,
-
                             sender_Id = senderId,
-
                             reciver_Id = receiverId,
-
                             message = message,
-
                             date = messageTimestamp,
-
                             status = status
                         )
-
-
-                        println(
-                            "REALTIME: CONVERTED MESSAGE = $messageInfo"
-                        )
-
-
+                        println("REALTIME: CONVERTED MESSAGE = $messageInfo")
                         // ------------------------------------------------
                         // IMPORTANT
                         // ------------------------------------------------
@@ -248,55 +180,26 @@ class MsgVM(
                         // ------------------------------------------------
 
                         if (senderId == myUserId) {
-
-                            dbrepo.updateMessageStatus(
-                                messageId = messageId,
-                                status = "SENT"
-                            )
-
-                            println(
-                                "REALTIME: OUR MESSAGE -> SENT"
-                            )
+                            dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
+                            println("REALTIME: OUR MESSAGE -> SENT")
 
                         } else {
-
-                            dbrepo.realtimeInsert(
-                                messageInfo
-                            )
-
-                            println(
-                                "REALTIME: OTHER USER MESSAGE -> DELIVERED"
-                            )
+                            dbrepo.realtimeInsert(messageInfo)
+                            println("REALTIME: OTHER USER MESSAGE -> DELIVERED")
                         }
-
-
                         // -------------------------------
                         // Update conversation preview
                         // -------------------------------
-
                         convoRepo.updateLastMessage(
-
                             conversationId = conversationId,
-
                             messageId = messageId,
-
                             message = message,
-
                             time = messageTimestamp
                         )
-
-
-                        println(
-                            "REALTIME: LAST MESSAGE UPDATED"
-                        )
-
-                        println(
-                            "======================================"
-                        )
+                        println("REALTIME: LAST MESSAGE UPDATED")
+                        println("======================================")
                     }
             }
-
-
             // ----------------------------------------------------
             // CONVERSATION REALTIME
             // ----------------------------------------------------
@@ -306,49 +209,24 @@ class MsgVM(
                 realtimeRepo
                     .conversationInsertFlow()
                     .collectLatest { event ->
-
-                        println(
-                            "CONVERSATION REALTIME EVENT RECEIVED"
-                        )
-
-                        println(
-                            "CONVERSATION EVENT = $event"
-                        )
-
-                        println(
-                            "CONVERSATION RECORD = ${event.record}"
-                        )
+                        println("CONVERSATION REALTIME EVENT RECEIVED")
+                        println("CONVERSATION EVENT = $event")
+                        println("CONVERSATION RECORD = ${event.record}")
                     }
             }
-
-
             // ----------------------------------------------------
             // SUBSCRIBE
             // ----------------------------------------------------
-
-            println(
-                "REALTIME: ABOUT TO SUBSCRIBE MESSAGE CHANNEL"
-            )
-
+            println("REALTIME: ABOUT TO SUBSCRIBE MESSAGE CHANNEL")
             realtimeRepo.subscribeMessages()
-
-            println(
-                "REALTIME: ABOUT TO SUBSCRIBE CONVERSATION CHANNEL"
-            )
-
+            println("REALTIME: ABOUT TO SUBSCRIBE CONVERSATION CHANNEL")
             realtimeRepo.subscribeConversations()
-
-            println(
-                "REALTIME: ALL REALTIME SUBSCRIPTIONS STARTED"
-            )
+            println("REALTIME: ALL REALTIME SUBSCRIPTIONS STARTED")
         }
     }
-
-
     // ============================================================
     // LOAD MESSAGES FROM SERVER
     // ============================================================
-
     fun insertingLocaly(
         conversationId: String
     ) {
@@ -356,195 +234,98 @@ class MsgVM(
         viewModelScope.launch {
 
             try {
-
-                val time =
-                    dbrepo.getTimeId(conversationId)
-
+                val time = dbrepo.getTimeId(conversationId)
                 gettingmsg.converting(
-
                     conversationId = conversationId,
-
                     time = time?.date ?: "",
-
                     id = time?.id ?: ""
                 )
-
             } catch (e: Exception) {
-
-                println(
-                    "LOAD MESSAGE ERROR = ${e.message}"
-                )
-
+                println("LOAD MESSAGE ERROR = ${e.message}")
                 e.printStackTrace()
             }
         }
     }
-
-
     // ============================================================
     // MARK LOCAL MESSAGES AS READ
     // ============================================================
-
     fun markMessagesAsRead(
         conversationId: String,
         myUserId: String
     ) {
-
         viewModelScope.launch {
-
             try {
-
-                dbrepo.markMessagesAsRead(
-
-                    conversationId = conversationId,
-
-                    myUserId = myUserId
-                )
-
+                dbrepo.markMessagesAsRead(conversationId = conversationId, myUserId = myUserId)
             } catch (e: Exception) {
-
-                println(
-                    "MARK READ ERROR = ${e.message}"
-                )
-
+                println("MARK READ ERROR = ${e.message}")
                 e.printStackTrace()
             }
         }
     }
-
-
     // ============================================================
     // SEND MESSAGE
     // ============================================================
-
     @RequiresApi(Build.VERSION_CODES.O)
-    fun storeMsg(
-        conversationId: String,
-        message: String
+    fun storeMsg(conversationId: String, message: String
     ) {
-
-        println(
-            "STORE MSG: FUNCTION CALLED"
-        )
-
-        println(
-            "STORE MSG: conversationId = $conversationId"
-        )
-
-        println(
-            "STORE MSG: message = $message"
-        )
-
-
+        println("STORE MSG: FUNCTION CALLED")
+        println("STORE MSG: conversationId = $conversationId")
+        println("STORE MSG: message = $message")
         viewModelScope.launch {
-
             try {
-
                 // ------------------------------------------------
                 // Generate message ID
                 // ------------------------------------------------
-
-                val messageId =
-                    UUID.randomUUID().toString()
-
-
+                val messageId = UUID.randomUUID().toString()
                 // ------------------------------------------------
                 // Get logged-in user
                 // ------------------------------------------------
-
-                val myUserId =
-                    tokenManager.getUserId()
-
-
+                val myUserId = tokenManager.getUserId()
                 if (myUserId.isNullOrBlank()) {
-
-                    println(
-                        "STORE MSG: USER ID IS EMPTY"
-                    )
-
+                    println("STORE MSG: USER ID IS EMPTY")
                     return@launch
                 }
-
-
                 // ------------------------------------------------
                 // Current timestamp
                 // ------------------------------------------------
-
-                val timestamp =
-                    Instant.now().toString()
-
-
+                val timestamp = Instant.now().toString()
                 // ------------------------------------------------
                 // STEP 1
                 // Save locally as PENDING
                 // ------------------------------------------------
-
                 dbrepo.insert(
-
                     MessageInfo(
-
                         id = messageId,
-
                         conversationId = conversationId,
-
                         sender_Id = myUserId,
-
                         reciver_Id = null,
-
                         message = message,
-
                         date = timestamp,
-
                         status = "PENDING"
                     )
                 )
-
-
-                println(
-                    "STORE MSG: LOCAL MESSAGE = PENDING"
-                )
-
-
+                println("STORE MSG: LOCAL MESSAGE = PENDING")
                 // ------------------------------------------------
                 // STEP 2
                 // Send to backend
                 // ------------------------------------------------
-
-                println(
-                    "STORE MSG: CALLING API"
-                )
-
+                println("STORE MSG: CALLING API")
 
                 val response =
                     gettingmsg.putMessage(
-
                         id = messageId,
-
                         conversationId = conversationId,
-
                         msg = message
                     )
-
-
-                println(
-                    "STORE MSG: HTTP STATUS = ${response.code()}"
-                )
-
-                println(
-                    "STORE MSG: BODY = ${response.body()}"
-                )
-
+                println("STORE MSG: HTTP STATUS = ${response.code()}")
+                println("STORE MSG: BODY = ${response.body()}")
                 println(
                     "STORE MSG: ERROR = ${
                         response.errorBody()?.string()
                     }"
                 )
 
-                println(
-                    "STORE MSG: MESSAGE ID = $messageId"
-                )
-
-
+                println("STORE MSG: MESSAGE ID = $messageId")
                 // ------------------------------------------------
                 // STEP 3
                 // API SUCCESS
@@ -552,42 +333,16 @@ class MsgVM(
 
                 if (response.isSuccessful) {
 
-                    println(
-                        "STORE MSG: API SUCCESS"
-                    )
+                    println("STORE MSG: API SUCCESS")
 
-
-                    dbrepo.updateMessageStatus(
-
-                        messageId = messageId,
-
-                        status = "SENT"
-                    )
-
-
-                    println(
-                        "MESSAGE STATUS: $messageId -> SENT"
-                    )
-
+                    dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
+                    println("MESSAGE STATUS: $messageId -> SENT")
                 } else {
-
                     // ------------------------------------------------
                     // API FAILED
                     // ------------------------------------------------
-
-                    println(
-                        "STORE MSG: API FAILED"
-                    )
-
-
-                    dbrepo.updateMessageStatus(
-
-                        messageId = messageId,
-
-                        status = "FAILED"
-                    )
-
-
+                    println("STORE MSG: API FAILED")
+                    dbrepo.updateMessageStatus(messageId = messageId, status = "FAILED")
                     println(
                         "MESSAGE STATUS: $messageId -> FAILED"
                     )
@@ -610,27 +365,19 @@ class MsgVM(
     // ============================================================
 
     fun stopRealtime() {
-
         viewModelScope.launch {
-
             try {
-
                 realtimeRepo.unsubscribeMessages()
-
                 realtimeRepo.unsubscribeConversations()
-
                 realtimeStarted = false
-
                 println(
                     "REALTIME: MESSAGE/CONVERSATION STOPPED"
                 )
 
             } catch (e: Exception) {
-
                 println(
                     "REALTIME STOP ERROR = ${e.message}"
                 )
-
                 e.printStackTrace()
             }
         }
@@ -647,14 +394,10 @@ class MsgVM(
     ): Flow<Int> {
 
         return dbrepo.getUnreadCount(
-
             conversationId = conversationId,
-
             myUserId = myUserId
         )
     }
-
-
     // ============================================================
     // VIEWMODEL FACTORY
     // ============================================================
