@@ -141,10 +141,21 @@ fun HomeScreen(
     // ========================================================
 
     val conversations by conversationInfo.privateConversations.collectAsState(initial = emptyList())
+
+    LaunchedEffect(conversations) {
+
+        val conversationIds =
+            conversations.map {
+                it.conversationId
+            }
+
+        if (conversationIds.isNotEmpty()) {
+            conversationInfo.loadOtherUserIds(conversationIds)
+        }
+    }
     val conversationUsers by conversationInfo.conversationUsers.collectAsState()
 
     val onlineUsers by conversationInfo.onlineUsers.collectAsState()
-
     // ========================================================
     // COLLAPSING TOP BAR
     // ========================================================
