@@ -193,7 +193,9 @@ class MsgVM(
 
                                 println("DELIVERED: SERVER STATUS = ${response.code()}")
 
-                                println("DELIVERED: ERROR = ${response.errorBody()?.string()
+                                println(
+                                    "DELIVERED: ERROR = ${
+                                        response.errorBody()?.string()
                                     }"
                                 )
                                 if (response.isSuccessful) {
@@ -220,6 +222,7 @@ class MsgVM(
                         println("REALTIME: LAST MESSAGE UPDATED")
                         println("======================================")
                     }
+            }
                 launch {
 
                     realtimeRepo
@@ -292,7 +295,7 @@ class MsgVM(
                             )
                         }
                 }
-            }
+
             // ----------------------------------------------------
             // CONVERSATION REALTIME
             // ----------------------------------------------------
