@@ -136,23 +136,44 @@ fun startConversationRealtime() {
             .body()
             ?.firstOrNull()
     }
-fun syncConversations() {
-    viewModelScope.launch {
-        try {
-            val userId =
-                token.getUserId()
-            if (userId.isNullOrBlank()) {
-                println("CONVO: USER ID IS EMPTY")
-                return@launch
-            }
-            repo.syncConversations(userId)
-        } catch (e: Exception) {
-            println(
-                "CONVERSATION SYNC ERROR = ${e.message}"
-            )
-         }
-      }
+//fun syncConversations() {
+//    viewModelScope.launch {
+//        try {
+//            val userId =
+//                token.getUserId()
+//            if (userId.isNullOrBlank()) {
+//                println("CONVO: USER ID IS EMPTY")
+//                return@launch
+//            }
+//            repo.syncConversations(userId)
+//        } catch (e: Exception) {
+//            println(
+//                "CONVERSATION SYNC ERROR = ${e.message}"
+//            )
+//         }
+//      }
+//    }
+suspend fun syncConversations() {
+
+    try {
+
+        val userId = token.getUserId()
+
+        if (userId.isNullOrBlank()) {
+            println("CONVO: USER ID IS EMPTY")
+            return
+        }
+
+        repo.syncConversations(userId)
+
+    } catch (e: Exception) {
+
+        println(
+            "CONVERSATION SYNC ERROR = ${e.message}"
+        )
+
     }
+}
     fun getUnreadCount(
         conversationId: String,
         myUserId: String

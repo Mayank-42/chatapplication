@@ -61,6 +61,7 @@ import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
@@ -251,6 +252,8 @@ class MainActivity : ComponentActivity() {
                         convoInfoVM.startConversationRealtime()
                         convoInfoVM.startPresence()
                         convoInfoVM.syncConversations()
+                        val conversationIds = convoInfoVM.privateConversations.first().map { it.conversationId }
+                        messageInfoVM.syncAllConversations(conversationIds)
                         messageInfoVM.startRealtime()
                         userInfovm.getCompanyUsers()
                     }

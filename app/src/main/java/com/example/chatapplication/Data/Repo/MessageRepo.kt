@@ -72,8 +72,7 @@ class MessageRepo(
                             "SYNC DELIVERED: MESSAGE ID = ${message.id}"
                         )
 
-                        val deliveredResponse =
-                            markMessageDelivered(message.id)
+                        val deliveredResponse = markMessageDelivered(message.id)
 
                         println(
                             "SYNC DELIVERED: SERVER STATUS = ${deliveredResponse.code()}"
@@ -84,7 +83,23 @@ class MessageRepo(
                                 deliveredResponse.errorBody()?.string()
                             }"
                         )
+                        if (deliveredResponse.isSuccessful) {
 
+                            localWork.updateMessageStatus(
+                                messageId = message.id,
+                                status = "DELIVERED"
+                            )
+
+                            println(
+                                "SYNC DELIVERED: ROOM STATUS = ${message.id} -> DELIVERED"
+                            )
+
+                        } else {
+
+                            println(
+                                "SYNC DELIVERED: SERVER UPDATE FAILED"
+                            )
+                        }
                     } catch (e: Exception) {
 
                         println(
