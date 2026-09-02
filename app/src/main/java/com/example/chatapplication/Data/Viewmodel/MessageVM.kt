@@ -106,6 +106,7 @@ class MsgVM(
                             record["message_timestamp"]
                                 ?.jsonPrimitive
                                 ?.content
+
                         // -------------------------------
                         // Validate required fields
                         // -------------------------------
@@ -186,6 +187,26 @@ class MsgVM(
                         } else {
                             dbrepo.realtimeInsert(messageInfo)
                             println("REALTIME: OTHER USER MESSAGE -> DELIVERED")
+
+                            try {
+                                val response = gettingmsg.markMessageDelivered(messageId)
+
+                                println("DELIVERED: SERVER STATUS = ${response.code()}")
+
+                                println("DELIVERED: ERROR = ${response.errorBody()?.string()
+                                    }"
+                                )
+                                if (response.isSuccessful) {
+                                    println("DELIVERED: SERVER UPDATED = $messageId")
+
+                                } else {
+                                    println("DELIVERED: SERVER UPDATE FAILED")
+                                }
+
+                            } catch (e: Exception) {
+                                println("DELIVERED: ERROR = ${e.message}")
+                                e.printStackTrace()
+                            }
                         }
                         // -------------------------------
                         // Update conversation preview
@@ -199,6 +220,78 @@ class MsgVM(
                         println("REALTIME: LAST MESSAGE UPDATED")
                         println("======================================")
                     }
+                launch {
+
+                    realtimeRepo
+                        .messageUpdateFlow()
+                        .collectLatest { event ->
+
+                            println(
+                                "========== MESSAGE UPDATE =========="
+                            )
+
+                            println(
+                                "REALTIME: MESSAGE UPDATE RECEIVED"
+                            )
+
+                            println(
+                                "REALTIME: UPDATE EVENT = $event"
+                            )
+
+                            val record = event.record
+
+                            println(
+                                "REALTIME: UPDATE RECORD = $record"
+                            )
+
+
+                            val messageId =
+                                record["id"]
+                                    ?.jsonPrimitive
+                                    ?.content
+
+                            val status =
+                                record["status"]
+                                    ?.jsonPrimitive
+                                    ?.content
+
+
+                            println(
+                                "REALTIME: UPDATED MESSAGE ID = $messageId"
+                            )
+
+                            println(
+                                "REALTIME: UPDATED STATUS = $status"
+                            )
+
+
+                            if (
+                                messageId != null &&
+                                status != null
+                            ) {
+
+                                dbrepo.updateMessageStatus(
+
+                                    messageId = messageId,
+
+                                    status = status
+                                )
+
+                                println(
+                                    "ROOM: STATUS UPDATED"
+                                )
+
+                                println(
+                                    "ROOM: $messageId -> $status"
+                                )
+                            }
+
+
+                            println(
+                                "===================================="
+                            )
+                        }
+                }
             }
             // ----------------------------------------------------
             // CONVERSATION REALTIME
