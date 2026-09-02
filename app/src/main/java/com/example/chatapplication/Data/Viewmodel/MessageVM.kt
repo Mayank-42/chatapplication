@@ -345,16 +345,28 @@ class MsgVM(
     // ============================================================
     // MARK LOCAL MESSAGES AS READ
     // ============================================================
-    fun markMessagesAsRead(
-        conversationId: String,
-        myUserId: String
-    ) {
+    fun markMessagesAsRead(conversationId: String, myUserId: String) {
         viewModelScope.launch {
             try {
-                dbrepo.markMessagesAsRead(conversationId = conversationId, myUserId = myUserId)
+
+                // 1. Update local Room
+                dbrepo.markMessagesAsRead(
+                    conversationId = conversationId,
+                    myUserId = myUserId
+                )
+
+                println("SEEN: ROOM UPDATED")
+
+                // 2. Update server
+                val response = gettingmsg.markConversationSeen(
+                    conversationId = conversationId
+                )
+
+                println("SEEN: SERVER STATUS = ${response.code()}")
+                println("SEEN: SERVER ERROR = ${response.errorBody()?.string()}")
+
             } catch (e: Exception) {
-                println("MARK READ ERROR = ${e.message}")
-                e.printStackTrace()
+                println("SEEN ERROR = ${e.message}")
             }
         }
     }

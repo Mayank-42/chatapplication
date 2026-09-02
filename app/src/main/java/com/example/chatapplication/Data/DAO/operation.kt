@@ -110,16 +110,16 @@ interface operation {
     FROM MessageInfo
     WHERE conversationId = :conversationId
       AND sender_Id != :myUserId
-      AND status != 'READ'
+      AND status != 'SEEN'
 """)
     fun getUnreadCount(conversationId: String, myUserId: String): Flow<Int>
 
     @Query("""
     UPDATE MessageInfo
-    SET status = 'READ'
+    SET status = 'SEEN'
     WHERE conversationId = :conversationId
       AND sender_Id != :myUserId
-      AND status != 'READ'
+      AND status != 'SEEN'
 """)
     suspend fun markMessagesAsRead(conversationId: String, myUserId: String)
 
