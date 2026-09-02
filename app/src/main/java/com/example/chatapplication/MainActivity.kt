@@ -240,47 +240,61 @@ class MainActivity : ComponentActivity() {
                         )
                     LaunchedEffect(Unit) {
 
-                        networkMonitor.networkRestored
-                            .collect {
+                        networkMonitor.networkRestored.collect {
+
+                            println("NETWORK SYNC: ================================")
+                            println("NETWORK SYNC: INTERNET RESTORED")
+                            println("NETWORK SYNC: SYNCING CONVERSATIONS")
+
+                            // ------------------------------------------------
+                            // WAIT for conversation synchronization to finish
+                            // ------------------------------------------------
+
+                            convoInfoVM.syncConversations()
+
+                            println("NETWORK SYNC: CONVERSATIONS SYNC COMPLETE")
+
+                            // ------------------------------------------------
+                            // NOW read the updated conversation list
+                            // ------------------------------------------------
+
+                            val conversationIds =
+                                convoInfoVM.privateConversations.first()
+                                    .map {
+                                        it.conversationId
+                                    }
+
+                            println(
+                                "NETWORK SYNC: CONVERSATION IDS = $conversationIds"
+                            )
+
+                            // ------------------------------------------------
+                            // SYNC ALL MESSAGES
+                            // ------------------------------------------------
+
+                            if (conversationIds.isNotEmpty()) {
 
                                 println(
-                                    "NETWORK SYNC: OFFLINE -> ONLINE"
+                                    "NETWORK SYNC: STARTING MESSAGE SYNC"
                                 )
-
-                                // ------------------------------------------------
-                                // First refresh conversations
-                                // ------------------------------------------------
-
-                                convoInfoVM.syncConversations()
-
-                                // ------------------------------------------------
-                                // Get the current conversation IDs
-                                // ------------------------------------------------
-
-                                val conversationIds =
-                                    convoInfoVM.privateConversations
-                                        .first()
-                                        .map {
-                                            it.conversationId
-                                        }
-
-                                println(
-                                    "NETWORK SYNC: CONVERSATIONS = " +
-                                            conversationIds
-                                )
-
-                                // ------------------------------------------------
-                                // Sync missed messages
-                                // ------------------------------------------------
 
                                 messageInfoVM.syncAllConversations(
                                     conversationIds
                                 )
 
                                 println(
-                                    "NETWORK SYNC: MESSAGE SYNC STARTED"
+                                    "NETWORK SYNC: MESSAGE SYNC TRIGGERED"
+                                )
+
+                            } else {
+
+                                println(
+                                    "NETWORK SYNC: NO CONVERSATIONS FOUND"
                                 )
                             }
+
+                            println("NETWORK SYNC: ================================")
+                        }
                     }
                     val userInfoRepo =
                         UserInfoReposatory(retroFitClient.apiService, SupaBaseClient.supabase)
