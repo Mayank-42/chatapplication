@@ -44,6 +44,7 @@ import com.example.chatapplication.Data.Viewmodel.UserInfoFactory
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.Data.network.NetworkMonitor
 import com.example.chatapplication.Data.network.clients.AuthRetroFitClient
 import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.clients.retroFitClient
@@ -65,12 +66,15 @@ import kotlinx.coroutines.flow.first
 import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
-
+    private lateinit var networkMonitor: NetworkMonitor
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val tokenManager = TokenManager(this)
+        networkMonitor = NetworkMonitor(this)
+        networkMonitor.start()
+
         enableEdgeToEdge()
         setContent {
 
@@ -234,6 +238,50 @@ class MainActivity : ComponentActivity() {
                                     convoRepo
                                 )
                         )
+                    LaunchedEffect(Unit) {
+
+                        networkMonitor.networkRestored
+                            .collect {
+
+                                println(
+                                    "NETWORK SYNC: OFFLINE -> ONLINE"
+                                )
+
+                                // ------------------------------------------------
+                                // First refresh conversations
+                                // ------------------------------------------------
+
+                                convoInfoVM.syncConversations()
+
+                                // ------------------------------------------------
+                                // Get the current conversation IDs
+                                // ------------------------------------------------
+
+                                val conversationIds =
+                                    convoInfoVM.privateConversations
+                                        .first()
+                                        .map {
+                                            it.conversationId
+                                        }
+
+                                println(
+                                    "NETWORK SYNC: CONVERSATIONS = " +
+                                            conversationIds
+                                )
+
+                                // ------------------------------------------------
+                                // Sync missed messages
+                                // ------------------------------------------------
+
+                                messageInfoVM.syncAllConversations(
+                                    conversationIds
+                                )
+
+                                println(
+                                    "NETWORK SYNC: MESSAGE SYNC STARTED"
+                                )
+                            }
+                    }
                     val userInfoRepo =
                         UserInfoReposatory(retroFitClient.apiService, SupaBaseClient.supabase)
 

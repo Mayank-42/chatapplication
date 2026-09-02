@@ -354,7 +354,9 @@ class MsgVM(
                                 "lastTime=${time?.date} " +
                                 "lastId=${time?.id}"
                     )
-                    gettingmsg.converting(conversationId = conversationId, time = time?.date ?: "", id = time?.id ?: ""
+                    gettingmsg.converting(conversationId = conversationId,
+                        time = time?.date ?: "",
+                        id = time?.id ?: ""
                     )
 
                 } catch (e: Exception) {

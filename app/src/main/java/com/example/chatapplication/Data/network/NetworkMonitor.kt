@@ -22,6 +22,21 @@ class NetworkMonitor(
     val isConnected: StateFlow<Boolean>
         get() = _isConnected
 
+    // ------------------------------------------------------------
+    // RECONNECT EVENT
+    // Every time we go:
+    //
+    // OFFLINE -> ONLINE
+    //
+    // this value increases.
+    // ------------------------------------------------------------
+
+    private val _networkRestored =
+        MutableStateFlow(0)
+
+    val networkRestored: StateFlow<Int>
+        get() = _networkRestored
+
     private var callbackRegistered = false
 
     private val networkCallback =
@@ -38,11 +53,21 @@ class NetworkMonitor(
 
                 _isConnected.value = true
 
+                // ------------------------------------------------
+                // IMPORTANT
+                // Only trigger when the actual transition is:
+                //
+                // OFFLINE -> ONLINE
+                // ------------------------------------------------
+
                 if (!wasConnected) {
 
                     println(
                         "NETWORK MONITOR: OFFLINE -> ONLINE"
                     )
+
+                    _networkRestored.value =
+                        _networkRestored.value + 1
                 }
             }
 
