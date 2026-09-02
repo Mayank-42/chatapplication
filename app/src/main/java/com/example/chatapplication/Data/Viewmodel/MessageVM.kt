@@ -181,7 +181,7 @@ class MsgVM(
                         // ------------------------------------------------
 
                         if (senderId == myUserId) {
-                            dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
+//                            dbrepo.updateMessageStatus(messageId = messageId, status = "SENT")
                             println("REALTIME: OUR MESSAGE -> LOCAL MESSAGE ALREADY EXISTS")
 
                         } else {
@@ -227,7 +227,7 @@ class MsgVM(
 
                 realtimeRepo
                     .messageUpdateFlow()
-                    .collectLatest { event ->
+                    .collect{ event ->
 
                         println("========== REALTIME MESSAGE UPDATE ==========")
                         println("REALTIME: MESSAGE UPDATE RECEIVED")
@@ -254,14 +254,14 @@ class MsgVM(
                             messageId.isNullOrBlank()
                         ) {
                             println("REALTIME UPDATE: MESSAGE ID IS EMPTY")
-                            return@collectLatest
+                            return@collect
                         }
 
                         if (
                             status.isNullOrBlank()
                         ) {
                             println("REALTIME UPDATE: STATUS IS EMPTY")
-                            return@collectLatest
+                            return@collect
                         }
 
                         when (status.uppercase()) {
@@ -304,7 +304,7 @@ class MsgVM(
 
                 realtimeRepo
                     .conversationInsertFlow()
-                    .collectLatest { event ->
+                    .collect { event ->
                         println("CONVERSATION REALTIME EVENT RECEIVED")
                         println("CONVERSATION EVENT = $event")
                         println("CONVERSATION RECORD = ${event.record}")
