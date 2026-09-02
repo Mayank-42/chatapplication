@@ -63,6 +63,7 @@ import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.local.tables.GroupInfo
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +76,14 @@ fun GroupName(
     var Gbio by rememberSaveable { mutableStateOf("") }
 
     var popupMessage by remember { mutableStateOf<String?>(null) }
-   var Showp by remember { mutableStateOf<Boolean>(false) }
+    var Showp by remember { mutableStateOf<Boolean>(false) }
+
+    LaunchedEffect(popupMessage){
+        delay(3000)
+        popupMessage = null
+        Showp=false
+
+    }
 
     LaunchedEffect(Unit) {
         infoo.getCompanyUsers()
@@ -191,6 +199,7 @@ fun GroupName(
                             onValueChange = {
                                 Gname = it
                             },
+                            singleLine=true,
                             placeholder = {
                                 Text(
                                     text = "Enter group name",
@@ -256,17 +265,16 @@ fun GroupName(
 
                     Button(
                         onClick = {
-                            if(Gname.isBlank()){
-                                popupMessage="Group name is required"
+                            if (Gname.isBlank()) {
+                                popupMessage = "Group name is required"
                                 print("it is working")
-                                Showp=true
-                            }
-                            else {
+                                Showp = true
+                            } else {
                                 save.createGroup(
                                     Gname,
                                     Gbio
                                 )
-                                    print("not woorking")
+                                print("not woorking")
                             }
                         }
                     ) {
@@ -385,66 +393,68 @@ fun GroupName(
                     }
                 }
             }
-        }
-        AnimatedVisibility(
-            visible = Showp,
-            enter = fadeIn(
-                animationSpec = tween(250)
-            ) + scaleIn(
-                initialScale = 0.85f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
+
+            AnimatedVisibility(
+                visible = Showp,
+                enter = fadeIn(
+                    animationSpec = tween(250)
+                ) + scaleIn(
+                    initialScale = 0.85f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                ) + slideInVertically(
+                    initialOffsetY = { -80 },
+                    animationSpec = tween(450)
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(180)
+                ) + scaleOut(
+                    targetScale = 0.9f,
+                    animationSpec = tween(180)
+                ) + slideOutVertically(
+                    targetOffsetY = { +80 },
+                    animationSpec = tween(450)
                 )
-            ) + slideInVertically(
-                initialOffsetY = { -80 },
-                animationSpec = tween(450)
-            ),
-            exit = fadeOut(
-                animationSpec = tween(180)
-            ) + scaleOut(
-                targetScale = 0.9f,
-                animationSpec = tween(180)
-            ) + slideOutVertically(
-                targetOffsetY = { +80 },
-                animationSpec = tween(450)
-            )
-        ) {
+            ) {
 
-            if (popupMessage != null) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = 40.dp, start = 20.dp, end = 20.dp),
-                    color = Color.White,
-                    shape = RoundedCornerShape(14.dp),
-                    shadowElevation = 8.dp
-                ) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                if (popupMessage != null) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth()
+                            .align(Alignment.TopCenter)
+                            .padding(top = 40.dp, start = 20.dp, end = 20.dp),
+                        color = Color.White,
+                        shape = RoundedCornerShape(14.dp),
+                        shadowElevation = 8.dp
                     ) {
-                        // ------------------------------------------
-                        // WARNING ICON
-                        // -----------------------------------------
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = "Warning",
-                            tint = Color.Red,
-                            modifier = Modifier.size(22.dp)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        // ------------------------------------------
-                        // ERROR MESSAGE
-                        // ------------------------------------------
-                        Text(
-                            text = popupMessage ?: "",
-                            color = Color.Black,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // ------------------------------------------
+                            // WARNING ICON
+                            // -----------------------------------------
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = "Warning",
+                                tint = Color.Red,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            // ------------------------------------------
+                            // ERROR MESSAGE
+                            // ------------------------------------------
+                            Text(
+                                text = popupMessage ?: "",
+                                color = Color.Black,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             }

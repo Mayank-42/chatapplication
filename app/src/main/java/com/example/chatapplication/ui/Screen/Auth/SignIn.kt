@@ -73,7 +73,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
 
     LaunchedEffect(popupMessage) {
         delay(3000)
-        popupMessage = null
+            popupMessage = null
         ShowpopUp=false
     }
     LaunchedEffect(email) {

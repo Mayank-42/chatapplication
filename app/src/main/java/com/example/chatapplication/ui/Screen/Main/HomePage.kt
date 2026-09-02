@@ -6,6 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -52,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -65,6 +71,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.math.roundToInt
 
 
 // ============================================================
@@ -133,6 +140,8 @@ fun HomeScreen(
         else ->
             "Good Evening"
     }
+
+    var offsetY by rememberSaveable {mutableStateOf(0f)}
     // ========================================================
     // CONVERSATIONS
     // ========================================================
@@ -561,78 +570,150 @@ private fun HomeBottomNavigation(
     onProfileClick: () -> Unit
 
 ) {
+    var offsetY by rememberSaveable {mutableStateOf(0f)}
+    val minHeight = 56.dp
+    val maxHeight = 180.dp
+    var isExpanded by rememberSaveable {mutableStateOf(false) }
 
     Surface(
 
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
+            .offset {
+                IntOffset(
+                    x = 0,
+                    y = offsetY.roundToInt()
+                )
+            }
+            .draggable(
+                orientation= Orientation.Vertical,
+                state= rememberDraggableState { delta ->
+                    offsetY + delta
+
+                    if (offsetY <= -124f) {
+                        offsetY = -124f
+                        isExpanded = true
+                    }
+                    if (offsetY >= 0f) {
+                        offsetY = 0f
+                        isExpanded = false
+                    }
+
+                }
+            )
+//            .navigationBarsPadding()
             .padding(
-                start = 24.dp,
-                end = 24.dp,
+                start = 20.dp,
+                end = 20.dp,
                 bottom = 12.dp
             )
-            .height(68.dp)
+            .height(if(isExpanded) maxHeight else minHeight)
             .shadow(
                 elevation = 10.dp,
-                shape = RoundedCornerShape(30.dp)
+                shape = RoundedCornerShape(topStart =30.dp, topEnd = 30.dp)
             ),
 
         color = HomeWhite,
-        shape = RoundedCornerShape(30.dp)
+        shape = RoundedCornerShape(topStart =30.dp, topEnd = 30.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    horizontal = 18.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            // ==================================================
-            // GROUPS
-            // ==================================================
-            HomeNavigationButton(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Groups,
-                        contentDescription = "Groups",
-                        tint = HomeBlack,
-                        modifier = Modifier.size(27.dp)
-                    )
-                },
-                onClick = onGroupsClick
-            )
-            // ==================================================
-            // LOGOUT
-            // ==================================================
-            HomeNavigationButton(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Logout,
-                        contentDescription = "Logout",
-                        tint = HomeBlack,
-                        modifier = Modifier.size(26.dp)
-                    )
-                },
-                onClick = onLogoutClick
-            )
-            // ==================================================
-            // PROFILE
-            // ==================================================
-            HomeNavigationButton(
-                icon = {
-                    Icon(
-                        imageVector =
-                            Icons.Default.AccountBox,
-                        contentDescription = "Profile",
-                        tint = HomeBlue,
-                        modifier = Modifier.size(28.dp)
-                    )
-                },
-                onClick = onProfileClick
-            )
+        if(isExpanded){
+            Column(){
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Logout",
+                            tint = HomeBlack,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onLogoutClick
+                )
+                // ==================================================
+                // GROUPS
+                // ==================================================
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Groups,
+                            contentDescription = "Groups",
+                            tint = HomeBlack,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onGroupsClick
+                )
+                // ==================================================
+                // PROFILE
+                // ==================================================
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector =
+                                Icons.Default.AccountBox,
+                            contentDescription = "Profile",
+                            tint = HomeBlue,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onProfileClick
+                )
+            }
+
+        }else {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        horizontal = 18.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // ==================================================
+                // LOGOUT
+                // ==================================================
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Logout",
+                            tint = HomeBlack,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onLogoutClick
+                )
+                // ==================================================
+                // GROUPS
+                // ==================================================
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Groups,
+                            contentDescription = "Groups",
+                            tint = HomeBlack,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onGroupsClick
+                )
+                // ==================================================
+                // PROFILE
+                // ==================================================
+                HomeNavigationButton(
+                    icon = {
+                        Icon(
+                            imageVector =
+                                Icons.Default.AccountBox,
+                            contentDescription = "Profile",
+                            tint = HomeBlue,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    onClick = onProfileClick
+                )
+            }
         }
     }
 }
