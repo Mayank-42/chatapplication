@@ -12,6 +12,8 @@ data class WholeMessageResponse(
     val receiverId: String,
     val message: String,
     @SerializedName("message_timestamp")
-    val timeStamp: String
+    val timeStamp: String,
+    @SerializedName("status")
+    val status: String
 ) {
 }

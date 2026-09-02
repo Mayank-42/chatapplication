@@ -12,6 +12,6 @@ data class MessageInfo(
     var reciver_Id: String?,
     var message: String,
     var date: String,
-    var status: String = "SENT"
+    var status: String
 ) {
 }

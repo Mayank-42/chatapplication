@@ -137,7 +137,7 @@ class MsgVM(
                                  * The local message should already
                                  * exist as SENT after the API succeeds.
                                  */
-                                "SENT"
+                                "REALTIME: OUR MESSAGE -> LOCAL MESSAGE ALREADY EXISTS"
 
                             } else {
 

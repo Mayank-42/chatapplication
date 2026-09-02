@@ -45,6 +45,15 @@ interface operation {
     UPDATE MessageInfo
     SET status = :status
     WHERE id = :messageId
+      AND (
+          (:status = 'SENT' AND status = 'PENDING')
+          OR
+          (:status = 'DELIVERED' AND status IN ('PENDING', 'SENT'))
+          OR
+          (:status = 'READ' AND status IN ('PENDING', 'SENT', 'DELIVERED'))
+          OR
+          (:status = 'FAILED' AND status = 'PENDING')
+      )
 """)
     suspend fun updateMessageStatus(messageId: String, status: String)
 

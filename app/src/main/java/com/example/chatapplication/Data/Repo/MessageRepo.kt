@@ -41,7 +41,7 @@ class MessageRepo(
                 reciver_Id = it.receiverId,
                 message = it.message,
                 date = it.timeStamp,
-                status = "SENT"
+                status = it.status
             )
         }
 
