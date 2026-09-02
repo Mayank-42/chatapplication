@@ -344,26 +344,17 @@ class MsgVM(
     }
 
     fun syncAllConversations(conversationIds: List<String>) {
-
         viewModelScope.launch {
-
             for (conversationId in conversationIds) {
-
                 try {
-
                     val time = dbrepo.getTimeId(conversationId)
-
                     println(
                         "STARTUP MESSAGE SYNC: " +
                                 "conversation=$conversationId " +
                                 "lastTime=${time?.date} " +
                                 "lastId=${time?.id}"
                     )
-
-                    gettingmsg.converting(
-                        conversationId = conversationId,
-                        time = time?.date ?: "",
-                        id = time?.id ?: ""
+                    gettingmsg.converting(conversationId = conversationId, time = time?.date ?: "", id = time?.id ?: ""
                     )
 
                 } catch (e: Exception) {
