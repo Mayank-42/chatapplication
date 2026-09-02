@@ -50,7 +50,7 @@ interface operation {
           OR
           (:status = 'DELIVERED' AND status IN ('PENDING', 'SENT'))
           OR
-          (:status = 'READ' AND status IN ('PENDING', 'SENT', 'DELIVERED'))
+          (:status = 'SEEN' AND status IN ('PENDING', 'SENT', 'DELIVERED'))
           OR
           (:status = 'FAILED' AND status = 'PENDING')
       )

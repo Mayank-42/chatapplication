@@ -267,7 +267,7 @@ class MsgVM(
                         when (status.uppercase()) {
 
                             "DELIVERED",
-                            "READ",
+                            "SEEN",
                             "SENT" -> {
 
                                 println(

@@ -56,6 +56,7 @@ import com.example.chatapplication.Data.Viewmodel.MsgVM
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
+import io.ktor.client.utils.EmptyContent.status
 
 private val ChatBlack = Color(0xFF000000)
 private val ChatWhite = Color(0xFFFFFFFF)
@@ -273,12 +274,12 @@ fun chatScreen(
                             SentMessageBubble(
                                 message = ele.message,
 
-                                status =
-                                    if (ele.id == lastSentMessageId) {
-                                        ele.status
-                                    } else {
-                                        null
-                                    },
+                                status = ele.status,
+//                                    if (ele.id == lastSentMessageId) {
+//                                        ele.status
+//                                    } else {
+//                                        null
+//                                    },
                                 time = null,
                                 onLongClick = {
                                     viewMode.delete(ele)
