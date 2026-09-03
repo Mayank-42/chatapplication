@@ -116,26 +116,20 @@ fun profileScreen(
                     top = 30.dp
                 ),
 
-            horizontalAlignment =
-                Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,
 
-            verticalArrangement =
-                Arrangement.Top
+            verticalArrangement = Arrangement.Top
         ) {
             Spacer(modifier= Modifier.height(30.dp))
 
             Box(
-                modifier =
-                    Modifier.size(170.dp)
+                modifier = Modifier.size(170.dp)
             ) {
 
                 AsyncImage(
                     model = currentUser?.photo_url,
-
                     contentDescription = "profile image",
-
                     contentScale = ContentScale.Crop,
-
                     modifier =
                         Modifier
                             .fillMaxSize()
@@ -165,24 +159,19 @@ fun profileScreen(
                                 )
                             },
 
-                    color =
-                        ProfileBlue,
+                    color = ProfileBlue,
 
-                    shape =
-                        CircleShape
+                    shape = CircleShape
                 ) {
 
                     Box(
-                        modifier =
-                            Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
 
-                        contentAlignment =
-                            Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
 
                         Icon(
-                            imageVector =
-                                Icons.Default.Edit,
+                            imageVector = Icons.Default.Edit,
 
                             contentDescription =
                                 "Edit profile image",
