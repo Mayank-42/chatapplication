@@ -8,5 +8,6 @@ data class ConversationResponse(
     var lastTime:String?,
     var Image:String?,
     var last_message_id: String?,
-    var unread_count: Int
+    var unread_count: Int,
+    var reciver_Id:String
 )

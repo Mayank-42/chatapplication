@@ -582,7 +582,7 @@ private fun HomeBottomNavigation(
     id: TakingUsernameResponse?
 ) {
     var offsetY by rememberSaveable { mutableStateOf(0f) }
-    val minHeight = 56.dp
+    val minHeight = 66.dp
     val maxHeight = 380.dp
     var isExpanded by rememberSaveable { mutableStateOf(false) }
 
@@ -773,12 +773,14 @@ private fun HomeBottomNavigation(
                     color = HomeWhite,
                     shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
                 ) {
+                    Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter){
+                        Box(modifier=Modifier.height(6.dp).width(10.dp).clip(RoundedCornerShape(50.dp))){}
+                    }
+
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(
-                                horizontal = 18.dp
-                            ),
+                            .padding(horizontal = 18.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
@@ -830,6 +832,7 @@ private fun HomeBottomNavigation(
             }
         }
     }
+
 
 // ================================================================
 // BOTTOM NAV ITEM

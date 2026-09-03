@@ -2,6 +2,7 @@ package com.example.chatapplication.ui.Screen.Main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.MsgVM
+import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
@@ -72,8 +74,12 @@ fun chatScreen(
     conversationId: String,
     msg: MsgVM,
     tokenManager: TokenManager,
-    convo: convoVM
+    convo: convoVM,
+    nav:NavController
 ) {
+
+
+
     var currentUserId by rememberSaveable {
         mutableStateOf("")
     }
@@ -94,6 +100,8 @@ fun chatScreen(
         mutableFloatStateOf(0f)
     }
 
+    var receiverId by remember { mutableStateOf("") }
+
     val density = androidx.compose.ui.platform.LocalDensity.current
 
     val dragThreshold = with(density) {
@@ -108,8 +116,7 @@ fun chatScreen(
         try {
             println("CHAT SCREEN: conversationId = $conversationId")
 
-            currentUserId =
-                tokenManager.getUserId() ?: ""
+            currentUserId = tokenManager.getUserId() ?: ""
 
             println(
                 "CHAT SCREEN: currentUserId = $currentUserId"
@@ -126,10 +133,7 @@ fun chatScreen(
                 )
             }
 
-            val conversation =
-                convo.getConversationById(
-                    conversationId
-                )
+            val conversation = convo.getConversationById(conversationId)
 
             if (conversation != null) {
                 receiverName =
@@ -137,6 +141,11 @@ fun chatScreen(
 
                 receiverImage =
                     conversation.Image
+
+
+                 receiverId = conversation.reciver_Id
+
+
 
                 println(
                     "CHAT HEADER NAME = ${conversation.name}"
@@ -239,7 +248,9 @@ fun chatScreen(
                 image = receiverImage,
                 onBackClick = {
                     navControl.popBackStack()
-                }
+                },
+                nav,
+                receiverId
             )
 
             Box(
@@ -320,14 +331,15 @@ private fun ChatHeader(
     name: String,
     role: String,
     image: String?,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    nav: NavController,
+    reciver:String
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                top = 24.dp
-            ),
+            .clickable{nav.navigate("profileScreen/$reciver")}
+            .padding(top = 24.dp),
 
         color = ChatBlack,
 
@@ -371,9 +383,7 @@ private fun ChatHeader(
                 )
             }
 
-            Spacer(
-                modifier = Modifier.width(12.dp)
-            )
+            Spacer(modifier = Modifier.width(12.dp))
 
             AsyncImage(
                 model = image,
@@ -406,8 +416,7 @@ private fun ChatHeader(
                     Text(
                         text = role,
 
-                        color =
-                            ChatMuted,
+                        color = ChatMuted,
 
                         fontSize =
                             12.sp
@@ -557,8 +566,7 @@ private fun ReceivedMessageBubble(
                     }
                 ),
 
-            color =
-                ChatIncoming,
+            color = ChatIncoming,
 
             shape =
                 RoundedCornerShape(
@@ -648,8 +656,7 @@ private fun ChatInputBar(
             modifier =
                 Modifier.fillMaxWidth(),
 
-            color =
-                ChatInput,
+            color = ChatInput,
 
             shape =
                 RoundedCornerShape(20.dp)
@@ -661,77 +668,49 @@ private fun ChatInputBar(
             ) {
 
                 TextField(
-                    value =
-                        text,
+                    value = text,
 
-                    onValueChange =
-                        onTextChange,
+                    onValueChange = onTextChange,
 
                     placeholder = {
-
                         Text(
-                            text =
-                                "Write a message...",
-
-                            color =
-                                Color.Gray
+                            text = "Write a message...",
+                            color = Color.Gray
                         )
                     },
 
-                    singleLine = false,
-
-                    maxLines = 4,
-
+//                    singleLine = false,
+                   maxLines = 8,
                     colors =
                         TextFieldDefaults.colors(
 
-                            focusedTextColor =
-                                Color.Black,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
 
-                            unfocusedTextColor =
-                                Color.Black,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
 
-                            focusedContainerColor =
-                                Color.Transparent,
-
-                            unfocusedContainerColor =
-                                Color.Transparent,
-
-                            focusedIndicatorColor =
-                                Color.Transparent,
-
-                            unfocusedIndicatorColor =
-                                Color.Transparent
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
                         ),
 
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                end = 58.dp
-                            )
+                            .fillMaxWidth().padding(end = 58.dp)
                 )
 
                 Button(
-                    onClick =
-                        onSend,
+                    onClick = onSend,
 
                     modifier =
                         Modifier
-                            .align(
-                                Alignment.BottomEnd
-                            )
-                            .padding(
-                                end = 6.dp,
-                                bottom = 6.dp
-                            )
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 6.dp, bottom = 6.dp)
                             .size(48.dp),
 
-                    shape =
-                        CircleShape,
+                    shape = CircleShape,
 
-                    contentPadding =
-                        PaddingValues(0.dp),
+                    contentPadding = PaddingValues(0.dp),
 
                     colors =
                         ButtonDefaults

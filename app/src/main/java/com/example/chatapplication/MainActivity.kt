@@ -359,7 +359,8 @@ class MainActivity : ComponentActivity() {
                                         conversationId,
                                     messageInfoVM,
                                     tokenManager,
-                                    convoInfoVM
+                                    convoInfoVM,
+                                    navController
                                 )
                             }
                         }

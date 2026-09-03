@@ -63,7 +63,7 @@ fun GroupChatScreen(navControl: NavController,
                     conversationId:String?,
                     msg: MsgVM,
                   tokenManager: TokenManager, save: GroupChatVM,convo:convoVM){
-    chatScreen(navControl,viewMode,conversationId?:"",msg,tokenManager,convo)
+    chatScreen(navControl,viewMode,conversationId?:"",msg,tokenManager,convo,navControl)
 //    val showInfo by save.gettingGroupinfo.collectAsState(initial=emptyList())
 //    var currentUserId by rememberSaveable { mutableStateOf("") }
 //
