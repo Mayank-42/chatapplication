@@ -56,7 +56,7 @@ fun profileScreen(
     user: UserInfo,
     token: TokenManager,
     id: String,
-    isOnline: Boolean
+
 ) {
 
 
@@ -137,7 +137,7 @@ fun profileScreen(
                             .clip(CircleShape)
                             .border(
                                 width = 2.dp,
-                                color = if(isOnline)Color.Green else ProfileBlue,
+                                color =  ProfileBlue,
                                 shape = CircleShape
                             )
                 )

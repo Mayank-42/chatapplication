@@ -342,7 +342,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            "ChatScreen/{conversationId}/${false}"
+                            "ChatScreen/{conversationId}/"
                         ) { backStackEntry ->
                             val conversationId =
                                 backStackEntry.arguments
@@ -361,7 +361,7 @@ class MainActivity : ComponentActivity() {
                                     tokenManager,
                                     convoInfoVM,
                                     navController,
-                                    false
+
                                 )
                             }
                         }
@@ -375,7 +375,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            "profileScreen/{userId}/${false}"
+                            "profileScreen/{userId}/"
                         ) { backStackEntry ->
 
                             val profileUserId =
@@ -391,7 +391,7 @@ class MainActivity : ComponentActivity() {
                                     userInfovm,
                                     tokenManager,
                                     profileUserId,
-                                    false
+
                                 )
                             }
                         }

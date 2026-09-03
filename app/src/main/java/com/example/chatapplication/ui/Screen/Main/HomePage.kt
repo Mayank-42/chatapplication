@@ -341,7 +341,7 @@ fun HomeScreen(
 
                             onClick = {
                                 navControl.navigate(
-                                    "chatScreen/${ele.conversationId}/${isOnline}"
+                                    "chatScreen/${ele.conversationId}"
                                 )
                             }
                         )

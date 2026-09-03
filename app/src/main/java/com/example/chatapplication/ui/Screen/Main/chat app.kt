@@ -76,7 +76,7 @@ fun chatScreen(
     tokenManager: TokenManager,
     convo: convoVM,
     nav:NavController,
-    isOnline:Boolean
+
 ) {
 
 
@@ -251,8 +251,8 @@ fun chatScreen(
                     navControl.popBackStack()
                 },
                 nav,
-                receiverId,
-                isOnline
+                receiverId
+
             )
 
             Box(
@@ -335,13 +335,13 @@ private fun ChatHeader(
     image: String?,
     onBackClick: () -> Unit,
     nav: NavController,
-    reciver:String,
-    isOnline:Boolean
+    reciver:String
+
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{nav.navigate("profileScreen/$reciver/${isOnline}")}
+            .clickable{nav.navigate("profileScreen/$reciver")}
             .padding(top = 24.dp),
 
         color = ChatBlack,
@@ -396,7 +396,7 @@ private fun ChatHeader(
                     .clip(CircleShape)
                     .border(
                         width = 1.5.dp,
-                        color = if(isOnline)Color.Green else ChatBlue,
+                        color =  ChatBlue,
                         shape = CircleShape
                     )
             )
