@@ -56,6 +56,7 @@ import com.example.chatapplication.ui.Screen.GroupChat.GroupChatScreen
 import com.example.chatapplication.ui.Screen.GroupChat.GroupChatSearch
 import com.example.chatapplication.ui.Screen.GroupChat.GroupName
 import com.example.chatapplication.ui.Screen.GroupChat.GroupPage
+import com.example.chatapplication.ui.Screen.GroupChat.ShowingGroupDetail
 import com.example.chatapplication.ui.Screen.Main.HomeScreen
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
@@ -439,6 +440,19 @@ class MainActivity : ComponentActivity() {
                                     save,
                                     convoInfoVM,
                                     realtimeRepo
+                                )
+                            }
+                        }
+                        composable("ShowingGroupDetail/{conversationId}") { backStackEntry ->
+
+                            val conversationId = backStackEntry.arguments?.getString("conversationId")
+
+                            if (conversationId != null) {
+                                ShowingGroupDetail(
+                                    nav = navController,
+                                    conversationId = conversationId,
+                                    groupVM = save,
+                                    userVM = userInfovm
                                 )
                             }
                         }
