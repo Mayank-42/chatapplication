@@ -274,12 +274,12 @@ fun chatScreen(
                             SentMessageBubble(
                                 message = ele.message,
 
-                                status = ele.status,
-//                                    if (ele.id == lastSentMessageId) {
-//                                        ele.status
-//                                    } else {
-//                                        null
-//                                    },
+                                status =
+                                    if (ele.id == lastSentMessageId) {
+                                        ele.status
+                                    } else {
+                                        null
+                                    },
                                 time = null,
                                 onLongClick = {
                                     viewMode.delete(ele)

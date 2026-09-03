@@ -343,32 +343,44 @@ class MsgVM(
         }
     }
 
-    fun syncAllConversations(conversationIds: List<String>) {
-        viewModelScope.launch {
-            for (conversationId in conversationIds) {
-                try {
-                    val time = dbrepo.getTimeId(conversationId)
-                    println(
-                        "STARTUP MESSAGE SYNC: " +
-                                "conversation=$conversationId " +
-                                "lastTime=${time?.date} " +
-                                "lastId=${time?.id}"
-                    )
-                    gettingmsg.converting(conversationId = conversationId,
-                        time = time?.date ?: "",
-                        id = time?.id ?: ""
-                    )
+    suspend fun syncAllConversations(
+        conversationIds: List<String>
+    ) {
 
-                } catch (e: Exception) {
+        for (conversationId in conversationIds) {
 
-                    println(
-                        "STARTUP MESSAGE SYNC ERROR: " +
-                                "conversation=$conversationId " +
-                                "error=${e.message}"
-                    )
+            try {
 
-                    e.printStackTrace()
-                }
+                val time =
+                    dbrepo.getTimeId(conversationId)
+
+                println(
+                    "STARTUP MESSAGE SYNC: " +
+                            "conversation=$conversationId " +
+                            "lastTime=${time?.date} " +
+                            "lastId=${time?.id}"
+                )
+
+                gettingmsg.converting(
+                    conversationId = conversationId,
+                    time = time?.date ?: "",
+                    id = time?.id ?: ""
+                )
+
+                println(
+                    "STARTUP MESSAGE SYNC COMPLETE: " +
+                            "conversation=$conversationId"
+                )
+
+            } catch (e: Exception) {
+
+                println(
+                    "STARTUP MESSAGE SYNC ERROR: " +
+                            "conversation=$conversationId " +
+                            "error=${e.message}"
+                )
+
+                e.printStackTrace()
             }
         }
     }

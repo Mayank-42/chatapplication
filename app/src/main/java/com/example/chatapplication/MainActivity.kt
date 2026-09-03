@@ -283,7 +283,7 @@ class MainActivity : ComponentActivity() {
                                 )
 
                                 println(
-                                    "NETWORK SYNC: MESSAGE SYNC TRIGGERED"
+                                    "NETWORK SYNC: MESSAGE SYNC COMPLETE"
                                 )
 
                             } else {
@@ -292,7 +292,6 @@ class MainActivity : ComponentActivity() {
                                     "NETWORK SYNC: NO CONVERSATIONS FOUND"
                                 )
                             }
-
                             println("NETWORK SYNC: ================================")
                         }
                     }

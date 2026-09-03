@@ -1,40 +1,55 @@
 package com.example.chatapplication.Data.Repo
 
-import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.ApiService
-import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.request.ConversationRequest
 import com.example.chatapplication.Data.network.request.ConversationSeenRequest
 import com.example.chatapplication.Data.network.request.GetMessageRequest
 import com.example.chatapplication.Data.network.request.MessageInfoRequest
 import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.response.ConversationResponse
-import com.example.chatapplication.Data.network.response.MessageInfoResponse
-import io.github.jan.supabase.auth.auth
 import retrofit2.Response
 
 class MessageRepo(
     private val getMessage: ApiService,
     private val localWork: operation
-){
-    suspend fun putMessage(id:String ,conversationId:String, msg:String):Response<Unit>{
-        val request= MessageInfoRequest(id, conversationId,msg)
+) {
+
+    suspend fun putMessage(
+        id: String,
+        conversationId: String,
+        msg: String
+    ): Response<Unit> {
+        val request = MessageInfoRequest(
+            id,
+            conversationId,
+            msg
+        )
+
         return getMessage.storeMessage(request)
     }
 
-    suspend fun converting(conversationId: String,time:String,id:String){
-    val request = GetMessageRequest(
-        conversation_id = conversationId,
-        last_timestamp = if (time.isBlank()) null else time,
-        last_id = if (id.isBlank()) null else id
-    )
-        val response=getMessage.getingMessage(request)
-    println("SYNC: STATUS = ${response.code()}")
-    println("SYNC: BODY = ${response.body()}")
-    println("SYNC: ERROR = ${response.errorBody()?.string()}")
-        var serverList= response.body()
+    suspend fun converting(
+        conversationId: String,
+        time: String,
+        id: String
+    ) {
+
+        val request = GetMessageRequest(
+            conversation_id = conversationId,
+            last_timestamp = if (time.isBlank()) null else time,
+            last_id = if (id.isBlank()) null else id
+        )
+
+        val response = getMessage.getingMessage(request)
+
+        println("SYNC: STATUS = ${response.code()}")
+        println("SYNC: BODY = ${response.body()}")
+        println("SYNC: ERROR = ${response.errorBody()?.string()}")
+
+        val serverList = response.body()
+
         val localMsgList = serverList?.map {
             MessageInfo(
                 id = it.id,
@@ -49,7 +64,9 @@ class MessageRepo(
 
         if (localMsgList != null) {
 
-            println("ROOM SYNC: INSERTING ${localMsgList.size} MESSAGES")
+            println(
+                "ROOM SYNC: INSERTING ${localMsgList.size} MESSAGES"
+            )
 
             localWork.localInsert(localMsgList)
 
@@ -58,13 +75,32 @@ class MessageRepo(
             // ------------------------------------------------
             // Mark newly synced incoming messages DELIVERED
             // ------------------------------------------------
+
             for (message in localMsgList) {
 
-                if (
-                    message.sender_Id !=
-                    SupaBaseClient.supabase.auth.currentUserOrNull()?.id &&
-                    message.status == "SENT"
-                ) {
+                /*
+                 * IMPORTANT:
+                 *
+                 * Do NOT use
+                 * SupaBaseClient.supabase.auth.currentUserOrNull()
+                 *
+                 * because the current SupabaseClient does not have
+                 * the Auth plugin installed.
+                 *
+                 * For this sync operation we do not need the local
+                 * authenticated user at all.
+                 *
+                 * The server-side RPC already validates that:
+                 *
+                 *   1. auth.uid() is a member of the conversation
+                 *   2. sender_id <> auth.uid()
+                 *   3. message status = SENT
+                 *
+                 * Therefore simply attempt DELIVERED for messages
+                 * returned as SENT by get_message.
+                 */
+
+                if (message.status == "SENT") {
 
                     try {
 
@@ -72,17 +108,19 @@ class MessageRepo(
                             "SYNC DELIVERED: MESSAGE ID = ${message.id}"
                         )
 
-                        val deliveredResponse = markMessageDelivered(message.id)
+                        val deliveredResponse =
+                            markMessageDelivered(message.id)
 
                         println(
-                            "SYNC DELIVERED: SERVER STATUS = ${deliveredResponse.code()}"
+                            "SYNC DELIVERED: SERVER STATUS = " +
+                                    "${deliveredResponse.code()}"
                         )
 
                         println(
-                            "SYNC DELIVERED: ERROR = ${
-                                deliveredResponse.errorBody()?.string()
-                            }"
+                            "SYNC DELIVERED: ERROR = " +
+                                    "${deliveredResponse.errorBody()?.string()}"
                         )
+
                         if (deliveredResponse.isSuccessful) {
 
                             localWork.updateMessageStatus(
@@ -91,7 +129,8 @@ class MessageRepo(
                             )
 
                             println(
-                                "SYNC DELIVERED: ROOM STATUS = ${message.id} -> DELIVERED"
+                                "SYNC DELIVERED: ROOM STATUS = " +
+                                        "${message.id} -> DELIVERED"
                             )
 
                         } else {
@@ -100,17 +139,20 @@ class MessageRepo(
                                 "SYNC DELIVERED: SERVER UPDATE FAILED"
                             )
                         }
+
                     } catch (e: Exception) {
 
                         println(
                             "SYNC DELIVERED: ERROR = ${e.message}"
                         )
 
+                        e.printStackTrace()
                     }
                 }
             }
         }
     }
+
     suspend fun getOrCreateConversation(
         otherUserId: String
     ): Response<List<ConversationResponse>> {
@@ -121,6 +163,7 @@ class MessageRepo(
 
         return getMessage.getOrCreateConversation(request)
     }
+
     suspend fun markMessageDelivered(
         messageId: String
     ): Response<Unit> {
@@ -131,6 +174,7 @@ class MessageRepo(
             )
         )
     }
+
     suspend fun markConversationSeen(
         conversationId: String
     ): Response<Unit> {

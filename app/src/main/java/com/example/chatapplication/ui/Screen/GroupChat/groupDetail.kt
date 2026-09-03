@@ -75,7 +75,7 @@ fun GroupName(
     var Gbio by rememberSaveable { mutableStateOf("") }
 
     var popupMessage by remember { mutableStateOf<String?>(null) }
-    var ShowpopUp by remember { mutableStateOf<Boolean>(false) }
+   var Showp by remember { mutableStateOf<Boolean>(false) }
 
     LaunchedEffect(Unit) {
         infoo.getCompanyUsers()
@@ -258,12 +258,16 @@ fun GroupName(
                         onClick = {
                             if(Gname.isBlank()){
                                 popupMessage="Group name is required"
-                                ShowpopUp=true
+                                print("it is working")
+                                Showp=true
                             }
-                            save.createGroup(
-                                Gname,
-                                Gbio
-                            )
+                            else {
+                                save.createGroup(
+                                    Gname,
+                                    Gbio
+                                )
+                                    print("not woorking")
+                            }
                         }
                     ) {
                         Text(
@@ -383,7 +387,7 @@ fun GroupName(
             }
         }
         AnimatedVisibility(
-            visible = ShowpopUp,
+            visible = Showp,
             enter = fadeIn(
                 animationSpec = tween(250)
             ) + scaleIn(

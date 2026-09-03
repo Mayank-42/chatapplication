@@ -11,35 +11,56 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object retroFitClient {
 
-//    val token = TokenManager(this)
-    private lateinit var token: TokenManager
+    private lateinit var tokenManager: TokenManager
+
     fun initialize(context: Context) {
-        token = TokenManager(context.applicationContext)
+        tokenManager = TokenManager(context.applicationContext)
     }
-    private val client=OkHttpClient.Builder()
+
+    private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->
+
             val accessToken = runBlocking {
-                token.getAccessToken()
+                tokenManager.getAccessToken()
             }
 
-            val request= chain.request()
+            val requestBuilder = chain.request()
                 .newBuilder()
-                .addHeader("apikey",constant.supaBaseKey)
-                if (!accessToken.isNullOrBlank()) {
-                    request.addHeader(
+                .addHeader(
+                    "apikey",
+                    constant.supaBaseKey
+                )
+                .addHeader(
+                    "Content-Type",
+                    "application/json"
+                )
+
+            if (!accessToken.isNullOrBlank()) {
+                requestBuilder.addHeader(
                     "Authorization",
                     "Bearer $accessToken"
                 )
             }
 
-            chain.proceed(request.build())
+            println(
+                "RETROFIT AUTH: TOKEN PRESENT = ${!accessToken.isNullOrBlank()}"
+            )
+
+            chain.proceed(
+                requestBuilder.build()
+            )
         }
         .build()
-    private val retrofit= Retrofit.Builder()
-        .baseUrl(constant.Base_url)
-        .client(client)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
 
-    val apiService = retrofit.create(ApiService::class.java)
+    private val retrofit =
+        Retrofit.Builder()
+            .baseUrl(constant.Base_url)
+            .client(client)
+            .addConverterFactory(
+                GsonConverterFactory.create()
+            )
+            .build()
+
+    val apiService =
+        retrofit.create(ApiService::class.java)
 }
