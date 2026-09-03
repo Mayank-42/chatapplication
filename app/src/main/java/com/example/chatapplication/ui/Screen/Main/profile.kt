@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.local.TokenManager
 
@@ -56,6 +58,7 @@ fun profileScreen(
     user: UserInfo,
     token: TokenManager,
     id: String,
+    realTime: RealTimeRepo
 
 ) {
 
@@ -73,6 +76,8 @@ fun profileScreen(
 
         userid = token.getUserId() ?: ""
     }
+    val onlineUsers by realTime.onlineUsers.collectAsState()
+    val isOnline = onlineUsers.contains(currentUser?.id)
 
     val context = LocalContext.current
 
@@ -137,7 +142,7 @@ fun profileScreen(
                             .clip(CircleShape)
                             .border(
                                 width = 2.dp,
-                                color =  ProfileBlue,
+                                color =if(isOnline) Color.Green else ProfileBlue,
                                 shape = CircleShape
                             )
                 )

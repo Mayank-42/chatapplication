@@ -257,9 +257,7 @@ fun HomeScreen(
                 // ==================================================
                 HomeSearchBar(
                     onClick = {
-                        navControl.navigate(
-                            "SearchBarPage"
-                        )
+                        navControl.navigate("SearchBarPage")
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))

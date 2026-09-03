@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
@@ -76,6 +77,7 @@ fun chatScreen(
     tokenManager: TokenManager,
     convo: convoVM,
     nav:NavController,
+    realTime: RealTimeRepo
 
 ) {
 
@@ -166,6 +168,9 @@ fun chatScreen(
         }
     }
 
+    val onlineUsers by realTime.onlineUsers.collectAsState()
+
+    val isOnline = onlineUsers.contains(receiverId)
     val task by viewMode
         .getConversation(conversationId)
         .collectAsState(
@@ -251,7 +256,9 @@ fun chatScreen(
                     navControl.popBackStack()
                 },
                 nav,
-                receiverId
+                receiverId,
+                isOnline
+
 
             )
 
@@ -335,7 +342,8 @@ private fun ChatHeader(
     image: String?,
     onBackClick: () -> Unit,
     nav: NavController,
-    reciver:String
+    reciver:String,
+    isOnline:Boolean
 
 ) {
     Surface(
@@ -396,7 +404,7 @@ private fun ChatHeader(
                     .clip(CircleShape)
                     .border(
                         width = 1.5.dp,
-                        color =  ChatBlue,
+                        color =if(isOnline)Color.Green else ChatBlue,
                         shape = CircleShape
                     )
             )
