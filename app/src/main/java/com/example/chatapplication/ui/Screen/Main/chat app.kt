@@ -75,7 +75,8 @@ fun chatScreen(
     msg: MsgVM,
     tokenManager: TokenManager,
     convo: convoVM,
-    nav:NavController
+    nav:NavController,
+    isOnline:Boolean
 ) {
 
 
@@ -143,7 +144,7 @@ fun chatScreen(
                     conversation.Image
 
 
-                 receiverId = conversation.reciver_Id
+                 receiverId = conversation.receiver_id
 
 
 
@@ -250,7 +251,8 @@ fun chatScreen(
                     navControl.popBackStack()
                 },
                 nav,
-                receiverId
+                receiverId,
+                isOnline
             )
 
             Box(
@@ -333,12 +335,13 @@ private fun ChatHeader(
     image: String?,
     onBackClick: () -> Unit,
     nav: NavController,
-    reciver:String
+    reciver:String,
+    isOnline:Boolean
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{nav.navigate("profileScreen/$reciver")}
+            .clickable{nav.navigate("profileScreen/$reciver/${isOnline}")}
             .padding(top = 24.dp),
 
         color = ChatBlack,
@@ -371,8 +374,7 @@ private fun ChatHeader(
                         }
                     ),
 
-                contentAlignment =
-                    Alignment.Center
+                contentAlignment = Alignment.Center
             ) {
 
                 Icon(
@@ -394,7 +396,7 @@ private fun ChatHeader(
                     .clip(CircleShape)
                     .border(
                         width = 1.5.dp,
-                        color = ChatBlue,
+                        color = if(isOnline)Color.Green else ChatBlue,
                         shape = CircleShape
                     )
             )
@@ -415,11 +417,8 @@ private fun ChatHeader(
 
                     Text(
                         text = role,
-
                         color = ChatMuted,
-
-                        fontSize =
-                            12.sp
+                        fontSize = 12.sp
                     )
                 }
             }
@@ -435,8 +434,7 @@ private fun SentMessageBubble(
     onLongClick: () -> Unit
 ) {
     Column(
-        modifier =
-            Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.End,
     ) {
 
@@ -447,10 +445,7 @@ private fun SentMessageBubble(
 
             Surface(
                 modifier = Modifier
-                    .padding(
-                        start = 60.dp,
-                        end = 4.dp
-                    )
+                    .padding(start = 60.dp, end = 4.dp)
                     .combinedClickable(
                         onClick = {},
 
@@ -513,26 +508,15 @@ private fun SentMessageBubble(
         ) {
 
             Text(
-                text =
-                    status,
+                text = status,
 
-                color =
-                    ChatMuted,
-
-                fontSize =
-                    10.sp,
-
-                fontStyle =
-                    FontStyle.Italic,
-
-                fontWeight =
-                    FontWeight.Medium,
+                color = ChatMuted,
+                fontSize = 10.sp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Medium,
 
                 modifier =
-                    Modifier.padding(
-                        top = 2.dp,
-                        end = 8.dp
-                    )
+                    Modifier.padding(top = 2.dp, end = 8.dp)
             )
         }
     }

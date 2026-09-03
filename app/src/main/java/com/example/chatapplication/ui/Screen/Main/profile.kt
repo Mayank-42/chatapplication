@@ -55,8 +55,10 @@ fun profileScreen(
     nav: NavController,
     user: UserInfo,
     token: TokenManager,
-    id: String
+    id: String,
+    isOnline: Boolean
 ) {
+
 
     val currentUser =
         user.userInfo.firstOrNull {
@@ -69,8 +71,7 @@ fun profileScreen(
 
     LaunchedEffect(Unit) {
 
-        userid =
-            token.getUserId() ?: ""
+        userid = token.getUserId() ?: ""
     }
 
     val context = LocalContext.current
@@ -136,11 +137,11 @@ fun profileScreen(
                             .clip(CircleShape)
                             .border(
                                 width = 2.dp,
-                                color = ProfileBlue,
+                                color = if(isOnline)Color.Green else ProfileBlue,
                                 shape = CircleShape
                             )
                 )
-
+                if (currentUser?.id == userid) {
                 Surface(
                     modifier =
                         Modifier
@@ -164,24 +165,20 @@ fun profileScreen(
                     shape = CircleShape
                 ) {
 
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
 
-                        contentAlignment = Alignment.Center
-                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
 
-                        Icon(
-                            imageVector = Icons.Default.Edit,
+                            contentAlignment = Alignment.Center
+                        ) {
 
-                            contentDescription =
-                                "Edit profile image",
-
-                            tint =
-                                ProfileBlack,
-
-                            modifier =
-                                Modifier.size(22.dp)
-                        )
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit profile image",
+                                tint = ProfileBlack,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
                 }
             }

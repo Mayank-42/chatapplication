@@ -154,7 +154,7 @@ fun HomeScreen(
             "Good Evening"
     }
 
-    var offsetY by rememberSaveable {mutableStateOf(0f)}
+
     // ========================================================
     // CONVERSATIONS
     // ========================================================
@@ -220,12 +220,9 @@ fun HomeScreen(
         // BOTTOM NAVIGATION
         // ====================================================
         bottomBar = {
-
             HomeBottomNavigation(
                 onGroupsClick = {
-                    navControl.navigate(
-                        "GroupPage"
-                    )
+                    navControl.navigate("GroupPage")
                 },
                 onLogoutClick = {
                     scope.launch {
@@ -313,7 +310,7 @@ fun HomeScreen(
                         val otherUserId =
                             conversationUsers[ele.conversationId]
 
-                        val isOnline =
+                        var isOnline =
                             otherUserId != null &&
                                     onlineUsers.contains(otherUserId)
                         println(
@@ -344,7 +341,7 @@ fun HomeScreen(
 
                             onClick = {
                                 navControl.navigate(
-                                    "chatScreen/${ele.conversationId}"
+                                    "chatScreen/${ele.conversationId}/${isOnline}"
                                 )
                             }
                         )
@@ -390,8 +387,7 @@ private fun HomeSearchBar(
                     horizontal = 16.dp
                 ),
 
-            verticalAlignment =
-                Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Icon(
@@ -404,10 +400,8 @@ private fun HomeSearchBar(
                 modifier = Modifier.width(12.dp)
             )
             Text(
-                text =
-                    "Search user by username",
-                color =
-                    HomeMuted,
+                text = "Search user by username",
+                color = HomeMuted,
                 fontSize = 15.sp
             )
         }
