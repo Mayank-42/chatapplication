@@ -32,9 +32,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -56,6 +59,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -140,7 +146,8 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                         contentDescription = null
                     )
                 },
-                isMandatory = true
+                isMandatory = true,
+                isPassword = true
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -297,102 +304,235 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
     }
  }
 
-    @Composable
-    fun surface(
-        navControl: NavController,
-        size: Int = 60,
-        task: String = "Enter Text here",
-        wantTextField: Boolean = true,
-        viewMode: databaseVM,
-        words: String,
-        onWordsChange: (String) -> Unit,
-        onButtonClick: () -> Unit = {},
-        icon: @Composable () -> Unit,
-        isMandatory: Boolean=false
+@Composable
+fun surface(
+    navControl: NavController,
+    size: Int = 60,
+    task: String = "Enter Text here",
+    wantTextField: Boolean = true,
+    viewMode: databaseVM,
+    words: String,
+    onWordsChange: (String) -> Unit,
+    onButtonClick: () -> Unit = {},
+    icon: @Composable () -> Unit,
+    isMandatory: Boolean = false,
+    isPassword: Boolean = false
+) {
+
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
+
+    // ---------------------------------------------------------
+    // PASSWORD VISIBILITY
+    // ---------------------------------------------------------
+
+    var passwordVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 35.dp,
+                end = 35.dp
+            )
+            .height(size.dp),
+
+        color = Color.White,
+
+        shape = RoundedCornerShape(16.dp)
     ) {
-        var isFocused by remember { mutableStateOf(false) }
 
+        if (wantTextField) {
 
-        Surface(
-            modifier = Modifier.fillMaxWidth().padding(start = 35.dp, end = 35.dp)
-                .height(size.dp),
-            color = Color.White,
-            shape = RoundedCornerShape(16.dp)
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
 
-        ) {
-            Box(modifier=Modifier.fillMaxWidth().padding(end=17.dp, bottom =3.dp), contentAlignment = Alignment.TopEnd) {
-                if (isMandatory && !isFocused && words.isBlank()) {
-                    Text(text = "*",
-                        color = Color.Red,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold,
-//                        fontStyle= FontStyle.Italic
+                // -------------------------------------------------
+                // TEXT FIELD
+                // -------------------------------------------------
+
+                OutlinedTextField(
+
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                        },
+
+                    value = words,
+
+                    onValueChange = {
+                        onWordsChange(it)
+                    },
+
+                    singleLine = true,
+
+                    placeholder = {
+                        Text(
+                            text = task,
+                            fontSize = 20.sp
                         )
+                    },
+
+                    leadingIcon = icon,
+
+                    // -------------------------------------------------
+                    // PASSWORD TYPE
+                    // -------------------------------------------------
+
+                    visualTransformation =
+                        if (isPassword && !passwordVisible) {
+                                PasswordVisualTransformation()
+                        } else {
+                            VisualTransformation.None
+                        },
+
+                    keyboardOptions =
+                        if (isPassword) {
+                            androidx.compose.foundation.text.KeyboardOptions(
+                                keyboardType = KeyboardType.Password
+                            )
+                        } else {
+                            androidx.compose.foundation.text.KeyboardOptions.Default
+                        },
+
+                    // -------------------------------------------------
+                    // EYE BUTTON
+                    // -------------------------------------------------
+
+                    trailingIcon = {
+
+                        if (isPassword) {
+
+                            IconButton(
+                                onClick = {
+                                    passwordVisible = !passwordVisible
+                                }
+                            ) {
+
+                                Icon(
+
+                                    imageVector =
+                                        if (passwordVisible) {
+                                            Icons.Default.VisibilityOff
+                                        } else {
+                                            Icons.Default.Visibility
+                                        },
+
+                                    contentDescription =
+                                        if (passwordVisible) {
+                                            "Hide password"
+                                        } else {
+                                            "Show password"
+                                        },
+
+                                    tint = Color.Gray
+                                )
+                            }
+                        }
+                    },
+
+                    shape = RoundedCornerShape(16.dp),
+
+                    colors = OutlinedTextFieldDefaults.colors(
+
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+
+                        focusedLeadingIconColor = Color.Black,
+                        unfocusedLeadingIconColor = Color.Gray,
+
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+
+                        focusedPlaceholderColor = Color.Gray,
+                        unfocusedPlaceholderColor = Color.Gray,
+
+                        cursorColor = Color.Black,
+
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Transparent
+                    )
+                )
+
+
+                // -------------------------------------------------
+                // REQUIRED *
+                // -------------------------------------------------
+
+                if (
+                    isMandatory &&
+                    words.isBlank()
+                ) {
+
+                    Text(
+                        text = "*",
+
+                        color = Color.Red,
+
+                        fontSize = 18.sp,
+
+                        fontWeight = FontWeight.ExtraBold,
+
+                        modifier = Modifier
+                            .align(
+                                if (isFocused) {
+                                    Alignment.TopStart
+                                } else {
+                                    Alignment.TopEnd
+                                }
+                            )
+                            .padding(
+                                start = if (isFocused) {
+                                    8.dp
+                                } else {
+                                    0.dp
+                                },
+
+                                end = if (!isFocused) {
+                                    6.dp
+                                } else {
+                                    0.dp
+                                },
+
+                                top = 2.dp
+                            )
+                    )
                 }
             }
-                if (wantTextField) {
-                    OutlinedTextField(
-                        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
 
-                        value = words,
-                        onValueChange = { onWordsChange(it) },
-//                        label = {
-//                            Text(
-//                                text = if (isFocused) "*" else task,
-//                                color = if (isFocused) Color.Red else Color.Gray
-//                            )
-//                        },
+        } else {
 
-                    placeholder = { Text(text = "$task", fontSize = 20.sp) },
-                        singleLine = true,
-                        leadingIcon = icon,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
+            // -------------------------------------------------
+            // BUTTON
+            // -------------------------------------------------
 
-                            // Removes the gray background
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        onButtonClick()
+                    },
 
-                            // Removes the bottom indicator line
-//                        focusedIndicatorColor = Color.Transparent,
-//                        unfocusedIndicatorColor = Color.Transparent,
-//                        disabledIndicatorColor = Color.Transparent,
+                contentAlignment = Alignment.Center
+            ) {
 
-                            focusedLeadingIconColor = Color.Black,
-                            unfocusedLeadingIconColor = Color.Gray,
+                Text(
+                    text = task,
 
-                            // Text colors
-                            focusedTextColor = Color.Black,
-                            unfocusedTextColor = Color.Black,
+                    fontWeight = FontWeight.Bold,
 
-                            // Placeholder color
-                            unfocusedPlaceholderColor = Color.Gray,
-                            focusedPlaceholderColor = Color.Gray,
-
-                            errorLabelColor = Color.Red,
-                            unfocusedLabelColor = Color.Gray,
-                            focusedLabelColor = Color.LightGray,
-                            // Cursor
-                            cursorColor = Color.Black,
-
-                            focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Transparent
-                        )
-                    )
-                } else {
-
-                    //Box(modifier=Modifier.fillMaxSize().clickable{navControl.navigate("Home");viewMode.logininsert(userLoginInfo(Email=words, password = words))}, contentAlignment = Alignment.Center){
-                    Box(
-                        modifier = Modifier.fillMaxSize().clickable { onButtonClick() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "$task", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-
-                    }
-
-                }
+                    fontSize = 30.sp
+                )
             }
         }
+    }
+}
 
 
 fun isValid(email: String, pass: String): String {

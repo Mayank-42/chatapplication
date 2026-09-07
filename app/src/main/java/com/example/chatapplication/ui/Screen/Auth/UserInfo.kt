@@ -423,7 +423,12 @@ fun userInfoField(
         modifier = Modifier.fillMaxWidth()
     ) {
 
+        // =====================================================
+        // TEXT FIELD
+        // =====================================================
+
         TextField(
+
             value = value,
 
             onValueChange = {
@@ -440,6 +445,7 @@ fun userInfoField(
             singleLine = true,
 
             placeholder = {
+
                 Text(
                     text = placeholder,
                     fontSize = 17.sp,
@@ -449,12 +455,14 @@ fun userInfoField(
 
             leadingIcon = leadingIcon,
 
-            // -----------------------------------------------------
+            // =================================================
             // USERNAME PREFIX
-            // -----------------------------------------------------
+            // =================================================
 
             prefix = {
+
                 if (showPrefix) {
+
                     Text(
                         text = "@ ",
                         color = Color.Black,
@@ -463,9 +471,9 @@ fun userInfoField(
                 }
             },
 
-            // -----------------------------------------------------
+            // =================================================
             // KEYBOARD
-            // -----------------------------------------------------
+            // =================================================
 
             keyboardOptions = KeyboardOptions(
                 imeAction = imeAction
@@ -477,9 +485,9 @@ fun userInfoField(
                 }
             ),
 
-            // -----------------------------------------------------
+            // =================================================
             // UI
-            // -----------------------------------------------------
+            // =================================================
 
             shape = RoundedCornerShape(16.dp),
 
@@ -501,32 +509,50 @@ fun userInfoField(
             )
         )
 
+
         // =====================================================
         // REQUIRED ASTERISK
         // =====================================================
 
-        if (isMandatory && !isFocused && value.isBlank()) {
+        if (
+            isMandatory &&
+            value.isBlank()
+        ) {
 
-            Box(
+            Text(
+
+                text = "*",
+                color = Color.Red,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(
-                        end = 14.dp,
-                        top = 0.dp
+                    .align(
+                        if (isFocused) {
+                            Alignment.TopStart
+                        } else {
+                            Alignment.TopEnd
+                        }
                     )
-            ) {
+                    .padding(
 
-                Text(
-                    text = "*",
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
+                        start = if (isFocused) {
+                            8.dp
+                        } else {
+                            0.dp
+                        },
+
+                        end = if (!isFocused) {
+                            6.dp
+                        } else {
+                            0.dp
+                        },
+
+                        top = 2.dp
+                    )
+            )
         }
     }
 }
-
 
 // =================================================================
 // ROLE DROPDOWN
