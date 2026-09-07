@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -25,20 +25,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Face6
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Person
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,22 +43,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import androidx.navigation.NavController
-
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.tables.userInfo
-
 import kotlinx.coroutines.delay
 
 
@@ -102,44 +96,33 @@ fun UserInfo(
     // =========================================================
     // SIGN UP FUNCTION
     // =========================================================
-    //
-    // Both:
-    // 1. Keyboard Send
-    // 2. Sign Up button
-    //
-    // call this SAME function.
-    //
-    // =========================================================
+
     fun signUpUser() {
+
         // -----------------------------------------------------
         // NAME
         // -----------------------------------------------------
+
         if (name.isBlank()) {
             popupMessage = "Name is required"
             showPopup = true
             return
         }
+
         // -----------------------------------------------------
         // USERNAME
         // -----------------------------------------------------
+
         if (username.isBlank()) {
             popupMessage = "Username is required"
             showPopup = true
             return
         }
-        // -----------------------------------------------------
-        // ROLE
-        // -----------------------------------------------------
-        if (
-            role.isBlank() || role == "Choose your role"
-        ) {
-            popupMessage = "Please choose your role"
-            showPopup = true
-            return
-        }
+
         // -----------------------------------------------------
         // EVERYTHING IS VALID
         // -----------------------------------------------------
+
         viewMode.userinsert(
             userInfo(
                 0,
@@ -147,99 +130,129 @@ fun UserInfo(
                 username
             )
         )
+
         authVM.sigUp(
             authVM.email,
             authVM.password,
             name,
             username,
             role
-        ) { success ,responseCode ->
+        ) { success, responseCode ->
+
             if (success) {
                 onLoginSuccess()
-            }else if (responseCode == 500) {
+
+            } else if (responseCode == 500) {
                 popupMessage = "Username already exists"
                 showPopup = true
             }
         }
     }
+
     // =========================================================
     // MAIN SCREEN
     // =========================================================
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
     ) {
+
         // =====================================================
         // SCROLLABLE CONTENT
         // =====================================================
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .imePadding()
-                .padding(start = 35.dp, end = 35.dp, top = 45.dp, bottom = 35.dp),
+                .padding(
+                    start = 35.dp,
+                    end = 35.dp,
+                    top = 45.dp,
+                    bottom = 35.dp
+                ),
+
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
             // =================================================
             // ICON
             // =================================================
+
             Icon(
                 imageVector = Icons.Default.Face6,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(85.dp)
             )
+
             Spacer(modifier = Modifier.height(10.dp))
+
             // =================================================
             // TITLE
             // =================================================
+
             Text(
                 text = "Complete your profile",
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.SemiBold
             )
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "Tell us a little about yourself",
                 color = Color.LightGray,
                 fontSize = 15.sp
             )
+
             Spacer(modifier = Modifier.height(30.dp))
+
             // =================================================
             // NAME
             // =================================================
+
             userInfoField(
                 value = name,
                 onValueChange = {
                     name = it
                 },
                 placeholder = "Enter your Name",
+
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Person,
                         contentDescription = "Name"
                     )
-                }
+                },
+
+                isMandatory = true
             )
 
-
             Spacer(modifier = Modifier.height(18.dp))
+
             // =================================================
             // ROLE
             // =================================================
+
             roleDropBox(
                 role = role,
                 onRoleChange = {
                     role = it
                 }
             )
+
             Spacer(modifier = Modifier.height(18.dp))
+
             // =================================================
             // USERNAME
             // =================================================
+
             userInfoField(
                 value = username,
                 onValueChange = {
@@ -247,41 +260,46 @@ fun UserInfo(
                 },
 
                 placeholder = "Enter your Username",
+
                 showPrefix = true,
+
                 imeAction = ImeAction.Send,
+
                 onImeAction = {
                     // Keyboard Send
                     signUpUser()
                 },
+
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.AccountBox,
                         contentDescription = "Username"
                     )
-                }
+                },
+
+                isMandatory = true
             )
 
-
             Spacer(modifier = Modifier.height(28.dp))
+
             // =================================================
             // SIGN UP BUTTON
             // =================================================
+
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(65.dp)
                     .clickable {
-                        // Button does the EXACT
-                        // same operation as keyboard Send.
                         signUpUser()
                     },
 
                 color = Color.White,
                 shape = RoundedCornerShape(16.dp)
             ) {
+
                 Box(
                     modifier = Modifier.fillMaxSize(),
-
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -294,14 +312,15 @@ fun UserInfo(
                 }
             }
 
-
             Spacer(modifier = Modifier.height(15.dp))
+
             Text(
                 text = "Complete all fields to continue",
                 color = Color.Gray,
                 fontSize = 13.sp
             )
         }
+
         // =====================================================
         // TOP WARNING POPUP
         // =====================================================
@@ -312,7 +331,6 @@ fun UserInfo(
                 delay(2000)
                 showPopup = false
             }
-
 
             Surface(
                 modifier = Modifier
@@ -339,6 +357,7 @@ fun UserInfo(
 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     // -----------------------------------------
                     // CAUTION ICON
                     // -----------------------------------------
@@ -367,9 +386,12 @@ fun UserInfo(
         }
     }
 }
+
+
 // =================================================================
 // USER INFO TEXT FIELD
 // =================================================================
+
 @Composable
 fun userInfoField(
     value: String,
@@ -378,77 +400,127 @@ fun userInfoField(
     leadingIcon: @Composable () -> Unit,
     showPrefix: Boolean = false,
     imeAction: ImeAction = ImeAction.Default,
-    onImeAction: () -> Unit = {}
+    onImeAction: () -> Unit = {},
+    isMandatory: Boolean = false
 ) {
 
-    TextField(
-        value = value,
-        onValueChange = {
-            onValueChange(it)
-        },
+    var isFocused by rememberSaveable {
+        mutableStateOf(false)
+    }
 
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(65.dp),
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
 
-        singleLine = true,
-        placeholder = {
-            Text(
-                text = placeholder,
-                fontSize = 17.sp,
-                color = Color.Gray
-            )
-        },
-        leadingIcon = leadingIcon,
-        // -----------------------------------------------------
-        // USERNAME PREFIX
-        // -----------------------------------------------------
-        prefix = {
-            if (showPrefix) {
+        TextField(
+            value = value,
+
+            onValueChange = {
+                onValueChange(it)
+            },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(65.dp)
+                .onFocusChanged {
+                    isFocused = it.isFocused
+                },
+
+            singleLine = true,
+
+            placeholder = {
                 Text(
-                    text = "@ ",
-                    color = Color.Black,
-                    fontSize = 17.sp
+                    text = placeholder,
+                    fontSize = 17.sp,
+                    color = Color.Gray
+                )
+            },
+
+            leadingIcon = leadingIcon,
+
+            // -----------------------------------------------------
+            // USERNAME PREFIX
+            // -----------------------------------------------------
+
+            prefix = {
+                if (showPrefix) {
+                    Text(
+                        text = "@ ",
+                        color = Color.Black,
+                        fontSize = 17.sp
+                    )
+                }
+            },
+
+            // -----------------------------------------------------
+            // KEYBOARD
+            // -----------------------------------------------------
+
+            keyboardOptions = KeyboardOptions(
+                imeAction = imeAction
+            ),
+
+            keyboardActions = KeyboardActions(
+                onSend = {
+                    onImeAction()
+                }
+            ),
+
+            // -----------------------------------------------------
+            // UI
+            // -----------------------------------------------------
+
+            shape = RoundedCornerShape(16.dp),
+
+            colors = TextFieldDefaults.colors(
+
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+
+                cursorColor = Color.Black,
+
+                focusedLeadingIconColor = Color.Black,
+                unfocusedLeadingIconColor = Color.Gray
+            )
+        )
+
+        // =====================================================
+        // REQUIRED ASTERISK
+        // =====================================================
+
+        if (isMandatory && !isFocused && value.isBlank()) {
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        end = 14.dp,
+                        top = 0.dp
+                    )
+            ) {
+
+                Text(
+                    text = "*",
+                    color = Color.Red,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
                 )
             }
-        },
-        // -----------------------------------------------------
-        // KEYBOARD
-        // -----------------------------------------------------
-
-        keyboardOptions = KeyboardOptions(
-            imeAction = imeAction
-        ),
-        keyboardActions = KeyboardActions(
-            onSend = {
-                onImeAction()
-            }
-        ),
-
-
-        // -----------------------------------------------------
-        // UI
-        // -----------------------------------------------------
-
-        shape = RoundedCornerShape(16.dp),
-
-        colors = TextFieldDefaults.colors(
-
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = Color.Black,
-            focusedLeadingIconColor = Color.Black,
-            unfocusedLeadingIconColor = Color.Gray
-        )
-    )
+        }
+    }
 }
+
+
 // =================================================================
 // ROLE DROPDOWN
 // =================================================================
+
 @Composable
 fun roleDropBox(
     role: String,
@@ -468,9 +540,11 @@ fun roleDropBox(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+
         // =====================================================
         // ROLE BOX
         // =====================================================
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -503,6 +577,7 @@ fun roleDropBox(
 
                 Text(
                     text = role,
+
                     color =
                         if (role == "Choose your role") {
                             Color.Gray
@@ -511,6 +586,7 @@ fun roleDropBox(
                         },
 
                     fontSize = 17.sp,
+
                     modifier = Modifier.weight(1f)
                 )
 
@@ -529,7 +605,6 @@ fun roleDropBox(
             }
         }
 
-
         // =====================================================
         // ANIMATED DROPDOWN
         // =====================================================
@@ -539,12 +614,14 @@ fun roleDropBox(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
+
             Column {
+
                 Spacer(
                     modifier = Modifier.height(8.dp)
                 )
-                Surface(
 
+                Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.White,
                     shape = RoundedCornerShape(16.dp)
@@ -554,7 +631,6 @@ fun roleDropBox(
 
                         roleItem(
                             role = "Principal Engineer",
-
                             onClick = {
                                 onRoleChange(
                                     "Principal Engineer"
@@ -565,7 +641,6 @@ fun roleDropBox(
 
                         roleItem(
                             role = "Manager",
-
                             onClick = {
                                 onRoleChange(
                                     "Manager"
@@ -577,11 +652,9 @@ fun roleDropBox(
                         roleItem(
                             role = "SDE",
                             onClick = {
-
                                 onRoleChange(
                                     "SDE"
                                 )
-
                                 expanded = false
                             }
                         )
@@ -596,7 +669,6 @@ fun roleDropBox(
 
                         roleItem(
                             role = "Product Manager",
-
                             onClick = {
                                 onRoleChange("Product Manager")
                                 expanded = false
@@ -636,6 +708,7 @@ fun roleItem(
                 onClick()
             }
             .padding(horizontal = 18.dp),
+
         contentAlignment = Alignment.CenterStart
     ) {
 

@@ -1,7 +1,5 @@
 package com.example.chatapplication.ui.Screen.Main
 
-import android.R.attr.text
-import android.R.id.message
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,8 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,9 +22,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,23 +31,19 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -60,172 +51,491 @@ import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.R
 import kotlinx.coroutines.delay
 
+
+// ================================================================
+// SEARCH COLORS
+// ================================================================
+
+private val SearchBlack = Color(0xFF000000)
+private val SearchWhite = Color(0xFFFFFFFF)
+private val SearchBlue = Color(0xFF3B82F6)
+private val SearchTile = Color(0xFF111111)
+private val SearchMuted = Color(0xFF9CA3AF)
+private val SearchBorder = Color(0xFF242424)
+
+
+// ================================================================
+// SEARCH PAGE
+// ================================================================
+
 @Composable
-fun SearchBarPage(navControl: NavController,userEsist: UserInfo){
+fun SearchBarPage(
+    navControl: NavController,
+    userEsist: UserInfo
+) {
+
     var userName by rememberSaveable { mutableStateOf("") }
-    var isSearched by rememberSaveable{mutableStateOf(false)}
+
+    var isSearched by rememberSaveable { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
+
+
+    // ============================================================
+    // AUTO FOCUS
+    // ============================================================
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
+
+    // ============================================================
+    // SEARCH LOGIC
+    // ============================================================
+
     LaunchedEffect(userName) {
+
         if (userName.isNotBlank()) {
+
             delay(1000)
 
             if (userName.isNotBlank()) {
+
                 userEsist.isExsist(userName)
+
                 isSearched = true
             }
         }
     }
 
-        Box(modifier= Modifier.fillMaxSize().background(Color.Black)){
 
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Surface(
-                        color = Color.White,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp, top = 40.dp)
-                            .clip(shape = RoundedCornerShape(30.dp))
-                            .background(Color.White)
-                            .height(52.dp),
+    // ============================================================
+    // SCREEN
+    // ============================================================
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SearchBlack)
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp
+                )
+        ) {
+
+
+            // ====================================================
+            // TOP SEARCH BAR
+            // ====================================================
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 35.dp
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                // BACK BUTTON
+
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            navControl.popBackStack()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = SearchWhite,
+                        modifier = Modifier.size(27.dp)
+                    )
+                }
+
+
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+
+
+                // SEARCH FIELD
+
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(54.dp),
+                    color = SearchTile,
+                    shape = RoundedCornerShape(18.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        width = 1.dp,
+                        color = SearchBorder
+                    )
+                ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null,
-                                tint = Color.Black,
-                                modifier = Modifier.padding(start = 25.dp)
-//                                    .clickable { navControl.navigate("Home") } this is good example to not use navigate evrywhere
-                                    .clickable { navControl.popBackStack()}
+
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = SearchBlue,
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .size(24.dp)
+                        )
+
+
+                        TextField(
+                            value = userName,
+
+                            onValueChange = { userName = it;isSearched = false },
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+
+                            placeholder = {
+                                Text(
+                                    text = "Search people...",
+                                    color = SearchMuted,
+                                    fontSize = 16.sp
+                                )
+                            },
+
+                            singleLine = true,
+
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Search
+                            ),
+
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+
+                                    userEsist.isExsist(userName)
+
+                                    isSearched = true
+                                }
+                            ),
+
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+
+                                focusedTextColor = SearchWhite,
+                                unfocusedTextColor = SearchWhite,
+
+                                cursorColor = SearchBlue
                             )
-                            Spacer(modifier = Modifier.width(15.dp))
-                            TextField(
-                                value = userName,
-                                onValueChange = { userName = it;isSearched = false },
-                                modifier = Modifier.focusRequester(focusRequester),
-                                placeholder = {
-                                    Text(text = "Search user by UserName ('')")
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    imeAction = ImeAction.Search
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onSearch = { userEsist.isExsist(userName);isSearched = true }
+                        )
+                    }
+                }
+            }
+
+
+            Spacer(
+                modifier = Modifier.height(32.dp)
+            )
+
+
+            // ====================================================
+            // SEARCH RESULTS TITLE
+            // ====================================================
+
+            Text(
+                text = "SEARCH RESULTS",
+                color = SearchWhite,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.2.sp
+            )
+
+
+            Spacer(
+                modifier = Modifier.height(14.dp)
+            )
+
+
+            // ====================================================
+            // RESULT
+            // ====================================================
+
+            val ans = userEsist.UserExsist
+
+
+            if (isSearched) {
+
+                if (ans?.isExsist == true) {
+
+
+                    // =================================================
+                    // EXISTING USER
+                    // =================================================
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(92.dp)
+                            .clickable {
+
+                                ans.data?.id?.let { otherUserId ->
+
+                                    userEsist.openConversation(
+                                        otherUserId = otherUserId
+                                    ) { conversationId ->
+
+                                        navControl.navigate(
+                                            "ChatScreen/$conversationId"
+                                        )
+                                    }
+                                }
+                            },
+
+                        color = SearchTile,
+
+                        shape = RoundedCornerShape(
+                            22.dp
+                        ),
+
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.dp,
+                            color = SearchBorder
+                        )
+                    ) {
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(
+                                    horizontal = 14.dp
                                 ),
 
-                                colors = TextFieldDefaults.colors(
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    unfocusedTextColor = Color.Gray
+                            verticalAlignment =
+                                Alignment.CenterVertically
+                        ) {
+
+
+                            // PROFILE IMAGE
+
+                            ImageProfile()
+
+
+                            Spacer(
+                                modifier = Modifier.width(14.dp)
+                            )
+
+
+                            // USER INFORMATION
+
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+
+                                Text(
+                                    text =
+                                        ans.data?.name
+                                            ?: userName,
+
+                                    color = SearchWhite,
+
+                                    fontSize = 18.sp,
+
+                                    fontWeight =
+                                        FontWeight.Bold,
+
+                                    maxLines = 1
                                 )
 
+
+                                Spacer(
+                                    modifier =
+                                        Modifier.height(4.dp)
+                                )
+
+
+                                Text(
+                                    text = "@$userName",
+
+                                    color = SearchMuted,
+
+                                    fontSize = 14.sp
+                                )
+                            }
+
+
+                            // CHAT BUTTON
+
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(SearchBlue),
+
+                                contentAlignment =
+                                    Alignment.Center
+                            ) {
+
+                                Icon(
+                                    imageVector =
+                                        Icons.Default.Send,
+
+                                    contentDescription =
+                                        "Start chat",
+
+                                    tint = SearchWhite,
+
+                                    modifier =
+                                        Modifier.size(23.dp)
+                                )
+                            }
+                        }
+                    }
+
+                } else {
+
+
+                    // =================================================
+                    // UNKNOWN USER
+                    // =================================================
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(92.dp),
+
+                        color = SearchTile,
+
+                        shape = RoundedCornerShape(
+                            22.dp
+                        ),
+
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 1.dp,
+                            color = SearchBorder
+                        )
+                    ) {
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(
+                                    horizontal = 14.dp
+                                ),
+
+                            verticalAlignment =
+                                Alignment.CenterVertically
+                        ) {
+
+
+                            // UNKNOWN USER AVATAR
+
+                            Box(
+                                modifier = Modifier
+                                    .size(58.dp)
+                                    .clip(CircleShape)
+                                    .background(SearchBlack)
+                                    .border(
+                                        width = 1.dp,
+                                        color = SearchBorder,
+                                        shape = CircleShape
+                                    ),
+
+                                contentAlignment =
+                                    Alignment.Center
+                            ) {
+
+                                Text(
+                                    text = "?",
+
+                                    color = SearchMuted,
+
+                                    fontSize = 24.sp,
+
+                                    fontWeight =
+                                        FontWeight.Bold
+                                )
+                            }
+
+
+                            Spacer(
+                                modifier = Modifier.width(14.dp)
                             )
-                        }
-                    }
 
-                    val ans = userEsist.UserExsist
-                    Spacer(modifier = Modifier.height(20.dp))
-                    if(isSearched==true) {
-                        if (ans?.isExsist == true) {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(60.dp)
-                                    .padding(start = 5.dp, end = 5.dp)
-                                    .clickable { ans?.data?.id?.let { otherUserId ->
 
-                                        userEsist.openConversation(
-                                            otherUserId = otherUserId
-                                        ) { conversationId ->
+                            Column {
 
-                                            navControl.navigate(
-                                                "ChatScreen/$conversationId"
-                                            )
-                                        }
-                                    } }
-                                    .clip(shape = RoundedCornerShape(8.dp)),
-                                color = Color.White
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.example),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .size(50.dp)
-                                            .clip(CircleShape)
-                                            .border(3.dp, Color.Transparent, CircleShape)
-                                    )
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    Column() {
-                                        Text(text = ans.data?.name ?: userName, fontSize = 20.sp)
-                                        Text(text = "designation")
-                                    }
-                                    Spacer(modifier = Modifier.width(80.dp))
-                                    Text(
-                                        text = """some message
-                            | common for all""".trimMargin()
-                                    )
-                                }
-                            }
+                                Text(
+                                    text = "User not found",
 
-                        } else {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(60.dp)
-                                    .padding(start = 5.dp, end = 5.dp)
-//                                    .clickable { navControl.navigate("ChatScreen") }
-                                    .clip(shape = RoundedCornerShape(8.dp)),
-                                color = Color.White
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Image(
-                                        painter = painterResource(R.drawable.example),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .size(50.dp)
-                                            .clip(CircleShape)
-                                            .border(3.dp, Color.Transparent, CircleShape)
-                                    )
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    Column() {
-                                        Text(text = "UnownUser", fontSize = 20.sp)
-                                        Text(text = "designation")
-                                    }
-                                    Spacer(modifier = Modifier.width(80.dp))
-                                    Text(
-                                        text = """some message
-                            | common for all""".trimMargin()
-                                    )
-                                }
+                                    color = SearchWhite,
+
+                                    fontSize = 17.sp,
+
+                                    fontWeight =
+                                        FontWeight.Bold
+                                )
+
+
+                                Spacer(
+                                    modifier =
+                                        Modifier.height(4.dp)
+                                )
+
+
+                                Text(
+                                    text =
+                                        "No account matches @$userName",
+
+                                    color = SearchMuted,
+
+                                    fontSize = 13.sp
+                                )
                             }
                         }
                     }
-
-
-
+                }
             }
         }
-
+    }
 }
 
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun ShowScreen(){
-//    SearchBarPage()
-//}
+
+// ================================================================
+// PROFILE IMAGE
+// ================================================================
+
+@Composable
+private fun ImageProfile() {
+
+    Image(
+        painter = painterResource(
+            R.drawable.example
+        ),
+
+        contentDescription = "Profile image",
+
+        modifier = Modifier
+            .size(58.dp)
+            .clip(CircleShape)
+            .border(
+                width = 1.5.dp,
+                color = SearchBorder,
+                shape = CircleShape
+            )
+    )
+}

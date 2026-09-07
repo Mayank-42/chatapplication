@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.singleLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -143,7 +146,8 @@ fun ShowShinUp(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email"
                     )
-                }
+                },
+                isMandatory = true
             )
             Spacer(modifier = Modifier.height(20.dp))
             // ==================================================
@@ -160,7 +164,8 @@ fun ShowShinUp(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Password"
                     )
-                }
+                },
+                isMandatory = true
             )
             Spacer(modifier = Modifier.height(20.dp))
             // ==================================================
@@ -177,7 +182,8 @@ fun ShowShinUp(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Confirm Password"
                     )
-                }
+                },
+                isMandatory = true
             )
             Spacer(modifier = Modifier.height(25.dp))
             // ====================================================
@@ -253,7 +259,7 @@ fun ShowShinUp(
                             text = "Continue",
                             color = Color.Black,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
+                            fontSize = 30.sp
                         )
                     }
                 }
@@ -343,71 +349,86 @@ fun ShowShinUp(
 
 @Composable
 fun signupTextField(
-
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    icon: @Composable () -> Unit
+    icon: @Composable () -> Unit,
+    isMandatory: Boolean = false
 ) {
+    var isFocused by rememberSaveable { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = {
-            onValueChange(it)
-        },
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
 
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 35.dp,
-                end = 35.dp
-            ),
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 35.dp, end = 35.dp)
+                .onFocusChanged {
+                    isFocused = it.isFocused
+                },
 
-        singleLine = true,
-        placeholder = {
-            Text(
-                text = placeholder,
-                fontSize = 18.sp
+            value = value,
+            onValueChange = { onValueChange(it) },
+
+            singleLine = true,
+
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    fontSize = 18.sp
+                )
+            },
+
+            leadingIcon = icon,
+
+            shape = RoundedCornerShape(16.dp),
+
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray,
+
+                focusedLeadingIconColor = Color.Black,
+                unfocusedLeadingIconColor = Color.Gray,
+
+                cursorColor = Color.Black,
+
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Transparent
             )
-        },
-
-        leadingIcon = icon,
-        shape = RoundedCornerShape(16.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-
-            // ------------------------------------------
-            // CONTAINER
-            // ------------------------------------------
-
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            // ------------------------------------------
-            // TEXT
-            // ------------------------------------------
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black,
-            // ------------------------------------------
-            // PLACEHOLDER
-            // ------------------------------------------
-            focusedPlaceholderColor = Color.Gray,
-            unfocusedPlaceholderColor = Color.Gray,
-            // ------------------------------------------
-            // ICON
-            // ------------------------------------------
-            focusedLeadingIconColor = Color.Black,
-            unfocusedLeadingIconColor = Color.Gray,
-            // ------------------------------------------
-            // CURSOR
-            // ------------------------------------------
-            cursorColor = Color.Black,
-            // ------------------------------------------
-            // BORDER
-            // ------------------------------------------
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Transparent
         )
-    )
 
+        // Required indicator
+        if (isMandatory && !isFocused && value.isBlank()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 49.dp, top = 0.dp)
+//                    .background(
+//                        color = Color.White,
+//                        shape = RoundedCornerShape(4.dp)
+//                    )
+                    .padding(
+                        horizontal = 5.dp,
+                        vertical = 1.dp
+                    )
+            ) {
+                Text(
+                    text = "*",
+                    color = Color.Red,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+        }
+    }
 }
 
 fun isValid(email:String,pass:String,con:String):String{

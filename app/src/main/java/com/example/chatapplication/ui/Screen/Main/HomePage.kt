@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -46,6 +47,7 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -129,13 +131,10 @@ fun HomeScreen(
         mutableStateOf("")
     }
 
-    LaunchedEffect(Unit) {
-        id = tokenManager.getUserId() ?: ""
-    }
+    LaunchedEffect(Unit) { id = tokenManager.getUserId() ?: "" }
 
-    LaunchedEffect(Unit) {
-        userinfoo.getinfo()
-    }
+    LaunchedEffect(Unit) { userinfoo.getinfo() }
+
     val LogedInUser = userinfoo.userInfo.firstOrNull{it.id==id}
 
 
@@ -179,26 +178,34 @@ fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
 
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(
-                scrollBehavior.nestedScrollConnection
-            ),
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .nestedScroll(
+//                scrollBehavior.nestedScrollConnection
+//            ),
         containerColor = HomeBlack,
         // ====================================================
         // TOP APP BAR
         // ====================================================
         topBar = {
-            MediumTopAppBar(
+            TopAppBar(
                 title = {
                     Column {
                         // BIG HI
-                        Text(
-                            text = "HI",
-                            color = HomeBlue,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.ExtraBold
-                        )
+                        Row(modifier=Modifier.fillMaxWidth(),verticalAlignment = Alignment.Bottom){
+                            Text(
+                                text = "HI ",
+                                color = HomeBlue,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                            Text(
+                                text = LogedInUser?.name?:"",
+                                color = HomeBlue,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
                         // GREETING
                         Text(
                             text = greetingMessage,
@@ -214,7 +221,7 @@ fun HomeScreen(
                         scrolledContainerColor = HomeBlack,
                         titleContentColor = HomeWhite
                     ),
-                scrollBehavior = scrollBehavior
+//                scrollBehavior = scrollBehavior
             )
         },
         // ====================================================
@@ -268,11 +275,7 @@ fun HomeScreen(
                 // ==================================================
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        start = 12.dp,
-                        end = 12.dp,
-                        bottom = 24.dp
-                    ),
+                    contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(11.dp)
                 ) {
                     items(
@@ -430,11 +433,7 @@ private fun ConversationTile(
             },
         color = HomeTile,
         shape = RoundedCornerShape(22.dp),
-        border =
-            androidx.compose.foundation.BorderStroke(
-                width = 1.dp,
-                color = HomeBorder
-            )
+        border = androidx.compose.foundation.BorderStroke(width = 1.dp, color = HomeBorder)
     ) {
         Row(
             modifier = Modifier
@@ -485,11 +484,10 @@ private fun ConversationTile(
                         if (name.isBlank())
                             "Unknown"
                         else
-                            name,
-                    color =
-                        HomeMuted,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
+                            name.replaceFirstChar { it.uppercase() } ,
+                    color = HomeWhite,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     modifier = Modifier.padding(start = 2.dp)
                 )
@@ -505,15 +503,11 @@ private fun ConversationTile(
                             "No messages yet"
                         else
                             lastMessage,
-                    color = HomeWhite,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
+                    color = HomeMuted,
+                    fontSize = 12.sp,
+                    fontWeight = if(unreadCount>0) FontWeight.SemiBold else FontWeight.Medium,
                     maxLines = 1,
-                    modifier =
-                        Modifier.padding(
-                            start = 10.dp,
-                            end = 4.dp
-                        )
+                    modifier = Modifier.padding(start = 10.dp, end = 4.dp)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -548,7 +542,7 @@ private fun ConversationTile(
                     Spacer(modifier = Modifier.height(6.dp))
                     Box(
                         modifier = Modifier
-                            .size(29.dp)
+                            .size(22.dp)
                             .clip(CircleShape)
                             .background(HomeBlue),
                         contentAlignment = Alignment.Center
@@ -620,10 +614,7 @@ private fun HomeBottomNavigation(
                     )
                     .shadow(
                         elevation = 10.dp,
-                        shape = RoundedCornerShape(
-                            topStart = 30.dp,
-                            topEnd = 30.dp
-                        )
+                        shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
                     ),
 
                 color = HomeWhite,
@@ -638,10 +629,7 @@ private fun HomeBottomNavigation(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(
-                            top = 12.dp,
-                            bottom = 70.dp
-                        ),
+                        .padding(top = 12.dp, bottom = 70.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
                     Row(modifier=Modifier.fillMaxWidth().padding(top=10.dp,start=15.dp).clickable{ onProfileClick()}, verticalAlignment = Alignment.CenterVertically){
@@ -790,13 +778,13 @@ private fun HomeBottomNavigation(
                         HomeNavigationButton(
                             icon = {
                                 Icon(
-                                    imageVector = Icons.Default.Logout,
+                                    imageVector = Icons.Default.Home,
                                     contentDescription = "Logout",
                                     tint = HomeBlack,
                                     modifier = Modifier.size(30.dp)
                                 )
                             },
-                            onClick = onLogoutClick
+                            onClick = {}
                         )
                         // ==================================================
                         // GROUPS

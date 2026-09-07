@@ -337,8 +337,7 @@ class MainActivity : ComponentActivity() {
                                     convoInfoVM.stopConversationRealtime()
                                     convoInfoVM.clearLocalConversations()
                                     userId = ""
-                                    authState =
-                                        ChekUserState.unAuthenticated
+                                    authState = ChekUserState.unAuthenticated
                                 },
                                 convoInfoVM
                             )
@@ -394,7 +393,14 @@ class MainActivity : ComponentActivity() {
                                     userInfovm,
                                     tokenManager,
                                     profileUserId,
-                                    realtimeRepo
+                                    realtimeRepo,
+                                    onLoginSuccess = {
+                                        messageInfoVM.stopRealtime()
+                                        convoInfoVM.stopConversationRealtime()
+                                        convoInfoVM.clearLocalConversations()
+                                        userId = ""
+                                        authState = ChekUserState.unAuthenticated
+                                    }
 
                                 )
                             }

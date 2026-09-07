@@ -1,5 +1,7 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.bottom
+import android.R.attr.font
 import android.R.attr.fontStyle
 import android.R.attr.password
 import android.R.attr.text
@@ -50,6 +52,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -121,7 +124,8 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                         imageVector = Icons.Default.Email,
                         contentDescription = null
                     )
-                }
+                },
+                isMandatory = true
                 )
             Spacer(modifier = Modifier.height(30.dp))
             surface(
@@ -135,7 +139,8 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
                         imageVector = Icons.Default.Lock,
                         contentDescription = null
                     )
-                }
+                },
+                isMandatory = true
             )
 
             Spacer(modifier = Modifier.height(30.dp))
@@ -302,8 +307,11 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
         words: String,
         onWordsChange: (String) -> Unit,
         onButtonClick: () -> Unit = {},
-        icon: @Composable () -> Unit
+        icon: @Composable () -> Unit,
+        isMandatory: Boolean=false
     ) {
+        var isFocused by remember { mutableStateOf(false) }
+
 
         Surface(
             modifier = Modifier.fillMaxWidth().padding(start = 35.dp, end = 35.dp)
@@ -312,58 +320,81 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
             shape = RoundedCornerShape(16.dp)
 
         ) {
-            if (wantTextField) {
-                OutlinedTextField(
-                    value = words,
-                    onValueChange = { onWordsChange(it) },
+            Box(modifier=Modifier.fillMaxWidth().padding(end=17.dp, bottom =3.dp), contentAlignment = Alignment.TopEnd) {
+                if (isMandatory && !isFocused && words.isBlank()) {
+                    Text(text = "*",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+//                        fontStyle= FontStyle.Italic
+                        )
+                }
+            }
+                if (wantTextField) {
+                    OutlinedTextField(
+                        modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
+
+                        value = words,
+                        onValueChange = { onWordsChange(it) },
+//                        label = {
+//                            Text(
+//                                text = if (isFocused) "*" else task,
+//                                color = if (isFocused) Color.Red else Color.Gray
+//                            )
+//                        },
+
                     placeholder = { Text(text = "$task", fontSize = 20.sp) },
-                    singleLine = true,
-                    leadingIcon=icon,
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
+                        singleLine = true,
+                        leadingIcon = icon,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
 
-                        // Removes the gray background
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
+                            // Removes the gray background
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
 
-                        // Removes the bottom indicator line
+                            // Removes the bottom indicator line
 //                        focusedIndicatorColor = Color.Transparent,
 //                        unfocusedIndicatorColor = Color.Transparent,
 //                        disabledIndicatorColor = Color.Transparent,
 
-                        focusedLeadingIconColor = Color.Black,
-                        unfocusedLeadingIconColor = Color.Gray,
+                            focusedLeadingIconColor = Color.Black,
+                            unfocusedLeadingIconColor = Color.Gray,
 
-                        // Text colors
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
+                            // Text colors
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
 
-                        // Placeholder color
-                        unfocusedPlaceholderColor = Color.Gray,
-                        focusedPlaceholderColor = Color.Gray,
+                            // Placeholder color
+                            unfocusedPlaceholderColor = Color.Gray,
+                            focusedPlaceholderColor = Color.Gray,
 
-                        // Cursor
-                        cursorColor = Color.Black,
+                            errorLabelColor = Color.Red,
+                            unfocusedLabelColor = Color.Gray,
+                            focusedLabelColor = Color.LightGray,
+                            // Cursor
+                            cursorColor = Color.Black,
 
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Transparent
+                            focusedBorderColor = Color.Black,
+                            unfocusedBorderColor = Color.Transparent
+                        )
                     )
-                )
-            } else {
+                } else {
 
-                //Box(modifier=Modifier.fillMaxSize().clickable{navControl.navigate("Home");viewMode.logininsert(userLoginInfo(Email=words, password = words))}, contentAlignment = Alignment.Center){
-                Box(
-                    modifier = Modifier.fillMaxSize().clickable { onButtonClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "$task", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+                    //Box(modifier=Modifier.fillMaxSize().clickable{navControl.navigate("Home");viewMode.logininsert(userLoginInfo(Email=words, password = words))}, contentAlignment = Alignment.Center){
+                    Box(
+                        modifier = Modifier.fillMaxSize().clickable { onButtonClick() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "$task", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+
+                    }
 
                 }
-
             }
         }
 
-    }
+
 fun isValid(email: String, pass: String): String {
     if (email.isBlank() && pass.isBlank())
         return "Please enter your email and password"
