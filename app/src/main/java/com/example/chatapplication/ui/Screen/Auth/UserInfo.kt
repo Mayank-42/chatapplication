@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Face6
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -148,239 +149,249 @@ fun UserInfo(
             }
         }
     }
+    Scaffold(
 
-    // =========================================================
-    // MAIN SCREEN
-    // =========================================================
+        bottomBar = {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
+        }
 
-        // =====================================================
-        // SCROLLABLE CONTENT
-        // =====================================================
+    ) {paddingValues ->
 
-        Column(
+
+        // =========================================================
+        // MAIN SCREEN
+        // =========================================================
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .imePadding()
-                .padding(
-                    start = 35.dp,
-                    end = 35.dp,
-                    top = 45.dp,
-                    bottom = 35.dp
-                ),
-
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .background(Color.Black)
+                .padding(paddingValues)
         ) {
 
-            // =================================================
-            // ICON
-            // =================================================
+            // =====================================================
+            // SCROLLABLE CONTENT
+            // =====================================================
 
-            Icon(
-                imageVector = Icons.Default.Face6,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(85.dp)
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // =================================================
-            // TITLE
-            // =================================================
-
-            Text(
-                text = "Complete your profile",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Tell us a little about yourself",
-                color = Color.LightGray,
-                fontSize = 15.sp
-            )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            // =================================================
-            // NAME
-            // =================================================
-
-            userInfoField(
-                value = name,
-                onValueChange = {
-                    name = it
-                },
-                placeholder = "Enter your Name",
-
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = "Name"
-                    )
-                },
-
-                isMandatory = true
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // =================================================
-            // ROLE
-            // =================================================
-
-            roleDropBox(
-                role = role,
-                onRoleChange = {
-                    role = it
-                }
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // =================================================
-            // USERNAME
-            // =================================================
-
-            userInfoField(
-                value = username,
-                onValueChange = {
-                    username = it
-                },
-
-                placeholder = "Enter your Username",
-
-                showPrefix = true,
-
-                imeAction = ImeAction.Send,
-
-                onImeAction = {
-                    // Keyboard Send
-                    signUpUser()
-                },
-
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.AccountBox,
-                        contentDescription = "Username"
-                    )
-                },
-
-                isMandatory = true
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // =================================================
-            // SIGN UP BUTTON
-            // =================================================
-
-            Surface(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-                    .clickable {
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .imePadding()
+                    .padding(
+                        start = 35.dp,
+                        end = 35.dp,
+                        top = 45.dp,
+                        bottom = 35.dp
+                    ),
+
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                // =================================================
+                // ICON
+                // =================================================
+
+                Icon(
+                    imageVector = Icons.Default.Face6,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(85.dp)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // =================================================
+                // TITLE
+                // =================================================
+
+                Text(
+                    text = "Complete your profile",
+                    color = Color.White,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Tell us a little about yourself",
+                    color = Color.LightGray,
+                    fontSize = 15.sp
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                // =================================================
+                // NAME
+                // =================================================
+
+                userInfoField(
+                    value = name,
+                    onValueChange = {
+                        name = it
+                    },
+                    placeholder = "Enter your Name",
+
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = "Name"
+                        )
+                    },
+
+                    isMandatory = true
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // =================================================
+                // ROLE
+                // =================================================
+
+                roleDropBox(
+                    role = role,
+                    onRoleChange = {
+                        role = it
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // =================================================
+                // USERNAME
+                // =================================================
+
+                userInfoField(
+                    value = username,
+                    onValueChange = {
+                        username = it
+                    },
+
+                    placeholder = "Enter your Username",
+
+                    showPrefix = true,
+
+                    imeAction = ImeAction.Send,
+
+                    onImeAction = {
+                        // Keyboard Send
                         signUpUser()
                     },
 
-                color = Color.White,
-                shape = RoundedCornerShape(16.dp)
-            ) {
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.AccountBox,
+                            contentDescription = "Username"
+                        )
+                    },
 
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                    isMandatory = true
+                )
 
-                    Text(
-                        text = "Sign Up",
-                        color = Color.Black,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+                Spacer(modifier = Modifier.height(28.dp))
 
-            Spacer(modifier = Modifier.height(15.dp))
+                // =================================================
+                // SIGN UP BUTTON
+                // =================================================
 
-            Text(
-                text = "Complete all fields to continue",
-                color = Color.Gray,
-                fontSize = 13.sp
-            )
-        }
-
-        // =====================================================
-        // TOP WARNING POPUP
-        // =====================================================
-
-        if (showPopup) {
-
-            LaunchedEffect(popupMessage) {
-                delay(2000)
-                showPopup = false
-            }
-
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(
-                        top = 45.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    )
-                    .fillMaxWidth(),
-
-                color = Color.White,
-                shape = RoundedCornerShape(14.dp),
-                shadowElevation = 8.dp
-            ) {
-
-                Row(
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 13.dp
-                        ),
+                        .height(65.dp)
+                        .clickable {
+                            signUpUser()
+                        },
 
-                    verticalAlignment = Alignment.CenterVertically
+                    color = Color.White,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
 
-                    // -----------------------------------------
-                    // CAUTION ICON
-                    // -----------------------------------------
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
 
-                    Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Invalid",
-                        tint = Color.Black,
-                        modifier = Modifier.size(22.dp)
-                    )
+                        Text(
+                            text = "Sign Up",
+                            color = Color.Black,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
 
-                    Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
-                    // -----------------------------------------
-                    // MESSAGE
-                    // -----------------------------------------
+                Text(
+                    text = "Complete all fields to continue",
+                    color = Color.Gray,
+                    fontSize = 13.sp
+                )
+            }
 
-                    Text(
-                        text = popupMessage,
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+            // =====================================================
+            // TOP WARNING POPUP
+            // =====================================================
+
+            if (showPopup) {
+
+                LaunchedEffect(popupMessage) {
+                    delay(2000)
+                    showPopup = false
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(
+                            top = 45.dp,
+                            start = 20.dp,
+                            end = 20.dp
+                        )
+                        .fillMaxWidth(),
+
+                    color = Color.White,
+                    shape = RoundedCornerShape(14.dp),
+                    shadowElevation = 8.dp
+                ) {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 13.dp
+                            ),
+
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        // -----------------------------------------
+                        // CAUTION ICON
+                        // -----------------------------------------
+
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = "Invalid",
+                            tint = Color.Black,
+                            modifier = Modifier.size(22.dp)
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        // -----------------------------------------
+                        // MESSAGE
+                        // -----------------------------------------
+
+                        Text(
+                            text = popupMessage,
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         }

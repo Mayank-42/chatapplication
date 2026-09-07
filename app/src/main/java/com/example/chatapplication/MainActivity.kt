@@ -410,7 +410,16 @@ class MainActivity : ComponentActivity() {
                             GroupPage(
                                 navController,
                                 save,
-                                convoInfoVM
+                                convoInfoVM,
+                                tokenManager,
+                                userInfovm,
+                                onLoginSuccess = {
+                                    messageInfoVM.stopRealtime()
+                                    convoInfoVM.stopConversationRealtime()
+                                    convoInfoVM.clearLocalConversations()
+                                    userId = ""
+                                    authState = ChekUserState.unAuthenticated
+                                }
                             )
                         }
 

@@ -78,7 +78,9 @@ import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
+import com.example.chatapplication.ui.Screen.HomeBottomNavigation
 import kotlinx.coroutines.launch
+import java.lang.ProcessBuilder.Redirect.to
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -127,16 +129,13 @@ fun HomeScreen(
     }
 
 
-    var id by rememberSaveable {
-        mutableStateOf("")
-    }
+    var id by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) { id = tokenManager.getUserId() ?: "" }
 
     LaunchedEffect(Unit) { userinfoo.getinfo() }
 
     val LogedInUser = userinfoo.userInfo.firstOrNull{it.id==id}
-
 
 
     // ========================================================
@@ -244,6 +243,9 @@ fun HomeScreen(
                             navControl.navigate("profileScreen/$id")
                         }
                     }
+                },
+                onHomeClick={
+                    navControl.navigate("Home")
                 },
                 onSetting = {navControl.navigate("SettingPage")},
                 LogedInUser

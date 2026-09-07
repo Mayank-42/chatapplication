@@ -43,10 +43,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +60,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
+import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
+import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.Data.local.tables.userInfo
+import com.example.chatapplication.ui.Screen.HomeBottomNavigation
+import kotlinx.coroutines.launch
 
 private val GroupBlack = Color.Black
 private val GroupWhite = Color.White
@@ -70,12 +78,24 @@ private val GroupTile = Color(0xFF111111)
 fun GroupPage(
     nav: NavController,
     save: GroupChatVM,
-    convoInfo: convoVM
+    convoInfo: convoVM,
+    token: TokenManager,
+    user: UserInfo,
+    onLoginSuccess:() ->Unit
+
 ){
     val groups by save.gettingGroupinfo.collectAsState(initial = emptyList())
     val conversations by convoInfo.groupConversations.collectAsState(initial = emptyList())
 
+    val scope = rememberCoroutineScope()
+    var id by rememberSaveable { mutableStateOf("") }
 
+    LaunchedEffect(Unit) { id = token.getUserId() ?: "" }
+
+    val currentUser =
+        user.userInfo.firstOrNull {
+            it.id == id
+        }
 
     Scaffold(
         containerColor = GroupBlack,
@@ -119,7 +139,33 @@ fun GroupPage(
 //                },
                 modifier = Modifier.fillMaxWidth()
             )
+        },
+        bottomBar={
+            HomeBottomNavigation(
+                onGroupsClick = {
+                    nav.navigate("GroupPage")
+                },
+                onLogoutClick = {
+                    scope.launch {
+                        token.clearTokens()
+                        onLoginSuccess()
+                    }
+                },
+                onProfileClick = {
+                    scope.launch {
+                        if (id.isNotBlank()) {
+                            nav.navigate("profileScreen/$id")
+                        }
+                    }
+                },
+                onHomeClick={
+                    nav .navigate("Home")
+                },
+                onSetting = {nav.navigate("SettingPage")},
+                currentUser
+            )
         }
+
     ) { paddingValues ->
 
         Box(

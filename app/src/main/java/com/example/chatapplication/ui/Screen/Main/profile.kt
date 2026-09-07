@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.R.string.yes
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,12 +24,14 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.internal.composableLambda
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,6 +50,7 @@ import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.ui.Screen.HomeBottomNavigation
 import kotlinx.coroutines.launch
 import kotlinx.serialization.descriptors.SerialDescriptor
 
@@ -105,194 +109,225 @@ fun profileScreen(
                 println("Image bytes: ${bytes?.size}")
             }
         }
+    Scaffold(
+        bottomBar={
+            HomeBottomNavigation(
+                onGroupsClick = {
+                    nav.navigate("GroupPage")
+                },
+                onLogoutClick = {
+                    scope.launch {
+                        token.clearTokens()
+                        onLoginSuccess()
+                    }
+                },
+                onProfileClick = {
+                    scope.launch {
+                        if (id.isNotBlank()) {
+                            nav.navigate("profileScreen/$id")
+                        }
+                    }
+                },
+                onHomeClick={
+                    nav.navigate("Home")
+                },
+                onSetting = {nav.navigate("SettingPage")},
+                currentUser
+            )
+        }
+    ) {paddingValues ->
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(ProfileBlack)
-            .padding(horizontal = 16.dp)
-    ) {
-
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 30.dp),
-
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+                .background(ProfileBlack)
+                .padding(paddingValues)
         ) {
-            Spacer(modifier= Modifier.height(30.dp))
 
-            Box(
-                modifier = Modifier.size(170.dp)
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 30.dp),
+
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
+                Spacer(modifier = Modifier.height(30.dp))
 
-                AsyncImage(
-                    model = currentUser?.photo_url,
-                    contentDescription = "profile image",
-                    contentScale = ContentScale.Crop,
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .border(
-                                width = 2.dp,
-                                color =if(isOnline) Color.Green else ProfileBlue,
-                                shape = CircleShape
-                            )
-                )
-                if (currentUser?.id == userid) {
-                Surface(
-                    modifier =
-                        Modifier
-                            .size(48.dp)
-                            .align(
-                                Alignment.BottomEnd
-                            )
-                            .clickable {
-
-                                imagePicker.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts
-                                            .PickVisualMedia
-                                            .ImageOnly
-                                    )
-                                )
-                            },
-
-                    color = ProfileBlue,
-                    shape = CircleShape
+                Box(
+                    modifier = Modifier.size(170.dp)
                 ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
 
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit profile image",
-                                tint = ProfileBlack,
-                                modifier = Modifier.size(22.dp)
-                            )
+                    AsyncImage(
+                        model = currentUser?.photo_url,
+                        contentDescription = "profile image",
+                        contentScale = ContentScale.Crop,
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                                .border(
+                                    width = 2.dp,
+                                    color = if (isOnline) Color.Green else ProfileBlue,
+                                    shape = CircleShape
+                                )
+                    )
+                    if (currentUser?.id == userid) {
+                        Surface(
+                            modifier =
+                                Modifier
+                                    .size(48.dp)
+                                    .align(
+                                        Alignment.BottomEnd
+                                    )
+                                    .clickable {
+
+                                        imagePicker.launch(
+                                            PickVisualMediaRequest(
+                                                ActivityResultContracts
+                                                    .PickVisualMedia
+                                                    .ImageOnly
+                                            )
+                                        )
+                                    },
+
+                            color = ProfileBlue,
+                            shape = CircleShape
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "Edit profile image",
+                                    tint = ProfileBlack,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = currentUser?.name ?: "Name",
-                color = ProfileWhite,
-                fontSize = 27.sp,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    text = currentUser?.name ?: "Name",
+                    color = ProfileWhite,
+                    fontSize = 27.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
-            Text(
-                text = "@${currentUser?.username ?: "username"}",
-                color = ProfileGrey,
-                fontSize = 14.sp
-            )
+                Text(
+                    text = "@${currentUser?.username ?: "username"}",
+                    color = ProfileGrey,
+                    fontSize = 14.sp
+                )
 
-            Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-            profileTile(
-                title = "Name",
-                content = currentUser?.name
-            )
+                profileTile(
+                    title = "Name",
+                    content = currentUser?.name
+                )
 
-            profileTile(
-                title = "Username",
-                content = currentUser?.username
-            )
+                profileTile(
+                    title = "Username",
+                    content = currentUser?.username
+                )
 
-            profileTile(
-                title = "Role",
-                content = currentUser?.role ?: "No designation"
-            )
+                profileTile(
+                    title = "Role",
+                    content = currentUser?.role ?: "No designation"
+                )
 
-            profileTile(
-                title = "Email",
-                content = currentUser?.email
-            )
-            if (currentUser?.id == userid) {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                        .clip(RoundedCornerShape(25.dp))
-                        .background(Color.Red)
-                        .padding(10.dp)
-                        .clickable{
-                            scope.launch {
-                                token.clearTokens()
-                                onLoginSuccess()
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Logout,
-                            contentDescription = "logOut",
-                            tint = Color.Black
-                        )
-                        Text(text = "LogOut", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                profileTile(
+                    title = "Email",
+                    content = currentUser?.email
+                )
+                if (currentUser?.id == userid) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(Color.Red)
+                            .padding(10.dp)
+                            .clickable {
+                                scope.launch {
+                                    token.clearTokens()
+                                    onLoginSuccess()
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Logout,
+                                contentDescription = "logOut",
+                                tint = Color.Black
+                            )
+                            Text(text = "LogOut", fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                        }
                     }
                 }
-            }
 
+            }
         }
     }
 }
 
-@Composable
-fun profileTile(
-    title: String,
-    content: String?
-) {
+    @Composable
+    fun profileTile(
+        title: String,
+        content: String?
+    ) {
 
-    Surface(
-        modifier = Modifier
+        Surface(
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
                 .height(68.dp),
 
-        color = ProfileTile,
+            color = ProfileTile,
 
-        shape = RoundedCornerShape(16.dp)
-    ) {
-
-        Column(
-            modifier =
-                Modifier.padding(
-                    horizontal = 18.dp,
-                    vertical = 10.dp
-                ),
-
-            verticalArrangement =
-                Arrangement.Center
+            shape = RoundedCornerShape(16.dp)
         ) {
 
-            Text(
-                text = title,
-                color = ProfileGrey,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Column(
+                modifier =
+                    Modifier.padding(
+                        horizontal = 18.dp,
+                        vertical = 10.dp
+                    ),
 
-            Spacer(
-                modifier = Modifier.height(3.dp)
-            )
+                verticalArrangement =
+                    Arrangement.Center
+            ) {
 
-            Text(
-                text = content ?: "Not available",
-                color = ProfileWhite,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1
-            )
+                Text(
+                    text = title,
+                    color = ProfileGrey,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(
+                    modifier = Modifier.height(3.dp)
+                )
+
+                Text(
+                    text = content ?: "Not available",
+                    color = ProfileWhite,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1
+                )
+            }
         }
     }
-}

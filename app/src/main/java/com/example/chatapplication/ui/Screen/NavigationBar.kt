@@ -57,10 +57,11 @@ private val HomeMuted = Color(0xFF9CA3AF)
 private val HomeBorder = Color(0xFF242424)
 
 @Composable
-private fun HomeBottomNavigation(
+ fun HomeBottomNavigation(
     onGroupsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onHomeClick:() ->Unit,
     onSetting :()->Unit,
     id: TakingUsernameResponse?
 ) {
@@ -278,7 +279,7 @@ private fun HomeBottomNavigation(
                                 modifier = Modifier.size(30.dp)
                             )
                         },
-                        onClick = {}
+                        onClick = onHomeClick
                     )
                     // ==================================================
                     // GROUPS
