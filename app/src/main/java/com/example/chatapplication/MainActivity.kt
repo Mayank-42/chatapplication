@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontVariation.Setting
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -59,6 +60,7 @@ import com.example.chatapplication.ui.Screen.GroupChat.GroupPage
 import com.example.chatapplication.ui.Screen.GroupChat.ShowingGroupDetail
 import com.example.chatapplication.ui.Screen.Main.HomeScreen
 import com.example.chatapplication.ui.Screen.Main.SearchBarPage
+import com.example.chatapplication.ui.Screen.Main.SettingPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
@@ -455,6 +457,9 @@ class MainActivity : ComponentActivity() {
                                     userVM = userInfovm
                                 )
                             }
+                        }
+                        composable("SettingPage"){
+                            SettingPage()
                         }
                     }
                 }

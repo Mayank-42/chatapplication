@@ -3,6 +3,7 @@ package com.example.chatapplication.ui.Screen.Main
 
 import android.R.attr.fontWeight
 import android.R.attr.onClick
+import android.R.attr.text
 import android.R.attr.x
 import android.os.Build
 import android.text.style.UnderlineSpan
@@ -237,6 +238,7 @@ fun HomeScreen(
                         }
                     }
                 },
+                onSetting = {navControl.navigate("SettingPage")},
                 LogedInUser
             )
         }
@@ -571,6 +573,7 @@ private fun HomeBottomNavigation(
     onGroupsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onSetting :()->Unit,
     id: TakingUsernameResponse?
 ) {
     var offsetY by rememberSaveable { mutableStateOf(0f) }
@@ -646,22 +649,23 @@ private fun HomeBottomNavigation(
                             model=id?.photo_url,
                         contentDescription = "profile image",
                             contentScale=ContentScale.Crop,
-                            modifier=Modifier.size(60.dp).clip(CircleShape).border(1.dp,Color.Green,CircleShape)
+                            modifier=Modifier.size(60.dp).clip(CircleShape).border(1.dp,Color.LightGray,CircleShape)
 
                         )
 //                            Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Column(modifier=Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom) {
 
                                 Text(
-                                    text = id?.name?.uppercase() ?: "",
+                                    text =id?.name?.replaceFirstChar { it.uppercase() } ?: "",
                                     fontSize = 20.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Bold
 
                                 )
 
                                 Text(
                                     text = id?.role ?: "", fontSize = 15.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Bold,
+                                    color=HomeBlue
                                 )
                             }
                         }
@@ -684,7 +688,7 @@ private fun HomeBottomNavigation(
                         )
                         Text(text="Group")
                     }
-                    Row(modifier=Modifier.fillMaxWidth().padding(top=10.dp,start=15.dp),verticalAlignment =Alignment.CenterVertically)
+                    Row(modifier=Modifier.fillMaxWidth().padding(top=10.dp,start=15.dp).clickable{onSetting()},verticalAlignment =Alignment.CenterVertically)
                     {
                         HomeNavigationButton(
                             icon = {
@@ -695,7 +699,7 @@ private fun HomeBottomNavigation(
                                     modifier = Modifier.size(30.dp)
                                 )
                             },
-                            onClick = onLogoutClick
+                            onClick = onSetting
                         )
                         Text(text="Seeting")
                     }
@@ -766,7 +770,11 @@ private fun HomeBottomNavigation(
                     shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
                 ) {
                     Box(modifier=Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter){
-                        Box(modifier=Modifier.height(6.dp).width(10.dp).clip(RoundedCornerShape(50.dp))){}
+                        Box(modifier=Modifier.height(6.dp).width(50.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(Color.Gray)
+
+                        ){}
                     }
 
                     Row(
