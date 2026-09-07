@@ -132,7 +132,8 @@ fun profileScreen(
                     nav.navigate("Home")
                 },
                 onSetting = {nav.navigate("SettingPage")},
-                currentUser
+                currentUser,
+                nav
             )
         }
     ) {paddingValues ->
@@ -253,7 +254,7 @@ fun profileScreen(
                     Box(
                         modifier = Modifier.fillMaxWidth()
                             .clip(RoundedCornerShape(25.dp))
-                            .background(Color.Red)
+                            .background(Color(0xFFEF4444))
                             .padding(10.dp)
                             .clickable {
                                 scope.launch {

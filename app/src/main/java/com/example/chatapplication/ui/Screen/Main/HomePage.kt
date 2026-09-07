@@ -199,7 +199,7 @@ fun HomeScreen(
                                 fontWeight = FontWeight.ExtraBold
                             )
                             Text(
-                                text = LogedInUser?.name?:"",
+                                text = LogedInUser?.name?.replaceFirstChar { it.uppercase() }?:"",
                                 color = HomeBlue,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.ExtraBold
@@ -248,7 +248,8 @@ fun HomeScreen(
                     navControl.navigate("Home")
                 },
                 onSetting = {navControl.navigate("SettingPage")},
-                LogedInUser
+                LogedInUser,
+                navControl
             )
         }
 
@@ -369,11 +370,7 @@ private fun HomeSearchBar(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 10.dp
-            )
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp)
             .height(56.dp)
             .clickable {
                 onClick()
@@ -388,9 +385,7 @@ private fun HomeSearchBar(
 
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    horizontal = 16.dp
-                ),
+                .padding(horizontal = 16.dp),
 
             verticalAlignment = Alignment.CenterVertically
         ) {

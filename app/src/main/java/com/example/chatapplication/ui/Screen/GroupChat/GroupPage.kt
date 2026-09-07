@@ -162,7 +162,8 @@ fun GroupPage(
                     nav .navigate("Home")
                 },
                 onSetting = {nav.navigate("SettingPage")},
-                currentUser
+                currentUser,
+                nav
             )
         }
 
