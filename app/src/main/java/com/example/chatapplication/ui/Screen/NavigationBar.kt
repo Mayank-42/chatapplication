@@ -102,12 +102,12 @@ private val HomeBorder = Color(0xFF242424)
                     .fillMaxWidth()
                     .height(maxHeight)
                     .align(Alignment.BottomCenter)
-    //                    .offset {
-    //                        IntOffset(
-    //                            x = 0,
-    //                            y = offsetY.roundToFloat()
-    //                        )
-    //                    }
+                        .offset {
+                        IntOffset(
+                            x = 0,
+                            y = offsetY.value.roundToInt()
+                        )
+                    }
                     .draggable(
                         orientation = Orientation.Vertical,
                         state = rememberDraggableState { delta ->
