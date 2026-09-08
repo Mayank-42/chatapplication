@@ -67,7 +67,16 @@ class GroupChatVM(
     }
     fun getingGroupInfo(conversationId:String){
         viewModelScope.launch{
-            reposatory.getingGroupInfo(conversationId)
+           val response= reposatory.getingGroupInfo(conversationId)
+            if(response.isSuccessful){
+                val data=response.body()
+            }else{
+                println(
+                    "GET GROUP INFO ERROR: ${
+                        response.errorBody()?.string()
+                    }"
+                )
+            }
         }
     }
 
