@@ -108,6 +108,6 @@ suspend fun getConvoInfo(
     @POST()
     suspend fun deletingGroup(
         @Body request: deleteGroupRequest
-    )
+    ):Response<Unit>
 
 }

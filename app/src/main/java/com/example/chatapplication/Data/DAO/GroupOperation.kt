@@ -25,7 +25,6 @@ interface GroupOperation {
     @Query("select*from groupMember")
     fun gatAllmember():Flow<List<groupMember>>
 
-    @Delete("select * from GroupInfo where conversationid=conversationId")
-    fun deleteGroupLocaly(ConversationId:String)
+
 
 }

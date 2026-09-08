@@ -49,6 +49,13 @@
             message: String,
             time: String
         )
+        @Query("""
+        DELETE FROM CinversationId
+        WHERE conversationId = :conversationId
+    """)
+        suspend fun deleteConversation(
+            conversationId: String
+        )
 
         @Query("DELETE FROM CinversationId")
         suspend fun deleteAllConversations()

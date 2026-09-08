@@ -1,6 +1,7 @@
 package com.example.chatapplication.Data.Repo
 
 import com.example.chatapplication.Data.DAO.GroupOperation
+import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.local.tables.GroupInfo
 import com.example.chatapplication.Data.local.tables.groupMember
 import com.example.chatapplication.Data.network.ApiService
@@ -13,7 +14,8 @@ import retrofit2.Response
 
 class GroupRepo(
     val work: GroupOperation,
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    val convoDao: conversationId
 ) {
 
     suspend fun goupInfoInsert(Info: GroupInfo){
@@ -37,9 +39,13 @@ class GroupRepo(
         return apiService.getingGroupInfo(request)
     }
 
-    suspend fun deleteGroup(conversationId:String){
+    suspend fun deleteGroup(conversationId:String): Response<Unit>{
         val request= deleteGroupRequest(conversationId)
-        apiService.deletingGroup(request)
+        return apiService.deletingGroup(request)
+    }
+
+    suspend fun delelteConoLocally(conversationId:String){
+        convoDao.deleteConversation(conversationId)
     }
 
 

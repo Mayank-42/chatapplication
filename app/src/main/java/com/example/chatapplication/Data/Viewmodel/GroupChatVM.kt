@@ -88,8 +88,8 @@ class GroupChatVM(
     fun deleteGroup(conversationId:String){
         viewModelScope.launch{
             var response=reposatory.deleteGroup(conversationId)
-            if(response.status==200){
-
+            if(response.isSuccessful){
+                reposatory.delelteConoLocally(conversationId)
             }
         }
     }
