@@ -75,7 +75,7 @@ fun HomeBottomNavigation(
 
     val scope = rememberCoroutineScope()
 
-    val minHeight = 66.dp
+    val minHeight = 80.dp
     val maxHeight = 380.dp
 
     /*
@@ -105,8 +105,7 @@ fun HomeBottomNavigation(
     val isGroupSelected =
         currentPage == "GroupPage"
 
-    val isProfileSelected =
-        currentPage?.startsWith("profileScreen/") == true
+    val isProfileSelected = currentPage?.startsWith("profileScreen/") == true
 
 
     /*
@@ -154,40 +153,28 @@ fun HomeBottomNavigation(
                  */
                 .draggable(
                     orientation = Orientation.Vertical,
-
                     state = rememberDraggableState { delta ->
-
                         scope.launch {
 
                             val newValue =
-                                (
-                                        dragAmount.value + delta
-                                        ).coerceIn(
-                                        -expandableHeight.value,
-                                        0f
-                                    )
-
+                                (dragAmount.value + delta).coerceIn(-expandableHeight.value, 0f)
                             dragAmount.snapTo(newValue)
 
 
                             /*
                              * Update expanded state while dragging.
                              */
-                            isExpanded =
-                                newValue < -(expandableHeight.value * 0.5f)
+                            isExpanded = newValue < -(expandableHeight.value * 0.5f)
                         }
                     },
-
                     /*
                      * When finger leaves screen,
                      * snap to either collapsed or expanded.
                      */
                     onDragStopped = {
-
                         scope.launch {
 
-                            val middle =
-                                -expandableHeight.value / 2f
+                            val middle = -expandableHeight.value / 2f
 
                             if (dragAmount.value < middle) {
 
@@ -267,11 +254,7 @@ fun HomeBottomNavigation(
                  * becomes expanded.
                  */
                 if (isExpanded) {
-
-                    Spacer(
-                        modifier = Modifier.height(12.dp)
-                    )
-
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     /*
                      * ===============================
@@ -282,19 +265,12 @@ fun HomeBottomNavigation(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(
-                                RoundedCornerShape(20.dp)
-                            )
-                            .background(
-                                HomeBlue.copy(alpha = 0.12f)
-                            )
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(HomeBlue.copy(alpha = 0.12f))
                             .clickable {
                                 onProfileClick()
                             }
-                            .padding(
-                                horizontal = 14.dp,
-                                vertical = 12.dp
-                            ),
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -329,11 +305,7 @@ fun HomeBottomNavigation(
                         }
 
 
-                        Spacer(
-                            modifier = Modifier.width(14.dp)
-                        )
-
-
+                        Spacer(modifier = Modifier.width(14.dp))
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
@@ -345,9 +317,7 @@ fun HomeBottomNavigation(
                                 fontWeight = FontWeight.Bold
                             )
 
-                            Spacer(
-                                modifier = Modifier.height(2.dp)
-                            )
+                            Spacer(modifier = Modifier.height(2.dp))
 
                             Text(
                                 text = id?.role ?: "Profile",
@@ -366,9 +336,7 @@ fun HomeBottomNavigation(
                     }
 
 
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
 
                     /*
@@ -382,7 +350,7 @@ fun HomeBottomNavigation(
                             Icon(
                                 imageVector = Icons.Default.Groups,
                                 contentDescription = null,
-                                tint = HomeBlack
+                                tint = HomeWhite
                             )
                         },
                         title = "Groups",
@@ -390,9 +358,7 @@ fun HomeBottomNavigation(
                     )
 
 
-                    Spacer(
-                        modifier = Modifier.height(8.dp)
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
 
                     /*
@@ -406,7 +372,7 @@ fun HomeBottomNavigation(
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = null,
-                                tint = HomeBlack
+                                tint = HomeWhite
                             )
                         },
                         title = "Settings",
@@ -414,20 +380,9 @@ fun HomeBottomNavigation(
                     )
 
 
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
-
-
-                    HorizontalDivider(
-                        color = HomeBorder
-                    )
-
-
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
-
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = HomeBorder)
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     /*
                      * ===============================
@@ -438,9 +393,7 @@ fun HomeBottomNavigation(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(
-                                RoundedCornerShape(18.dp)
-                            )
+                            .clip(RoundedCornerShape(18.dp))
                             .background(LogoutRed)
                             .clickable {
                                 onLogoutClick()
@@ -481,11 +434,7 @@ fun HomeBottomNavigation(
                  * =================================
                  */
 
-                Spacer(
-                    modifier = Modifier.weight(1f)
-                )
-
-
+                Spacer(modifier = Modifier.weight(1f))
                 /*
                  * =================================
                  * MAIN NAVIGATION ROW
@@ -508,7 +457,8 @@ fun HomeBottomNavigation(
                             Icon(
                                 imageVector = Icons.Default.Home,
                                 contentDescription = "Home",
-                                tint = HomeBlack
+                                tint = HomeBlack,
+                                modifier =Modifier.size(30.dp)
                             )
                         },
                         onClick = onHomeClick,
@@ -524,7 +474,8 @@ fun HomeBottomNavigation(
                             Icon(
                                 imageVector = Icons.Default.Groups,
                                 contentDescription = "Groups",
-                                tint = HomeBlack
+                                tint = HomeBlack,
+                                modifier =Modifier.size(30.dp)
                             )
                         },
                         onClick = onGroupsClick,
@@ -557,7 +508,7 @@ fun HomeBottomNavigation(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = "Profile",
                                 tint = HomeBlack,
-                                modifier = Modifier.size(28.dp)
+                                modifier = Modifier.size(30.dp)
                             )
 
                         } else {
@@ -566,7 +517,7 @@ fun HomeBottomNavigation(
                                 model = id.photo_url,
                                 contentDescription = "Profile",
                                 modifier = Modifier
-                                    .size(34.dp)
+                                    .size(32.dp)
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
@@ -594,7 +545,7 @@ private fun HomeNavigationButton(
 
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(40.dp)
             .clip(CircleShape)
             .background(
                 if (selected)
