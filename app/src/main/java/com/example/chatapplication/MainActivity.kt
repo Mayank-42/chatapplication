@@ -193,7 +193,8 @@ class MainActivity : ComponentActivity() {
                     var GroupRepo =
                         GroupRepo(
                             application.database.Groupcall(),
-                            retroFitClient.apiService
+                            retroFitClient.apiService,
+                            application.database.ConvoInfo()
                         )
 
                     var save: GroupChatVM =
@@ -469,7 +470,8 @@ class MainActivity : ComponentActivity() {
                                     nav = navController,
                                     conversationId = conversationId,
                                     groupVM = save,
-                                    userVM = userInfovm
+                                    userVM = userInfovm,
+                                    tokenManager
                                 )
                             }
                         }

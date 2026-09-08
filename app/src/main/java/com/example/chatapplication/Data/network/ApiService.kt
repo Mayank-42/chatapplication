@@ -105,7 +105,7 @@ suspend fun getConvoInfo(
         @Body request: getGroupInfo
     ): Response<List<getGroupInfoResponse>>
 
-    @POST()
+    @POST("rpc/delete_group")
     suspend fun deletingGroup(
         @Body request: deleteGroupRequest
     ):Response<Unit>

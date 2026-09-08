@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
 import java.lang.reflect.Member
 
@@ -64,7 +65,8 @@ fun ShowingGroupDetail(
     nav: NavController,
     conversationId: String,
     groupVM: GroupChatVM,
-    userVM: UserInfo
+    userVM: UserInfo,
+    token: TokenManager
 ) {
 
 //    var GInfo by rememberSaveable { mutableStateOf("") }
@@ -73,7 +75,11 @@ fun ShowingGroupDetail(
     }
     val GInfo = groupVM.groupInfo
 
+    var  logedInuser by rememberSaveable{mutableStateOf("")}
+    LaunchedEffect(Unit) {
 
+        logedInuser=token.getUserId()?:""
+    }
 
     val groups by groupVM.gettingGroupinfo.collectAsState(
         initial = emptyList()
@@ -124,15 +130,18 @@ fun ShowingGroupDetail(
                     )
                 },
                 actions = {
-                    IconButton(onClick = {
-                        groupVM.deleteGroup(conversationId);
-                        nav.popBackStack("GroupPage",false)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.DeleteForever,
-                            contentDescription ="DeleteForever",
-                            tint=Color.Red
-                        )
+                    if (logedInuser == GInfo?.createdById) {
+                        IconButton(onClick = {
+                            groupVM.deleteGroup(conversationId);
+                            nav.popBackStack("GroupPage", false);
+                            println("the conversationId is :${conversationId}")
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteForever,
+                                contentDescription = "DeleteForever",
+                                tint = Color.Red
+                            )
+                        }
                     }
                 }
 

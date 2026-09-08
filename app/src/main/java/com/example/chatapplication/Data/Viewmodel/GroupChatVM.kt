@@ -90,6 +90,16 @@ class GroupChatVM(
             var response=reposatory.deleteGroup(conversationId)
             if(response.isSuccessful){
                 reposatory.delelteConoLocally(conversationId)
+
+                println("DELETE STATUS = ${response.code()}")
+                println("DELETE SUCCESS = ${response.isSuccessful}")
+                println("DELETE ERROR = ${response.errorBody()?.string()}")
+                println("DELETE BODY = ${response.body()}")
+            }else{
+                println(
+                    "GROUP DELETE ERROR: ${
+                        response.errorBody()?.string()
+                    }")
             }
         }
     }
