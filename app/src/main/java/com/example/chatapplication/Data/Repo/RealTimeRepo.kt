@@ -58,6 +58,12 @@ class RealTimeRepo {
         ) {
             table = "conversation"
         }
+    private val conversationDeleteFlow =
+        conversationChannel.postgresChangeFlow<PostgresAction.Delete>(
+            schema = "public"
+        ) {
+            table = "conversation"
+        }
 
 
     private val presenceChannel = SupaBaseClient.supabase.channel("online-users")
@@ -90,6 +96,10 @@ class RealTimeRepo {
     fun conversationInsertFlow(): Flow<PostgresAction.Insert> {
         println("REALTIME: RETURNING CONVERSATION FLOW")
         return conversationFlow
+    }
+    fun conversationDeleteFlow(): Flow<PostgresAction.Delete> {
+        println("REALTIME: RETURNING CONVERSATION DELETE FLOW")
+        return conversationDeleteFlow
     }
 
 

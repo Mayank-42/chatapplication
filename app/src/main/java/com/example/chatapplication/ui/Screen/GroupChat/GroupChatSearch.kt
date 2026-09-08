@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -73,17 +74,11 @@ fun GroupChatSearch(
     save: GroupChatVM
 ) {
 
-    var username by rememberSaveable {
-        mutableStateOf("")
-    }
+    var username by rememberSaveable { mutableStateOf("") }
 
-    var showIcon by remember {
-        mutableStateOf(false)
-    }
+    var showIcon by remember { mutableStateOf(false) }
 
-    var isSearched by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var isSearched by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         infoo.getCompanyUsers()
@@ -104,7 +99,7 @@ fun GroupChatSearch(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            nav.popBackStack()
+                           nav.popBackStack()
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = GroupWhite
@@ -153,7 +148,7 @@ fun GroupChatSearch(
 
                         IconButton(
                             onClick = {
-                                nav.popBackStack()
+//                                nav.popBackStack()
                             },
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = Color.Transparent,
@@ -162,8 +157,8 @@ fun GroupChatSearch(
                         ) {
 
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back"
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
                             )
                         }
 

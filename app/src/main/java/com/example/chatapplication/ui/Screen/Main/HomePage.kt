@@ -202,9 +202,13 @@ fun HomeScreen(
                                 text = LogedInUser?.name?.replaceFirstChar { it.uppercase() }?:"",
                                 color = HomeBlue,
                                 fontSize = 18.sp,
-                                fontWeight = FontWeight.ExtraBold
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.6.sp
+
                             )
                         }
+//                        text = LogedInUser?.name?.replaceFirstChar { it.uppercase() }?:"",
+
                         // GREETING
                         Text(
                             text = greetingMessage,
@@ -276,51 +280,60 @@ fun HomeScreen(
                 // ==================================================
                 // CONVERSATION LIST
                 // ==================================================
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(11.dp)
-                ) {
-                    items(
-                        items = conversations,
-                        key = {
-                            it.conversationId
-                        }
-                    ) { ele ->
-                        // ==================================================
-                        // UNREAD COUNT
-                        // ==================================================
-                        val unreadCount by produceState(
-                            initialValue = ele.unread_count,
-                            key1 = ele.conversationId,
-                            key2 = id
-                        ) {
+                if (conversations.isEmpty()) {
 
-                            if (id.isNotBlank()) {
-                                conversationInfo
-                                    .getUnreadCount(ele.conversationId, id)
-                                    .collect {
-                                        value = it
-                                    }
+                    HomeEmptyState(
+                        onSearchClick = {
+                            navControl.navigate("SearchBarPage")
+                        }
+                    )
+
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp),
+                        verticalArrangement = Arrangement.spacedBy(11.dp)
+                    ) {
+                        items(
+                            items = conversations,
+                            key = {
+                                it.conversationId
                             }
-                        }
-//                        val unreadCount = ele.unread_count
-                        println(
-                            "HOME TIME DEBUG: " +
-                                    "conversation=${ele.conversationId}, " +
-                                    "lastTime=${ele.lastTime}"
-                        )
-                        // ==================================================
-                        // CONVERSATION TILE
-                        // ==================================================
-                        val otherUserId =
-                            conversationUsers[ele.conversationId]
+                        ) { ele ->
+                            // ==================================================
+                            // UNREAD COUNT
+                            // ==================================================
+                            val unreadCount by produceState(
+                                initialValue = ele.unread_count,
+                                key1 = ele.conversationId,
+                                key2 = id
+                            ) {
 
-                        var isOnline =
-                            otherUserId != null &&
-                                    onlineUsers.contains(otherUserId)
-                        println(
-                            """
+                                if (id.isNotBlank()) {
+                                    conversationInfo
+                                        .getUnreadCount(ele.conversationId, id)
+                                        .collect {
+                                            value = it
+                                        }
+                                }
+                            }
+//                        val unreadCount = ele.unread_count
+                            println(
+                                "HOME TIME DEBUG: " +
+                                        "conversation=${ele.conversationId}, " +
+                                        "lastTime=${ele.lastTime}"
+                            )
+                            // ==================================================
+                            // CONVERSATION TILE
+                            // ==================================================
+                            val otherUserId =
+                                conversationUsers[ele.conversationId]
+
+                            var isOnline =
+                                otherUserId != null &&
+                                        onlineUsers.contains(otherUserId)
+                            println(
+                                """
                 ================= ONLINE DEBUG =================
                 CONVERSATION ID = ${ele.conversationId}
                 OTHER USER ID   = $otherUserId
@@ -328,29 +341,30 @@ fun HomeScreen(
                 IS ONLINE       = $isOnline
                 =================================================
                  """.trimIndent()
-                        )
-                        println(
-                            "HOME ONLINE DEBUG: " +
-                                    "conversation=${ele.conversationId}, " +
-                                    "otherUserId=$otherUserId, " +
-                                    "onlineUsers=$onlineUsers"
-                        )
+                            )
+                            println(
+                                "HOME ONLINE DEBUG: " +
+                                        "conversation=${ele.conversationId}, " +
+                                        "otherUserId=$otherUserId, " +
+                                        "onlineUsers=$onlineUsers"
+                            )
 
-                        ConversationTile(
-                            convoId=isOnline,
-                            name = ele.name ?: "",
-                            image = ele.Image,
-                            lastMessage = ele.lastMessage ?: "",
-                            time =
-                                formatConversationTime(ele.lastTime),
-                            unreadCount = unreadCount,
+                            ConversationTile(
+                                convoId = isOnline,
+                                name = ele.name ?: "",
+                                image = ele.Image,
+                                lastMessage = ele.lastMessage ?: "",
+                                time =
+                                    formatConversationTime(ele.lastTime),
+                                unreadCount = unreadCount,
 
-                            onClick = {
-                                navControl.navigate(
-                                    "chatScreen/${ele.conversationId}"
-                                )
-                            }
-                        )
+                                onClick = {
+                                    navControl.navigate(
+                                        "chatScreen/${ele.conversationId}"
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -410,6 +424,95 @@ private fun HomeSearchBar(
 // ================================================================
 // CONVERSATION TILE
 // ================================================================
+@Composable
+private fun HomeEmptyState(
+    onSearchClick: () -> Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = null,
+            modifier = Modifier.size(54.dp),
+            tint = HomeBlue
+        )
+
+        Spacer(
+            modifier = Modifier.height(20.dp)
+        )
+
+        Text(
+            text = "No conversations yet",
+            color = HomeWhite,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        Text(
+            text = "Find someone by their username\nand start a conversation.",
+            color = HomeMuted,
+            fontSize = 14.sp,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            lineHeight = 21.sp
+        )
+
+        Spacer(
+            modifier = Modifier.height(24.dp)
+        )
+
+        Surface(
+            modifier = Modifier
+                .clickable {
+                    onSearchClick()
+                },
+            shape = RoundedCornerShape(14.dp),
+            color = HomeTile,
+            border = androidx.compose.foundation.BorderStroke(
+                1.dp,
+                HomeBorder
+            )
+        ) {
+
+            Row(
+                modifier = Modifier.padding(
+                    horizontal = 20.dp,
+                    vertical = 13.dp
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = HomeBlue,
+                    modifier = Modifier.size(20.dp)
+                )
+
+                Spacer(
+                    modifier = Modifier.width(9.dp)
+                )
+
+                Text(
+                    text = "Find someone",
+                    color = HomeWhite,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
 @Composable
 private fun ConversationTile(
     convoId: Boolean,

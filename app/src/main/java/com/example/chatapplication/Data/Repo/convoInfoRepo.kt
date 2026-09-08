@@ -65,6 +65,11 @@
                 conversationIdRequest(conversationId)
             )
         }
+        suspend fun deleteLocalConversation(
+            conversationId: String
+        ) {
+            work.deleteConversation(conversationId)
+        }
 
         suspend fun getConversationById(
             conversationId: String

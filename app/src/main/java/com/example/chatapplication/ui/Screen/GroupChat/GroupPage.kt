@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.GroupAdd
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -56,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -72,6 +74,7 @@ private val GroupWhite = Color.White
 private val GroupBlue = Color(0xFF3B82F6)
 private val GroupGrey = Color(0xFF9CA3AF)
 private val GroupTile = Color(0xFF111111)
+private val HomeMuted = Color(0xFF9CA3AF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,29 +177,73 @@ fun GroupPage(
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(GroupBlack)
-        ){
+        ) {
 
             Column(
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                if (conversations.isEmpty()) {
 
-                    items(conversations) { ele ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        ) {
 
-                        GropChatTile(
-                            Gname = ele.name ?: "",
-                            nav = nav,
-                            id = ele.conversationId,
-                            lastMesage = ele.lastMessage ?: "",
-                            time = ele.lastTime ?: ""
-                        )
+                            Icon(
+                                imageVector = Icons.Default.Groups,
+                                contentDescription = null,
+                                modifier = Modifier.size(54.dp),
+                                tint = GroupBlue
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(
+                                text = "No groups yet",
+                                color = GroupWhite,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Create your  group using\nthe + button at the bottom right.",
+                                color = GroupGrey,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                                lineHeight = 21.sp
+                            )
+                        }
+                    }
+
+                } else {
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
+                        items(conversations) { ele ->
+
+                            GropChatTile(
+                                Gname = ele.name ?: "",
+                                nav = nav,
+                                id = ele.conversationId,
+                                lastMesage = ele.lastMessage ?: "",
+                                time = ele.lastTime ?: ""
+                            )
+                        }
                     }
                 }
             }
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -205,8 +252,7 @@ fun GroupPage(
                         bottom = 25.dp
                     ),
                 contentAlignment = Alignment.BottomEnd
-            ){
-
+            ) {
                 FloatingActionButton(
                     onClick = {
                         nav.navigate("GropChatSearch")
@@ -214,8 +260,7 @@ fun GroupPage(
                     containerColor = GroupBlue,
                     contentColor = GroupBlack,
                     shape = CircleShape
-                ){
-
+                ) {
                     Icon(
                         imageVector = Icons.Default.GroupAdd,
                         contentDescription = "Create Group",

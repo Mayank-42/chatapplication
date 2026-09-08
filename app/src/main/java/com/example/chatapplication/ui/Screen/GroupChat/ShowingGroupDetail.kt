@@ -21,13 +21,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -98,6 +102,10 @@ fun ShowingGroupDetail(
 //    }
     val groupMembers=GInfo?.member?: emptyList()
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+
+
     Scaffold(
         containerColor = GroupDetailBlack,
 
@@ -132,14 +140,13 @@ fun ShowingGroupDetail(
                 actions = {
                     if (logedInuser == GInfo?.createdById) {
                         IconButton(onClick = {
-                            groupVM.deleteGroup(conversationId);
-                            nav.popBackStack("GroupPage", false);
+                            showDeleteDialog = true
                             println("the conversationId is :${conversationId}")
                         }) {
                             Icon(
-                                imageVector = Icons.Default.DeleteForever,
+                                imageVector = Icons.Default.DeleteOutline,
                                 contentDescription = "DeleteForever",
-                                tint = Color.Red
+                                tint = MaterialTheme.colorScheme.error
                             )
                         }
                     }
@@ -148,6 +155,45 @@ fun ShowingGroupDetail(
             )
         }
     ) { paddingValues ->
+        if (showDeleteDialog) {
+
+            AlertDialog(onDismissRequest = { showDeleteDialog = false },
+                title = {
+                    Text(text = "Delete group?")
+                },
+
+                text = {
+                    Text(
+                        text = "This will permanently delete the group and its messages for everyone."
+                    )
+                },
+
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            groupVM.deleteGroup(conversationId)
+                            nav.popBackStack("GroupPage", false)
+                        }
+                    ) {
+                        Text(
+                            text = "Delete",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
 
         LazyColumn(
             modifier = Modifier

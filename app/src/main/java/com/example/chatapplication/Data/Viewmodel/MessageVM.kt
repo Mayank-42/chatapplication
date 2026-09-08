@@ -310,6 +310,40 @@ class MsgVM(
                         println("CONVERSATION RECORD = ${event.record}")
                     }
             }
+            launch {
+                realtimeRepo
+                    .conversationDeleteFlow()
+                    .collect { event ->
+
+                        println("========== REALTIME CONVERSATION DELETE ==========")
+                        println("REALTIME: CONVERSATION DELETE RECEIVED")
+                        println("REALTIME: DELETE EVENT = $event")
+                        println("REALTIME: OLD RECORD = ${event.oldRecord}")
+
+                        val conversationId =
+                            event.oldRecord["id"]
+                                ?.jsonPrimitive
+                                ?.content
+
+                        if (conversationId.isNullOrBlank()) {
+                            println("REALTIME DELETE: CONVERSATION ID IS EMPTY")
+                            return@collect
+                        }
+
+                        println(
+                            "REALTIME DELETE: REMOVING FROM ROOM = $conversationId"
+                        )
+
+                        convoRepo.deleteLocalConversation(conversationId)
+
+                        println(
+                            "REALTIME DELETE: ROOM DELETE COMPLETE = $conversationId"
+                        )
+
+                        println("===================================================")
+                    }
+            }
+
             // ----------------------------------------------------
             // SUBSCRIBE
             // ----------------------------------------------------
