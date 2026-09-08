@@ -355,7 +355,9 @@ fun signupTextField(
     icon: @Composable () -> Unit,
     isMandatory: Boolean = false
 ) {
-    var isFocused by rememberSaveable { mutableStateOf(false) }
+    var isFocused by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -364,16 +366,37 @@ fun signupTextField(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 35.dp, end = 35.dp)
+                .padding(
+                    start = 35.dp,
+                    end = 35.dp
+                )
                 .onFocusChanged {
                     isFocused = it.isFocused
                 },
 
             value = value,
-            onValueChange = { onValueChange(it) },
+
+            onValueChange = onValueChange,
 
             singleLine = true,
 
+            /*
+             * This is the actual field label.
+             *
+             * It only appears when focused.
+             */
+            label = {
+                if (isFocused) {
+                    Text(
+                        text = placeholder,
+                        color = Color.Black
+                    )
+                }
+            },
+
+            /*
+             * Keep the placeholder!
+             */
             placeholder = {
                 Text(
                     text = placeholder,
@@ -386,6 +409,7 @@ fun signupTextField(
             shape = RoundedCornerShape(16.dp),
 
             colors = OutlinedTextFieldDefaults.colors(
+
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
 
@@ -401,25 +425,77 @@ fun signupTextField(
                 cursorColor = Color.Black,
 
                 focusedBorderColor = Color.Black,
-                unfocusedBorderColor = Color.Transparent
+                unfocusedBorderColor = Color.Transparent,
+
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Gray
             )
         )
 
-        // Required indicator
+
+        /*
+         * =================================
+         * UNFOCUSED REQUIRED INDICATOR
+         * =================================
+         *
+         * Only show the floating * when:
+         *
+         * mandatory
+         * AND
+         * not focused
+         * AND
+         * empty
+         */
         if (isMandatory && !isFocused && value.isBlank()) {
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(end = 49.dp, top = 0.dp)
-//                    .background(
-//                        color = Color.White,
-//                        shape = RoundedCornerShape(4.dp)
-//                    )
+                    .padding(
+                        end = 49.dp,
+                        top = 0.dp
+                    )
                     .padding(
                         horizontal = 5.dp,
                         vertical = 1.dp
                     )
             ) {
+
+                Text(
+                    text = "*",
+                    color = Color.Red,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+            }
+        }
+
+
+        /*
+         * =================================
+         * FOCUSED REQUIRED INDICATOR
+         * =================================
+         *
+         * This one sits on top of the
+         * TextField outline.
+         */
+        if (isMandatory && isFocused) {
+
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        end = 49.dp,
+                        top = 0.dp
+                    )
+                    .background(
+                        color = Color.White
+                    )
+                    .padding(
+                        horizontal = 4.dp
+                    )
+            ) {
+
                 Text(
                     text = "*",
                     color = Color.Red,
