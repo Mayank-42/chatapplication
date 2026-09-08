@@ -99,9 +99,9 @@ suspend fun getConvoInfo(
         @Body request: ConversationSeenRequest
     ): Response<Unit>
 
-    @GET()
+    @POST("rpc/get_group_info")
     suspend fun getingGroupInfo(
         @Body request: getGroupInfo
-    ): Response<getGroupInfoResponse>
+    ): Response<List<getGroupInfoResponse>>
 
 }

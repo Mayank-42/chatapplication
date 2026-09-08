@@ -31,7 +31,7 @@ class GroupRepo(
         return apiService.createGroup(request)
     }
 
-    suspend fun getingGroupInfo(conversationId:String):Response<getGroupInfoResponse>{
+    suspend fun getingGroupInfo(conversationId:String):Response<List<getGroupInfoResponse>>{
         val request= getGroupInfo(conversationId)
         return apiService.getingGroupInfo(request)
     }

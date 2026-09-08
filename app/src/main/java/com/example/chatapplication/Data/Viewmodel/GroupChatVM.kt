@@ -70,6 +70,7 @@ class GroupChatVM(
            val response= reposatory.getingGroupInfo(conversationId)
             if(response.isSuccessful){
                 val data=response.body()
+                println("GET GROUP INFO RESPONSE = $data")
             }else{
                 println(
                     "GET GROUP INFO ERROR: ${
