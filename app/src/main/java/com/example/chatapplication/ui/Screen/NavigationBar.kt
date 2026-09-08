@@ -135,11 +135,7 @@ fun HomeBottomNavigation(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                start = 20.dp,
-                end = 20.dp,
-                bottom = 12.dp
-            ),
+            .padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
 
@@ -334,11 +330,7 @@ fun HomeBottomNavigation(
                             tint = HomeBlack
                         )
                     }
-
-
                     Spacer(modifier = Modifier.height(16.dp))
-
-
                     /*
                      * ===============================
                      * GROUPS
@@ -356,17 +348,12 @@ fun HomeBottomNavigation(
                         title = "Groups",
                         onClick = onGroupsClick
                     )
-
-
                     Spacer(modifier = Modifier.height(8.dp))
-
-
                     /*
                      * ===============================
                      * SETTINGS
                      * ===============================
                      */
-
                     ExpandedNavigationItem(
                         icon = {
                             Icon(
@@ -378,7 +365,6 @@ fun HomeBottomNavigation(
                         title = "Settings",
                         onClick = onSetting
                     )
-
 
                     Spacer(modifier = Modifier.height(16.dp))
                     HorizontalDivider(color = HomeBorder)
@@ -398,10 +384,7 @@ fun HomeBottomNavigation(
                             .clickable {
                                 onLogoutClick()
                             }
-                            .padding(
-                                horizontal = 18.dp,
-                                vertical = 15.dp
-                            ),
+                            .padding(horizontal = 18.dp, vertical = 15.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -413,11 +396,7 @@ fun HomeBottomNavigation(
                         )
 
 
-                        Spacer(
-                            modifier = Modifier.width(14.dp)
-                        )
-
-
+                        Spacer(modifier = Modifier.width(14.dp))
                         Text(
                             text = "Logout",
                             color = HomeWhite,

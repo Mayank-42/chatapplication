@@ -6,6 +6,7 @@ import com.example.chatapplication.Data.local.tables.groupMember
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.clients.retroFitClient.apiService
 import com.example.chatapplication.Data.network.request.CreateGroupRequest
+import com.example.chatapplication.Data.network.response.getGroupInfoResponse
 import retrofit2.Response
 
 class GroupRepo(
@@ -27,6 +28,11 @@ class GroupRepo(
 
         val request = CreateGroupRequest(name = name, memberIds = memberIds)
         return apiService.createGroup(request)
+    }
+
+    suspend fun getingGroupInfo(conversationId:String):Response<getGroupInfoResponse>{
+        val request=getingGroupInfo(conversationId)
+        return apiService.getingGroupInfo(request)
     }
 
 

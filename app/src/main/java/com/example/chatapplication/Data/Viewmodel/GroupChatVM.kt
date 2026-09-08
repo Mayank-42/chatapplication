@@ -52,7 +52,6 @@ class GroupChatVM(
         bio:String
     ) {
         viewModelScope.launch {
-
             val result = reposatory.createGroup(name = name, memberIds = selectedUserId)
             if (result.isSuccessful) {
                 val conversationId = result.body()
@@ -64,6 +63,11 @@ class GroupChatVM(
                 println("CREATE GROUP ERROR: ${result.errorBody()?.string()}"
                 )
             }
+        }
+    }
+    fun getingGroupInfo(conversationId:String){
+        viewModelScope.launch{
+            reposatory.getingGroupInfo(conversationId)
         }
     }
 

@@ -9,6 +9,7 @@ import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
+import com.example.chatapplication.Data.network.request.getGroupInfo
 import com.example.chatapplication.Data.network.request.getOneConversation
 import com.example.chatapplication.Data.network.request.loginRequest
 import com.example.chatapplication.Data.network.request.signUpRequest
@@ -17,6 +18,7 @@ import com.example.chatapplication.Data.network.response.MessageInfoResponse
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
+import com.example.chatapplication.Data.network.response.getGroupInfoResponse
 import com.example.chatapplication.Data.network.response.loginResponse
 import com.example.chatapplication.Data.network.response.signUpResponse
 import retrofit2.Response
@@ -97,5 +99,9 @@ suspend fun getConvoInfo(
         @Body request: ConversationSeenRequest
     ): Response<Unit>
 
+    @GET()
+    suspend fun getingGroupInfo(
+        @Body request: getGroupInfo
+    ): Response<getGroupInfoResponse>
 
 }
