@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -121,7 +122,20 @@ fun ShowingGroupDetail(
                         fontSize = 22.sp,
                         fontWeight = FontWeight.SemiBold
                     )
+                },
+                actions = {
+                    IconButton(onClick = {
+                        groupVM.deleteGroup(conversationId);
+                        nav.popBackStack("GroupPage",false)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.DeleteForever,
+                            contentDescription ="DeleteForever",
+                            tint=Color.Red
+                        )
+                    }
                 }
+
             )
         }
     ) { paddingValues ->
