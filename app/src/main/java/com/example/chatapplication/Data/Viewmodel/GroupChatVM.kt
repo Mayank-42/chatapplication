@@ -12,12 +12,15 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.tables.GroupInfo
 import com.example.chatapplication.Data.local.tables.groupMember
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.response.getGroupInfoResponse
 import kotlinx.coroutines.launch
 
 class GroupChatVM(
     var reposatory: GroupRepo
 ): ViewModel(){
 
+    var groupInfo by mutableStateOf<getGroupInfoResponse?>(null)
+        private set
     var groupCreated by mutableStateOf(false)
         private set
     fun resetGroupCreated() {
@@ -49,7 +52,8 @@ class GroupChatVM(
 
     fun createGroup(
         name: String,
-        bio:String
+        bio:String,
+
     ) {
         viewModelScope.launch {
             val result = reposatory.createGroup(name = name, memberIds = selectedUserId)
@@ -70,6 +74,7 @@ class GroupChatVM(
            val response= reposatory.getingGroupInfo(conversationId)
             if(response.isSuccessful){
                 val data=response.body()
+                groupInfo = response.body()?.firstOrNull()
                 println("GET GROUP INFO RESPONSE = $data")
             }else{
                 println(
@@ -77,6 +82,14 @@ class GroupChatVM(
                         response.errorBody()?.string()
                     }"
                 )
+            }
+        }
+    }
+    fun deleteGroup(conversationId:String){
+        viewModelScope.launch{
+            var response=reposatory.deleteGroup(conversationId)
+            if(response.status==200){
+
             }
         }
     }

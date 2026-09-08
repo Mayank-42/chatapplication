@@ -6,6 +6,7 @@ import com.example.chatapplication.Data.local.tables.groupMember
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.clients.retroFitClient.apiService
 import com.example.chatapplication.Data.network.request.CreateGroupRequest
+import com.example.chatapplication.Data.network.request.deleteGroupRequest
 import com.example.chatapplication.Data.network.request.getGroupInfo
 import com.example.chatapplication.Data.network.response.getGroupInfoResponse
 import retrofit2.Response
@@ -34,6 +35,11 @@ class GroupRepo(
     suspend fun getingGroupInfo(conversationId:String):Response<List<getGroupInfoResponse>>{
         val request= getGroupInfo(conversationId)
         return apiService.getingGroupInfo(request)
+    }
+
+    suspend fun deleteGroup(conversationId:String){
+        val request= deleteGroupRequest(conversationId)
+        apiService.deletingGroup(request)
     }
 
 

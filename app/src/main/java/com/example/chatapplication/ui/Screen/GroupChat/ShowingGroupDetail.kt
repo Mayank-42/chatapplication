@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.GroupChat
 
+import android.R.attr.maxLines
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -28,18 +29,27 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
+import com.example.chatapplication.Data.local.tables.userInfo
+import java.lang.reflect.Member
 
 private val GroupDetailBlack = Color.Black
 private val GroupDetailWhite = Color.White
@@ -56,6 +66,14 @@ fun ShowingGroupDetail(
     userVM: UserInfo
 ) {
 
+//    var GInfo by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(conversationId) {
+       groupVM.getingGroupInfo(conversationId)
+    }
+    val GInfo = groupVM.groupInfo
+
+
+
     val groups by groupVM.gettingGroupinfo.collectAsState(
         initial = emptyList()
     )
@@ -68,9 +86,10 @@ fun ShowingGroupDetail(
         it.GroupId == conversationId
     }
 
-    val groupMembers = members.filter {
-        it.GroupId == conversationId
-    }
+//    val groupMembers = members.filter {
+//        it.GroupId == conversationId
+//    }
+    val groupMembers=GInfo?.member?: emptyList()
 
     Scaffold(
         containerColor = GroupDetailBlack,
@@ -138,7 +157,7 @@ fun ShowingGroupDetail(
                 ) {
 
                     Text(
-                        text = group?.GropName
+                        text = GInfo?.Gname
                             ?.trim()
                             ?.firstOrNull()
                             ?.uppercase()
@@ -155,7 +174,7 @@ fun ShowingGroupDetail(
                 )
 
                 Text(
-                    text = group?.GropName ?: "Group",
+                    text = GInfo?.Gname ?: "Group",
                     color = GroupDetailWhite,
                     fontSize = 27.sp,
                     fontWeight = FontWeight.Bold
@@ -171,9 +190,7 @@ fun ShowingGroupDetail(
                     fontSize = 14.sp
                 )
 
-                Spacer(
-                    modifier = Modifier.height(24.dp)
-                )
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -186,27 +203,29 @@ fun ShowingGroupDetail(
                     ) {
 
                         Text(
-                            text = "Created",
+                            text = "Created By",
                             color = GroupDetailGrey,
                             fontSize = 12.sp
                         )
 
-                        Spacer(
-                            modifier = Modifier.height(4.dp)
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = group?.createdAt ?: "Unknown",
+                            text = GInfo?.createdByName?: "Unknown",
                             color = GroupDetailWhite,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium
                         )
+//                        Text(
+//                            text = GInfo?.createdByName?: "Unknown",
+//                            color = GroupDetailWhite,
+//                            fontSize = 10.sp,
+//                            fontWeight = FontWeight.Medium
+//                        )
                     }
                 }
 
-                Spacer(
-                    modifier = Modifier.height(28.dp)
-                )
+                Spacer(modifier = Modifier.height(28.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -220,9 +239,7 @@ fun ShowingGroupDetail(
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Spacer(
-                        modifier = Modifier.width(8.dp)
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
                         text = "(${groupMembers.size})",
@@ -238,13 +255,16 @@ fun ShowingGroupDetail(
 
             items(groupMembers) { member ->
 
-                val memberInfo = userVM.userInfo.firstOrNull {
-                    it.id == member.GroupMemberId
-                }
+//                val memberInfo = userVM.userInfo.firstOrNull {
+//                    it.id == member.GroupMemberId
+//                }
+                val memberInfo=userVM.userInfo.firstOrNull{it.id==member}
 
                 GroupMemberTile(
                     name = memberInfo?.name ?: "Unknown User",
-                    username = memberInfo?.username ?: "username"
+                    username = memberInfo?.username ?: "username",
+                    member,
+                    userVM
                 )
             }
 
@@ -260,9 +280,11 @@ fun ShowingGroupDetail(
 @Composable
 private fun GroupMemberTile(
     name: String,
-    username: String
+    username: String,
+    member: String,
+    useR: UserInfo
 ) {
-
+    val user=useR.userInfo.firstOrNull{it.id==member}
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -275,10 +297,7 @@ private fun GroupMemberTile(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = 14.dp,
-                    vertical = 12.dp
-                ),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
 
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -291,18 +310,27 @@ private fun GroupMemberTile(
 
                 contentAlignment = Alignment.Center
             ) {
+                if (user?.photo_url == null) {
+                    Text(
+                        text = name
+                            .trim()
+                            .firstOrNull()
+                            ?.uppercase()
+                            ?: "U",
 
-                Text(
-                    text = name
-                        .trim()
-                        .firstOrNull()
-                        ?.uppercase()
-                        ?: "U",
+                        color = GroupDetailWhite,
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    AsyncImage(
+                        model = user.photo_url,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.border(1.dp,Color.Transparent,CircleShape)
 
-                    color = GroupDetailWhite,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                    )
+                }
             }
 
             Spacer(
@@ -332,6 +360,13 @@ private fun GroupMemberTile(
                     maxLines = 1
                 )
             }
+                    Text(
+                        text = user?.role?:"",
+                        color = GroupDetailGrey,
+                        fontSize = 13.sp,
+                        maxLines = 1
+                    )
+
         }
     }
 }

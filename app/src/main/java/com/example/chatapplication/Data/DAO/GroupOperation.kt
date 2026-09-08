@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.DAO
 
 import androidx.compose.ui.semantics.SemanticsProperties.Selected
 import androidx.room3.Dao
+import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.Query
 import com.example.chatapplication.Data.local.tables.GroupInfo
@@ -23,5 +24,8 @@ interface GroupOperation {
 
     @Query("select*from groupMember")
     fun gatAllmember():Flow<List<groupMember>>
+
+    @Delete("select * from GroupInfo where conversationid=conversationId")
+    fun deleteGroupLocaly(ConversationId:String)
 
 }

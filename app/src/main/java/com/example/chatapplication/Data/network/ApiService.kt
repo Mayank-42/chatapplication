@@ -9,6 +9,7 @@ import com.example.chatapplication.Data.network.request.MessageStatusRequest
 import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
+import com.example.chatapplication.Data.network.request.deleteGroupRequest
 import com.example.chatapplication.Data.network.request.getGroupInfo
 import com.example.chatapplication.Data.network.request.getOneConversation
 import com.example.chatapplication.Data.network.request.loginRequest
@@ -103,5 +104,10 @@ suspend fun getConvoInfo(
     suspend fun getingGroupInfo(
         @Body request: getGroupInfo
     ): Response<List<getGroupInfoResponse>>
+
+    @POST()
+    suspend fun deletingGroup(
+        @Body request: deleteGroupRequest
+    )
 
 }
