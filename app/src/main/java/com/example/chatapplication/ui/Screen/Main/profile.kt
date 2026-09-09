@@ -17,16 +17,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,6 +67,7 @@ private val ProfileBlue = Color(0xFF3B82F6)
 private val ProfileGrey = Color(0xFF9CA3AF)
 private val ProfileTile = Color(0xFF111111)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun profileScreen(
     nav: NavController,
@@ -72,6 +80,8 @@ fun profileScreen(
 ) {
 
     val scope = rememberCoroutineScope()
+
+    val scrollState = rememberScrollState()
 
     val currentUser =
         user.userInfo.firstOrNull {
@@ -110,31 +120,52 @@ fun profileScreen(
             }
         }
     Scaffold(
-        bottomBar={
-            HomeBottomNavigation(
-                onGroupsClick = {
-                    nav.navigate("GroupPage")
-                },
-                onLogoutClick = {
-                    scope.launch {
-                        token.clearTokens()
-                        onLoginSuccess()
-                    }
-                },
-                onProfileClick = {
-                    scope.launch {
-                        if (id.isNotBlank()) {
-                            nav.navigate("profileScreen/$id")
+        topBar= {
+            if (currentUser?.id != userid) {
+                TopAppBar(
+                    modifier=Modifier.fillMaxWidth().background(Color.Transparent),
+                    colors= TopAppBarDefaults.topAppBarColors(Color.Transparent),
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = { nav.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
-                },
-                onHomeClick={
-                    nav.navigate("Home")
-                },
-                onSetting = {nav.navigate("SettingPage")},
-                currentUser,
-                nav
-            )
+                )
+            }
+        },
+        bottomBar={
+            if(currentUser?.id==userid) {
+                HomeBottomNavigation(
+                    onGroupsClick = {
+                        nav.navigate("GroupPage")
+                    },
+                    onLogoutClick = {
+                        scope.launch {
+                            token.clearTokens()
+                            onLoginSuccess()
+                        }
+                    },
+                    onProfileClick = {
+                        scope.launch {
+                            if (id.isNotBlank()) {
+                                nav.navigate("profileScreen/$id")
+                            }
+                        }
+                    },
+                    onHomeClick = {
+                        nav.navigate("Home")
+                    },
+                    onSetting = { nav.navigate("SettingPage") },
+                    currentUser,
+                    nav
+                )
+            }
         }
     ) {paddingValues ->
 
@@ -149,6 +180,7 @@ fun profileScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(top = 30.dp),
 
                 horizontalAlignment = Alignment.CenterHorizontally,

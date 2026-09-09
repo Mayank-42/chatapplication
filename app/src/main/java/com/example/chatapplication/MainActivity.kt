@@ -205,7 +205,7 @@ class MainActivity : ComponentActivity() {
                                 )
                         )
 
-                    val realtimeRepo = RealTimeRepo()
+                    val realtimeRepo =  application.realtimeRepo
 
                     val convoRepo =
                         convoInfoRepo(
