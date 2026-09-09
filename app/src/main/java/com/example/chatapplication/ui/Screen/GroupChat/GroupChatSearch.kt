@@ -58,6 +58,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
+import kotlinx.coroutines.delay
 
 
 private val GroupBlack = Color.Black
@@ -86,6 +87,25 @@ fun GroupChatSearch(
 
     showIcon = save.selectedUserId.isNotEmpty()
 
+    // ============================================================
+    // LIVE SEARCH
+    // ============================================================
+
+    LaunchedEffect(username) {
+
+        if (username.isBlank()) {
+            isSearched = false
+            return@LaunchedEffect
+        }
+
+        delay(300)
+
+        if (username.isNotBlank()) {
+            infoo.isExsist(username)
+            isSearched = true
+        }
+    }
+
     Scaffold(
         containerColor = GroupBlack,
         topBar = {
@@ -99,7 +119,7 @@ fun GroupChatSearch(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                           nav.popBackStack()
+                            nav.popBackStack()
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = GroupWhite
@@ -148,7 +168,6 @@ fun GroupChatSearch(
 
                         IconButton(
                             onClick = {
-//                                nav.popBackStack()
                             },
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = Color.Transparent,
@@ -209,74 +228,81 @@ fun GroupChatSearch(
                         modifier = Modifier.height(10.dp)
                     )
 
-                    if (ans?.isExsist == true) {
+                    if (ans?.isExsist == true && !ans.data.isNullOrEmpty()) {
 
-                        val searchedUser = ans.data
+                        LazyColumn {
 
-                        if (searchedUser != null) {
+                            items(
+                                items = ans.data!!,
+                                key = { user ->
+                                    user.id
+                                }
+                            ) { searchedUser ->
 
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(70.dp)
-                                    .padding(
-                                        start = 5.dp,
-                                        end = 5.dp
-                                    )
-                                    .clip(
-                                        RoundedCornerShape(8.dp)
-                                    ),
-                                color = GroupTile
-                            ) {
-
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    verticalAlignment = Alignment.CenterVertically
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(70.dp)
+                                        .padding(
+                                            start = 5.dp,
+                                            end = 5.dp
+                                        )
+                                        .clip(
+                                            RoundedCornerShape(8.dp)
+                                        ),
+                                    color = GroupTile
                                 ) {
 
-                                    UserProfileImage(
-                                        imageUrl = searchedUser.photo_url,
-                                        name = searchedUser.name
-                                    )
-
-                                    Column(
-                                        modifier = Modifier.weight(1f)
+                                    Row(
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
 
-                                        Text(
-                                            text = searchedUser.name,
-                                            color = GroupWhite,
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.SemiBold
+                                        UserProfileImage(
+                                            imageUrl = searchedUser.photo_url,
+                                            name = searchedUser.name
                                         )
 
-                                        Text(
-                                            text = searchedUser.role
-                                                ?: "No designation",
-                                            color = GroupGrey,
-                                            fontSize = 14.sp
+                                        Column(
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+
+                                            Text(
+                                                text = searchedUser.name,
+                                                color = GroupWhite,
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+
+                                            Text(
+                                                text = searchedUser.role
+                                                    ?: "No designation",
+                                                color = GroupGrey,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+
+                                        Checkbox(
+                                            checked = searchedUser.id in save.selectedUserId,
+                                            onCheckedChange = { checked ->
+
+                                                if (checked) {
+                                                    save.addUser(
+                                                        searchedUser.id
+                                                    )
+                                                } else {
+                                                    save.removeUser(
+                                                        searchedUser.id
+                                                    )
+                                                }
+
+                                            }
                                         )
                                     }
-
-                                    Checkbox(
-                                        checked = searchedUser.id in save.selectedUserId,
-                                        onCheckedChange = { checked ->
-
-                                            if (checked) {
-                                                save.addUser(
-                                                    searchedUser.id
-                                                )
-                                            } else {
-                                                save.removeUser(
-                                                    searchedUser.id
-                                                )
-                                            }
-
-                                        }
-                                    )
                                 }
                             }
                         }
+
                     } else {
 
                         Surface(
