@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -319,18 +320,9 @@ fun surface(
     isPassword: Boolean = false
 ) {
 
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
-
-    // ---------------------------------------------------------
-    // PASSWORD VISIBILITY
-    // ---------------------------------------------------------
-
     var passwordVisible by rememberSaveable {
         mutableStateOf(false)
     }
-
 
     Surface(
         modifier = Modifier
@@ -342,175 +334,144 @@ fun surface(
             .height(size.dp),
 
         color = Color.White,
-
         shape = RoundedCornerShape(16.dp)
     ) {
 
         if (wantTextField) {
 
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxSize(),
 
-                // -------------------------------------------------
-                // TEXT FIELD
-                // -------------------------------------------------
+                value = words,
 
-                OutlinedTextField(
+                onValueChange = {
+                    onWordsChange(it)
+                },
 
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .onFocusChanged {
-                            isFocused = it.isFocused
-                        },
+                singleLine = true,
 
-                    value = words,
-
-                    onValueChange = {
-                        onWordsChange(it)
-                    },
-
-                    singleLine = true,
-
-                    placeholder = {
-                        Text(
-                            text = task,
-                            fontSize = 20.sp
-                        )
-                    },
-
-                    leadingIcon = icon,
-
-                    // -------------------------------------------------
-                    // PASSWORD TYPE
-                    // -------------------------------------------------
-
-                    visualTransformation =
-                        if (isPassword && !passwordVisible) {
-                                PasswordVisualTransformation()
-                        } else {
-                            VisualTransformation.None
-                        },
-
-                    keyboardOptions =
-                        if (isPassword) {
-                            androidx.compose.foundation.text.KeyboardOptions(
-                                keyboardType = KeyboardType.Password
-                            )
-                        } else {
-                            androidx.compose.foundation.text.KeyboardOptions.Default
-                        },
-
-                    // -------------------------------------------------
-                    // EYE BUTTON
-                    // -------------------------------------------------
-
-                    trailingIcon = {
-
-                        if (isPassword) {
-
-                            IconButton(
-                                onClick = {
-                                    passwordVisible = !passwordVisible
-                                }
-                            ) {
-
-                                Icon(
-
-                                    imageVector =
-                                        if (passwordVisible) {
-                                            Icons.Default.VisibilityOff
-                                        } else {
-                                            Icons.Default.Visibility
-                                        },
-
-                                    contentDescription =
-                                        if (passwordVisible) {
-                                            "Hide password"
-                                        } else {
-                                            "Show password"
-                                        },
-
-                                    tint = Color.Gray
-                                )
-                            }
-                        }
-                    },
-
-                    shape = RoundedCornerShape(16.dp),
-
-                    colors = OutlinedTextFieldDefaults.colors(
-
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-
-                        focusedLeadingIconColor = Color.Black,
-                        unfocusedLeadingIconColor = Color.Gray,
-
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-
-                        focusedPlaceholderColor = Color.Gray,
-                        unfocusedPlaceholderColor = Color.Gray,
-
-                        cursorColor = Color.Black,
-
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Transparent
-                    )
-                )
-
-
-                // -------------------------------------------------
-                // REQUIRED *
-                // -------------------------------------------------
-
-                if (
-                    isMandatory &&
-                    words.isBlank()
-                ) {
-
+                placeholder = {
                     Text(
-                        text = "*",
-
-                        color = Color.Red,
-
-                        fontSize = 18.sp,
-
-                        fontWeight = FontWeight.ExtraBold,
-
-                        modifier = Modifier
-                            .align(
-                                if (isFocused) {
-                                    Alignment.TopStart
-                                } else {
-                                    Alignment.TopEnd
-                                }
-                            )
-                            .padding(
-                                start = if (isFocused) {
-                                    8.dp
-                                } else {
-                                    0.dp
-                                },
-
-                                end = if (!isFocused) {
-                                    6.dp
-                                } else {
-                                    0.dp
-                                },
-
-                                top = 2.dp
-                            )
+                        text = task,
+                        fontSize = 20.sp
                     )
-                }
-            }
+                },
+
+                // -------------------------------------------------
+                // ICON + PERMANENT *
+                // -------------------------------------------------
+
+                leadingIcon = {
+
+                    Box() {
+
+                        // YOUR NORMAL ICON
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            icon()
+                        }
+
+                        // PERMANENT *
+                        if (isMandatory) {
+
+                            Text(
+                                text = "*",
+                                color = Color.Red,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+//                                    .offset(
+//                                        x = 2.dp,
+//                                        y = (-3).dp
+//                                    )
+                            )
+                        }
+                    }
+                },
+
+                // -------------------------------------------------
+                // PASSWORD
+                // -------------------------------------------------
+
+                visualTransformation =
+                    if (isPassword && !passwordVisible) {
+                        PasswordVisualTransformation()
+                    } else {
+                        VisualTransformation.None
+                    },
+
+                keyboardOptions =
+                    if (isPassword) {
+                        androidx.compose.foundation.text.KeyboardOptions(
+                            keyboardType = KeyboardType.Password
+                        )
+                    } else {
+                        androidx.compose.foundation.text.KeyboardOptions.Default
+                    },
+
+                // -------------------------------------------------
+                // PASSWORD EYE
+                // -------------------------------------------------
+
+                trailingIcon = {
+
+                    if (isPassword) {
+
+                        IconButton(
+                            onClick = {
+                                passwordVisible = !passwordVisible
+                            }
+                        ) {
+
+                            Icon(
+                                imageVector =
+                                    if (passwordVisible) {
+                                        Icons.Default.VisibilityOff
+                                    } else {
+                                        Icons.Default.Visibility
+                                    },
+
+                                contentDescription =
+                                    if (passwordVisible) {
+                                        "Hide password"
+                                    } else {
+                                        "Show password"
+                                    },
+
+                                tint = Color.Gray
+                            )
+                        }
+                    }
+                },
+
+                shape = RoundedCornerShape(16.dp),
+
+                colors = OutlinedTextFieldDefaults.colors(
+
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+
+                    focusedLeadingIconColor = Color.Black,
+                    unfocusedLeadingIconColor = Color.Gray,
+
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
+
+                    focusedPlaceholderColor = Color.Gray,
+                    unfocusedPlaceholderColor = Color.Gray,
+
+                    cursorColor = Color.Black,
+
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Transparent
+                )
+            )
 
         } else {
-
-            // -------------------------------------------------
-            // BUTTON
-            // -------------------------------------------------
 
             Box(
                 modifier = Modifier
@@ -524,9 +485,7 @@ fun surface(
 
                 Text(
                     text = task,
-
                     fontWeight = FontWeight.Bold,
-
                     fontSize = 30.sp
                 )
             }
