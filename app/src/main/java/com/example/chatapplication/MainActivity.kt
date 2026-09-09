@@ -457,7 +457,8 @@ class MainActivity : ComponentActivity() {
                                     tokenManager,
                                     save,
                                     convoInfoVM,
-                                    realtimeRepo
+                                    realtimeRepo,
+                                    userInfovm
                                 )
                             }
                         }

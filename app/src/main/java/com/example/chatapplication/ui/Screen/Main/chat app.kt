@@ -1,5 +1,7 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -59,6 +61,7 @@ import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
+import com.example.chatapplication.ui.Screen.GroupChat.formatMessageTime
 import io.ktor.client.utils.EmptyContent.status
 
 private val ChatBlack = Color(0xFF000000)
@@ -68,6 +71,7 @@ private val ChatMuted = Color(0xFF9CA3AF)
 private val ChatIncoming = Color(0xFFF4F4F4)
 private val ChatInput = Color(0xFFFFFFFF)
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun chatScreen(
     navControl: NavController,
@@ -300,7 +304,7 @@ fun chatScreen(
                                     } else {
                                         null
                                     },
-                                time = null,
+                                time =  formatMessageTime(ele.date),
                                 onLongClick = {
                                     viewMode.delete(ele)
                                 }
@@ -309,7 +313,7 @@ fun chatScreen(
                         } else {
                             ReceivedMessageBubble(
                                 message = ele.message,
-                                time = null,
+                                time = formatMessageTime(ele.date),
                                 onLongClick = {
                                     viewMode.delete(ele)
                                 }
@@ -358,24 +362,15 @@ private fun ChatHeader(
     ) {
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 14.dp
-                ),
-
-            verticalAlignment =
-                Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Box(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(CircleShape)
-                    .background(
-                        Color(0xFF111111)
-                    )
+                    .background(Color(0xFF111111))
                     .combinedClickable(
                         onClick = {
                             onBackClick()
@@ -473,14 +468,14 @@ private fun SentMessageBubble(
                     )
             ) {
 
-                Column(
-                    modifier =
-                        Modifier.padding(
-                            start = 14.dp,
-                            top = 10.dp,
-                            end = 12.dp,
-                            bottom = 8.dp
-                        )
+                Row(
+                    modifier = Modifier.padding(
+                        start = 14.dp,
+                        top = 10.dp,
+                        end = 12.dp,
+                        bottom = 8.dp
+                    ),
+                    verticalAlignment = Alignment.Bottom
                 ) {
 
                     Text(
@@ -490,21 +485,17 @@ private fun SentMessageBubble(
                         lineHeight = 22.sp
                     )
 
-                    if (
-                        !time.isNullOrBlank()
-                    ) {
+                    if (!time.isNullOrBlank()) {
 
-                        Spacer(
-                            modifier =
-                                Modifier.height(3.dp)
-                        )
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
                             text = time,
-
                             color = ChatWhite.copy(alpha = 0.70f),
                             fontSize = 10.sp,
-                            modifier = Modifier.align(Alignment.End)
+                            modifier = Modifier.align(
+                                Alignment.Bottom
+                            )
                         )
                     }
                 }
@@ -569,53 +560,31 @@ private fun ReceivedMessageBubble(
                 )
         ) {
 
-            Column(
-                modifier =
-                    Modifier.padding(
-                        start = 14.dp,
-                        top = 10.dp,
-                        end = 12.dp,
-                        bottom = 8.dp
-                    )
+            Row(
+                modifier = Modifier.padding(
+                    start = 14.dp,
+                    top = 10.dp,
+                    end = 12.dp,
+                    bottom = 8.dp
+                )
             ) {
 
                 Text(
-                    text =
-                        message,
-
-                    color =
-                        Color.Black,
-
-                    fontSize =
-                        16.sp,
-
-                    lineHeight =
-                        22.sp
+                    text = message,
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    lineHeight = 22.sp
                 )
-
+                Spacer(modifier = Modifier.width(5.dp))
                 if (
                     !time.isNullOrBlank()
                 ) {
-
-                    Spacer(
-                        modifier =
-                            Modifier.height(3.dp)
-                    )
-
+                    Spacer(modifier = Modifier.height(3.dp))
                     Text(
-                        text =
-                            time,
-
-                        color =
-                            Color.Gray,
-
-                        fontSize =
-                            10.sp,
-
-                        modifier =
-                            Modifier.align(
-                                Alignment.End
-                            )
+                        text = time,
+                        color = Color.Gray,
+                        fontSize = 10.sp,
+                        modifier = Modifier.align(Alignment.Bottom)
                     )
                 }
             }

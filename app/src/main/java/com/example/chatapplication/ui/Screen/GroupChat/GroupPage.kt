@@ -110,18 +110,18 @@ fun GroupPage(
                     navigationIconContentColor = GroupWhite,
                     actionIconContentColor = GroupWhite
                 ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            nav.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                },
+//                navigationIcon = {
+//                    IconButton(
+//                        onClick = {
+//                            nav.popBackStack()
+//                        }
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.ArrowBack,
+//                            contentDescription = null
+//                        )
+//                    }
+//                },
                 title = {
                     Text(
                         text = "Group Chat",
