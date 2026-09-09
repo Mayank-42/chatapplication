@@ -240,7 +240,7 @@ fun GroupChatScreen(nav: NavController,
                         ) {
                             hasNavigated = true
                             nav.popBackStack(
-                                "Home",
+                                "GroupPage",
                                 false
                             )
                         }
@@ -815,13 +815,11 @@ private fun ReceivedMessageBubble(
     user: UserInfo,
     id: String
 ) {
-    println("PROFILE DEBUG: requested id = $id")
-    println("PROFILE DEBUG: userInfo size = ${user.userInfo.size}")
-    println("PROFILE DEBUG: userInfo ids = ${user.userInfo.map { it.id }}")
 
-    val reciversInfo = user.userInfo.firstOrNull { it.id == id }
+    val textMeasurer = rememberTextMeasurer()
 
-    println("PROFILE DEBUG: reciversInfo = $reciversInfo")
+    val reciversInfo =
+        user.userInfo.firstOrNull { it.id == id }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -832,6 +830,10 @@ private fun ReceivedMessageBubble(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Bottom
         ) {
+
+            // ---------------------------------------------------------
+            // PROFILE IMAGE
+            // ---------------------------------------------------------
 
             Box(
                 modifier = Modifier
@@ -860,25 +862,14 @@ private fun ReceivedMessageBubble(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(34.dp)
-                            .clip(CircleShape),
-
-                        onError = {
-                            println(
-                                "PROFILE IMAGE ERROR = ${it.result.throwable}"
-                            )
-                            println(
-                                "PROFILE IMAGE URL = ${reciversInfo.photo_url}"
-                            )
-                        },
-
-                        onSuccess = {
-                            println(
-                                "PROFILE IMAGE LOADED = ${reciversInfo.photo_url}"
-                            )
-                        }
+                            .clip(CircleShape)
                     )
                 }
             }
+
+            // ---------------------------------------------------------
+            // MESSAGE BUBBLE
+            // ---------------------------------------------------------
 
             Surface(
                 modifier = Modifier
@@ -888,7 +879,6 @@ private fun ReceivedMessageBubble(
                     )
                     .combinedClickable(
                         onClick = {},
-
                         onLongClick = {
                             onLongClick()
                         }
@@ -904,36 +894,257 @@ private fun ReceivedMessageBubble(
                 )
             ) {
 
-                Row(
+                Box(
                     modifier = Modifier.padding(
                         start = 14.dp,
                         top = 10.dp,
                         end = 12.dp,
                         bottom = 8.dp
-                    ),
-
-                    verticalAlignment = Alignment.Bottom
+                    )
                 ) {
 
-                    Text(
-                        text = message,
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        lineHeight = 22.sp
-                    )
+                    SubcomposeLayout { constraints ->
 
-                    if (!time.isNullOrBlank()) {
+                        // -------------------------------------------------
+                        // 1. Measure timestamp
+                        // -------------------------------------------------
+                        val timePlaceable =
+                            if (!time.isNullOrBlank()) {
 
-                        Spacer(
-                            modifier = Modifier.width(8.dp)
-                        )
+                                subcompose("time") {
 
-                        Text(
-                            text = time,
-                            color = Color.Gray,
-                            fontSize = 10.sp,
-                            modifier = Modifier.align(Alignment.Bottom)
-                        )
+                                    Text(
+                                        text = time,
+                                        color = Color.Gray,
+                                        fontSize = 10.sp,
+                                        maxLines = 1,
+                                        softWrap = false
+                                    )
+
+                                }.first().measure(
+                                    Constraints(
+                                        minWidth = 0,
+                                        maxWidth = Constraints.Infinity,
+                                        minHeight = 0,
+                                        maxHeight = Constraints.Infinity
+                                    )
+                                )
+
+                            } else {
+                                null
+                            }
+
+                        // -------------------------------------------------
+                        // 2. Measure complete message
+                        // -------------------------------------------------
+
+                        val fullTextLayout =
+                            textMeasurer.measure(
+                                text = message,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    lineHeight = 22.sp
+                                ),
+                                constraints = constraints
+                            )
+
+
+                        val lastLineIndex =
+                            fullTextLayout.lineCount - 1
+
+
+                        // -------------------------------------------------
+                        // 3. Get all previous lines
+                        // -------------------------------------------------
+
+                        val lineRanges =
+                            mutableListOf<Pair<Int, Int>>()
+
+                        for (
+                        lineIndex in
+                        0 until lastLineIndex
+                        ) {
+
+                            lineRanges.add(
+                                fullTextLayout.getLineStart(
+                                    lineIndex
+                                ) to
+                                        fullTextLayout.getLineEnd(
+                                            lineIndex
+                                        )
+                            )
+                        }
+                        // -------------------------------------------------
+                        // 4. Get last line
+                        // -------------------------------------------------
+                        val lastStart =
+                            fullTextLayout.getLineStart(
+                                lastLineIndex
+                            )
+
+                        val lastEnd =
+                            fullTextLayout.getLineEnd(lastLineIndex)
+                        val lastLineText =
+                            message.substring(lastStart, lastEnd)
+                        val timeWidth = timePlaceable?.width ?: 0
+
+                        val spaceBetween =
+                            if (timePlaceable != null) {
+                                5.dp.roundToPx()
+                            } else {
+                                0
+                            }
+                        // -------------------------------------------------
+                        // 5. Reserve space ONLY for last line
+                        // -------------------------------------------------
+
+                        val lastLineAvailableWidth =
+                            if (timePlaceable != null) {
+                                maxOf(1, constraints.maxWidth - timeWidth - spaceBetween)
+
+                            } else {
+                                constraints.maxWidth
+                            }
+                        val lastLineLayout =
+                            textMeasurer.measure(
+                                text = lastLineText,
+
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    lineHeight = 22.sp
+                                ),
+
+                                constraints =
+                                    constraints.copy(
+                                        minWidth = 0,
+                                        maxWidth =
+                                            lastLineAvailableWidth
+                                    )
+                            )
+                        // -------------------------------------------------
+                        // 6. Build all lines
+                        // -------------------------------------------------
+                        val allLineTexts = mutableListOf<String>()
+                        for ((start, end) in lineRanges) {
+
+                            allLineTexts.add(
+                                message.substring(
+                                    start,
+                                    end
+                                )
+                            )
+                        }
+                        for (
+                        lineIndex in
+                        0 until lastLineLayout.lineCount
+                        ) {
+                            val start = lastLineLayout.getLineStart(lineIndex)
+                            val end = lastLineLayout.getLineEnd(lineIndex)
+
+                            allLineTexts.add(
+                                lastLineText.substring(
+                                    start,
+                                    end
+                                )
+                            )
+                        }
+                        // -------------------------------------------------
+                        // 7. Measure every line separately
+                        // -------------------------------------------------
+
+                        val textPlaceables =
+                            allLineTexts.mapIndexed {
+                                    index,
+                                    line ->
+
+                                subcompose(
+                                    "line_$index"
+                                ) {
+
+                                    Text(
+                                        text = line,
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        lineHeight = 22.sp,
+                                        softWrap = false
+                                    )
+
+                                }.first().measure(
+                                    Constraints(
+                                        minWidth = 0,
+                                        maxWidth =
+                                            constraints.maxWidth,
+                                        minHeight = 0,
+                                        maxHeight =
+                                            Constraints.Infinity
+                                    )
+                                )
+                            }
+                        // -------------------------------------------------
+                        // 8. Calculate final row width
+                        // -------------------------------------------------
+                        val lastTextPlaceable =
+                            textPlaceables.lastOrNull()
+
+                        val lastRowWidth =
+                            if (
+                                timePlaceable != null &&
+                                lastTextPlaceable != null
+                            ) {
+                                lastTextPlaceable.width +
+                                        spaceBetween +
+                                        timePlaceable.width
+
+                            } else {
+                                lastTextPlaceable?.width ?: 0
+                            }
+
+
+                        val contentWidth =
+                            maxOf(
+                                textPlaceables
+                                    .dropLast(1)
+                                    .maxOfOrNull {
+                                        it.width
+                                    } ?: 0,
+
+                                lastRowWidth
+                            )
+
+
+                        val contentHeight = textPlaceables.sumOf { it.height }
+                        // -------------------------------------------------
+                        // 9. Place everything
+                        // -------------------------------------------------
+
+                        layout(
+                            width = contentWidth,
+                            height = contentHeight
+                        ) {
+                            var yPosition = 0
+
+                            // Previous lines
+                            textPlaceables
+                                .dropLast(1)
+                                .forEach { placeable ->
+                                    placeable.placeRelative(x = 0, y = yPosition)
+                                    yPosition += placeable.height
+                                }
+                            // Last line
+                            if (lastTextPlaceable != null) {
+                                lastTextPlaceable.placeRelative(x = 0, y = yPosition)
+                                timePlaceable?.placeRelative(
+                                    // IMPORTANT:
+                                    // timestamp is locked
+                                    // to bubble's right side
+
+                                    x = contentWidth - timePlaceable.width,
+                                    y = yPosition +
+                                            lastTextPlaceable.height -
+                                            timePlaceable.height
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -1019,28 +1230,14 @@ private fun ChatInputBar(
                             .size(48.dp),
 
                     shape = CircleShape,
-
                     contentPadding = PaddingValues(0.dp),
-
-                    colors =
-                        ButtonDefaults
-                            .buttonColors(
-                                containerColor =
-                                    ChatBlue
-                            )
+                    colors = ButtonDefaults.buttonColors(containerColor = ChatBlue)
                 ) {
-
                     Icon(
-                        imageVector =
-                            Icons.Default.Send,
-
-                        contentDescription =
-                            "Send",
-
-                        tint =
-                            ChatWhite,
-                        modifier =
-                            Modifier.size(21.dp)
+                        imageVector = Icons.Default.Send,
+                        contentDescription = "Send",
+                        tint = ChatWhite,
+                        modifier = Modifier.size(21.dp)
                     )
                 }
             }
