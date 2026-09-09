@@ -1161,12 +1161,7 @@ private fun ChatInputBar(
 
                     contentPadding = PaddingValues(0.dp),
 
-                    colors =
-                        ButtonDefaults
-                            .buttonColors(
-                                containerColor =
-                                    ChatBlue
-                            )
+                    colors = ButtonDefaults.buttonColors(containerColor = ChatBlue)
                 ) {
 
                     Icon(

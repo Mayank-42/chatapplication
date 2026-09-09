@@ -110,64 +110,45 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                println("AUTH FLOW: CHECKING EXISTING SESSION")
-                val refreshToken = tokenManager.getRefreshToken()
-                if (refreshToken.isNullOrBlank()) {
-                    println("AUTH FLOW: NO REFRESH TOKEN")
+
+                println("AUTH FLOW: CHECKING LOCAL SESSION")
+
+                val accessToken = tokenManager.getAccessToken()
+
+                if (accessToken.isNullOrBlank()) {
+
+                    println("AUTH FLOW: NO LOCAL SESSION")
+
                     authState = ChekUserState.unAuthenticated
 
                 } else {
 
-                    println("AUTH FLOW: REFRESH TOKEN FOUND")
-                    println("AUTH FLOW: REFRESHING SESSION")
+                    println("AUTH FLOW: LOCAL ACCESS TOKEN FOUND")
 
-                    val response = authRepo.refreshToken(refreshToken)
+                    // Initialize Supabase using the locally stored token.
+                    // This does not require an internet connection.
+                    SupaBaseClient.initialize(tokenManager)
 
-                    println("AUTH FLOW: REFRESH STATUS = ${response.code()}")
+                    println("AUTH FLOW: SUPABASE INITIALIZED")
 
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            println("AUTH FLOW: REFRESH SUCCESS")
-                            // Save NEW access + refresh tokens
-                            tokenManager.saveTokens(
-                                it.access_token,
-                                it.refresh_token
-                            )
-                            println("AUTH FLOW: NEW TOKENS SAVED")
-                            // Initialize Supabase with the new session
-                            SupaBaseClient.initialize(
-                                tokenManager
-                            )
-                            println("AUTH FLOW: SUPABASE INITIALIZED")
-                            // Get the user ID belonging to this session
-                            val newUserId = tokenManager.getUserId()
-                            println("AUTH FLOW: USER ID = $newUserId")
-                            if (!newUserId.isNullOrBlank()) {
-                                userId = newUserId
+                    val localUserId = tokenManager.getUserId()
 
-                                println("AUTH FLOW: SESSION READY")
-                                println("AUTH FLOW: USER = $userId")
+                    println("AUTH FLOW: LOCAL USER ID = $localUserId")
 
-                                // ONLY NOW enter authenticated state
-                                authState = ChekUserState.authenticated
+                    if (!localUserId.isNullOrBlank()) {
 
-                            } else {
-                                println("AUTH FLOW: USER ID EMPTY")
-                                tokenManager.clearTokens()
-                                authState = ChekUserState.unAuthenticated
-                            }
+                        userId = localUserId
 
-                        } ?: run {
-                            println("AUTH FLOW: REFRESH BODY IS NULL")
-                            tokenManager.clearTokens()
-                            authState = ChekUserState.unAuthenticated
-                        }
+                        println("AUTH FLOW: LOCAL SESSION READY")
+
+                        authState = ChekUserState.authenticated
 
                     } else {
-                        println("AUTH FLOW: REFRESH FAILED")
-                        println("AUTH FLOW: STATUS = ${response.code()}")
+
+                        println("AUTH FLOW: INVALID LOCAL SESSION")
 
                         tokenManager.clearTokens()
+
                         authState = ChekUserState.unAuthenticated
                     }
                 }

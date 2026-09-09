@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Groups2
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.Send
@@ -50,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
@@ -419,19 +421,45 @@ private fun ChatHeader(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            AsyncImage(
-                model = image,
-                contentDescription = "Profile image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 1.5.dp,
-                        color =if(isOnline)Color.Green else ChatBlue,
-                        shape = CircleShape
+            if (image == null) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Color(0xFFE9EEF5)
+                        )
+                        .border(width = 1.5.dp,
+                            color = if (isOnline)
+                                Color(0xFF4CAF50)
+                            else
+                                Color(0xFFB8C2D1),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Groups2,
+                        contentDescription = null,
+                        tint = Color(0xFF526174),
+                        modifier = Modifier.size(32.dp)
                     )
-            )
+                }
+            }else {
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Profile image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 1.5.dp,
+                            color = if (isOnline) Color.Green else ChatBlue,
+                            shape = CircleShape
+                        )
+                )
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
