@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.Face6
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -415,143 +417,116 @@ fun userInfoField(
     isMandatory: Boolean = false
 ) {
 
-    var isFocused by rememberSaveable {
-        mutableStateOf(false)
-    }
+    OutlinedTextField(
 
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(65.dp),
 
-        // =====================================================
-        // TEXT FIELD
-        // =====================================================
+        value = value,
 
-        TextField(
+        onValueChange = {
+            onValueChange(it)
+        },
 
-            value = value,
+        singleLine = true,
 
-            onValueChange = {
-                onValueChange(it)
-            },
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(65.dp)
-                .onFocusChanged {
-                    isFocused = it.isFocused
-                },
-
-            singleLine = true,
-
-            placeholder = {
-
-                Text(
-                    text = placeholder,
-                    fontSize = 17.sp,
-                    color = Color.Gray
-                )
-            },
-
-            leadingIcon = leadingIcon,
-
-            // =================================================
-            // USERNAME PREFIX
-            // =================================================
-
-            prefix = {
-
-                if (showPrefix) {
-
-                    Text(
-                        text = "@ ",
-                        color = Color.Black,
-                        fontSize = 17.sp
-                    )
-                }
-            },
-
-            // =================================================
-            // KEYBOARD
-            // =================================================
-
-            keyboardOptions = KeyboardOptions(
-                imeAction = imeAction
-            ),
-
-            keyboardActions = KeyboardActions(
-                onSend = {
-                    onImeAction()
-                }
-            ),
-
-            // =================================================
-            // UI
-            // =================================================
-
-            shape = RoundedCornerShape(16.dp),
-
-            colors = TextFieldDefaults.colors(
-
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-
-                cursorColor = Color.Black,
-
-                focusedLeadingIconColor = Color.Black,
-                unfocusedLeadingIconColor = Color.Gray
-            )
-        )
-
-
-        // =====================================================
-        // REQUIRED ASTERISK
-        // =====================================================
-
-        if (
-            isMandatory &&
-            value.isBlank()
-        ) {
+        placeholder = {
 
             Text(
-
-                text = "*",
-                color = Color.Red,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier
-                    .align(
-                        if (isFocused) {
-                            Alignment.TopStart
-                        } else {
-                            Alignment.TopEnd
-                        }
-                    )
-                    .padding(
-
-                        start = if (isFocused) {
-                            8.dp
-                        } else {
-                            0.dp
-                        },
-
-                        end = if (!isFocused) {
-                            6.dp
-                        } else {
-                            0.dp
-                        },
-
-                        top = 2.dp
-                    )
+                text = placeholder,
+                fontSize = 17.sp
             )
-        }
-    }
+        },
+
+        // ---------------------------------------------------------
+        // ICON + PERMANENT *
+        // ---------------------------------------------------------
+
+        leadingIcon = {
+
+            Box {
+
+                // NORMAL ICON
+                Box(
+                    modifier = Modifier
+                        .size(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    leadingIcon()
+                }
+
+                // PERMANENT *
+                if (isMandatory) {
+
+                    Text(
+                        text = "*",
+                        color = Color.Red,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    )
+                }
+            }
+        },
+
+        // ---------------------------------------------------------
+        // USERNAME PREFIX
+        // ---------------------------------------------------------
+
+        prefix = {
+
+            if (showPrefix) {
+
+                Text(
+                    text = "@ ",
+                    color = Color.Black,
+                    fontSize = 17.sp
+                )
+            }
+        },
+
+        // ---------------------------------------------------------
+        // KEYBOARD
+        // ---------------------------------------------------------
+
+        keyboardOptions = KeyboardOptions(
+            imeAction = imeAction
+        ),
+
+        keyboardActions = KeyboardActions(
+            onSend = {
+                onImeAction()
+            }
+        ),
+
+        // ---------------------------------------------------------
+        // UI
+        // ---------------------------------------------------------
+
+        shape = RoundedCornerShape(16.dp),
+
+        colors = OutlinedTextFieldDefaults.colors(
+
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+
+            focusedPlaceholderColor = Color.Gray,
+            unfocusedPlaceholderColor = Color.Gray,
+
+            focusedLeadingIconColor = Color.Black,
+            unfocusedLeadingIconColor = Color.Gray,
+
+            cursorColor = Color.Black,
+
+            focusedBorderColor = Color.Black,
+            unfocusedBorderColor = Color.Transparent
+        )
+    )
 }
 
 // =================================================================

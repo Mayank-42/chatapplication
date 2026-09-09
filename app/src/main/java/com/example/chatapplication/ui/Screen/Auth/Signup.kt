@@ -364,150 +364,150 @@
         isPassword: Boolean = false
     ) {
 
-        var isFocused by rememberSaveable {
-            mutableStateOf(false)
-        }
-
         var passwordVisible by rememberSaveable {
             mutableStateOf(false)
         }
 
-        Box(
+        OutlinedTextField(
+
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = 35.dp,
                     end = 35.dp
                 )
-        ) {
+                .height(65.dp),
 
-            OutlinedTextField(
+            value = value,
 
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-                    .onFocusChanged {
-                        isFocused = it.isFocused
-                    },
+            onValueChange = onValueChange,
 
-                value = value,
+            singleLine = true,
 
-                onValueChange = onValueChange,
-
-                singleLine = true,
-
-                placeholder = {
-                    Text(
-                        text = placeholder,
-                        fontSize = 18.sp
-                    )
-                },
-
-                leadingIcon = icon,
-
-                visualTransformation =
-                    if (isPassword && !passwordVisible) {
-                        PasswordVisualTransformation()
-                    } else {
-                        VisualTransformation.None
-                    },
-
-                trailingIcon = {
-
-                    if (isPassword) {
-
-                        IconButton(
-                            onClick = {
-                                passwordVisible = !passwordVisible
-                            }
-                        ) {
-
-                            Icon(
-                                imageVector =
-                                    if (passwordVisible) {
-                                        Icons.Default.VisibilityOff
-                                    } else {
-                                        Icons.Default.Visibility
-                                    },
-
-                                contentDescription =
-                                    if (passwordVisible) {
-                                        "Hide password"
-                                    } else {
-                                        "Show password"
-                                    },
-
-                                tint = Color.Gray
-                            )
-                        }
-                    }
-                },
-
-                shape = RoundedCornerShape(16.dp),
-
-                colors = OutlinedTextFieldDefaults.colors(
-
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black,
-
-                    focusedPlaceholderColor = Color.Gray,
-                    unfocusedPlaceholderColor = Color.Gray,
-
-                    focusedLeadingIconColor = Color.Black,
-                    unfocusedLeadingIconColor = Color.Gray,
-
-                    cursorColor = Color.Black,
-
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Transparent
-                )
-            )
-
-
-            // =====================================================
-            // REQUIRED *
-            // =====================================================
-
-            if (isMandatory && value.isBlank()) {
-
+            placeholder = {
                 Text(
-                    text = "*",
-
-                    color = Color.Red,
-
-                    fontSize = 18.sp,
-
-                    fontWeight = FontWeight.ExtraBold,
-
-                    modifier = Modifier
-                        .align(
-                            if (isFocused) {
-                                Alignment.TopStart
-                            } else {
-                                Alignment.TopEnd
-                            }
-                        )
-                        .padding(
-                            start = if (isFocused) {
-                                8.dp
-                            } else {
-                                0.dp
-                            },
-
-                            end = if (!isFocused) {
-                                8.dp
-                            } else {
-                                0.dp
-                            },
-
-                            top = 2.dp
-                        )
+                    text = placeholder,
+                    fontSize = 18.sp
                 )
-            }
-        }
+            },
+
+            // ---------------------------------------------------------
+            // ICON + PERMANENT *
+            // ---------------------------------------------------------
+
+            leadingIcon = {
+
+                Box {
+
+                    // NORMAL ICON
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        icon()
+                    }
+
+                    // PERMANENT *
+                    if (isMandatory) {
+
+                        Text(
+                            text = "*",
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                        )
+                    }
+                }
+            },
+
+            // ---------------------------------------------------------
+            // PASSWORD
+            // ---------------------------------------------------------
+
+            visualTransformation =
+                if (isPassword && !passwordVisible) {
+                    PasswordVisualTransformation()
+                } else {
+                    VisualTransformation.None
+                },
+
+            // ---------------------------------------------------------
+            // PASSWORD KEYBOARD
+            // ---------------------------------------------------------
+
+            keyboardOptions =
+                if (isPassword) {
+                    androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Password
+                    )
+                } else {
+                    androidx.compose.foundation.text.KeyboardOptions.Default
+                },
+
+            // ---------------------------------------------------------
+            // PASSWORD EYE
+            // ---------------------------------------------------------
+
+            trailingIcon = {
+
+                if (isPassword) {
+
+                    IconButton(
+                        onClick = {
+                            passwordVisible = !passwordVisible
+                        }
+                    ) {
+
+                        Icon(
+                            imageVector =
+                                if (passwordVisible) {
+                                    Icons.Default.VisibilityOff
+                                } else {
+                                    Icons.Default.Visibility
+                                },
+
+                            contentDescription =
+                                if (passwordVisible) {
+                                    "Hide password"
+                                } else {
+                                    "Show password"
+                                },
+
+                            tint = Color.Gray
+                        )
+                    }
+                }
+            },
+
+            // ---------------------------------------------------------
+            // UI
+            // ---------------------------------------------------------
+
+            shape = RoundedCornerShape(16.dp),
+
+            colors = OutlinedTextFieldDefaults.colors(
+
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+
+                focusedPlaceholderColor = Color.Gray,
+                unfocusedPlaceholderColor = Color.Gray,
+
+                focusedLeadingIconColor = Color.Black,
+                unfocusedLeadingIconColor = Color.Gray,
+
+                cursorColor = Color.Black,
+
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Transparent
+            )
+        )
     }
 
     fun isValid(email:String,pass:String,con:String):String{
