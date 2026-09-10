@@ -88,7 +88,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
     }
     LaunchedEffect(email) {
         if (email.isNotBlank()) {
-            delay(6000)
+            delay(2000)
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
                 popupMessage = "Enter a Valid Email"
                 ShowpopUp=true
@@ -163,8 +163,8 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
 //                        popupMessage = "Enter a Valid Email"
 //                    }
 
-                    authVM.login(email, pass) { response, userId ->
                         var msg=isValid(email,pass)
+                    authVM.login(email, pass) { response, userId ->
                         if(msg!="good"){
                             popupMessage=msg
                             ShowpopUp=true

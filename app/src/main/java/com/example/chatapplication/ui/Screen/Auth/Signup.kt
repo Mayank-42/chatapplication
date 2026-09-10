@@ -1,6 +1,9 @@
     package com.example.chatapplication.ui.Screen.Auth
 
     import android.R.attr.singleLine
+    import android.graphics.Rect
+    import android.util.Log
+    import android.view.ViewTreeObserver
     import androidx.compose.foundation.background
     import androidx.compose.foundation.layout.Arrangement
     import androidx.compose.foundation.layout.Box
@@ -32,6 +35,7 @@
     import androidx.compose.material3.Text
     import androidx.compose.material3.TextButton
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.DisposableEffect
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.mutableStateOf
@@ -43,6 +47,7 @@
     import androidx.compose.ui.focus.onFocusChanged
     import androidx.compose.ui.focus.onFocusEvent
     import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.platform.LocalView
     import androidx.compose.ui.text.font.FontStyle
     import androidx.compose.ui.text.font.FontWeight
     import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -104,8 +109,8 @@
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(scrollState)
                     .imePadding()
+//                    .verticalScroll(scrollState)
                     .padding(
                         top = 40.dp,
                         bottom = 30.dp
@@ -376,7 +381,13 @@
                     start = 35.dp,
                     end = 35.dp
                 )
-                .height(65.dp),
+                .height(65.dp)
+                .onFocusChanged {
+                    Log.d(
+                        "FOCUS_DEBUG",
+                        "$placeholder focused=${it.isFocused} hasFocus=${it.hasFocus}"
+                    )
+                },
 
             value = value,
 
@@ -435,14 +446,14 @@
             // PASSWORD KEYBOARD
             // ---------------------------------------------------------
 
-            keyboardOptions =
-                if (isPassword) {
-                    androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Password
-                    )
-                } else {
-                    androidx.compose.foundation.text.KeyboardOptions.Default
-                },
+//            keyboardOptions =
+//                if (isPassword) {
+//                    androidx.compose.foundation.text.KeyboardOptions(
+//                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Password
+//                    )
+//                } else {
+//                    androidx.compose.foundation.text.KeyboardOptions.Default
+//                },
 
             // ---------------------------------------------------------
             // PASSWORD EYE
@@ -505,7 +516,31 @@
                 unfocusedBorderColor = Color.Transparent
             )
         )
+        val view = LocalView.current
+
+        DisposableEffect(view) {
+            val rootView = view.rootView
+
+            val listener = ViewTreeObserver.OnGlobalLayoutListener {
+                val rect = Rect()
+                rootView.getWindowVisibleDisplayFrame(rect)
+
+                val heightDiff = rootView.height - rect.bottom
+
+                Log.d(
+                    "KEYBOARD_DEBUG",
+                    "root=${rootView.height}, visible=${rect.bottom}, keyboardDiff=$heightDiff"
+                )
+            }
+
+            rootView.viewTreeObserver.addOnGlobalLayoutListener(listener)
+
+            onDispose {
+                rootView.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+            }
+        }
     }
+
 
     fun isValid(email:String,pass:String,con:String):String{
         if(email.isBlank()&&pass.isBlank()&&con.isBlank()) return "Please enter your email, password, and confirm password"
