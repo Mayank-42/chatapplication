@@ -88,7 +88,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
     }
     LaunchedEffect(email) {
         if (email.isNotBlank()) {
-            delay(2000)
+            delay(6000)
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
                 popupMessage = "Enter a Valid Email"
                 ShowpopUp=true
@@ -242,29 +242,29 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
         }
 
     }
-    AnimatedVisibility(
-        visible = ShowpopUp,
-        enter = fadeIn(animationSpec = tween(250)
-        ) + scaleIn(
-            initialScale = 0.85f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium
-            )
-        ) + slideInVertically(
-            initialOffsetY = { -80 },
-            animationSpec = tween(450)
-        ),
-        exit = fadeOut(
-            animationSpec = tween(180)
-        ) + scaleOut(
-            targetScale = 0.9f,
-            animationSpec = tween(180)
-        ) + slideOutVertically(
-            targetOffsetY  = {+80 },
-            animationSpec = tween(450)
-        )
-    ) {
+//    AnimatedVisibility(
+//        visible = ShowpopUp,
+//        enter = fadeIn(animationSpec = tween(150)
+//        ) + scaleIn(
+//            initialScale = 0.85f,
+//            animationSpec = spring(
+//                dampingRatio = Spring.DampingRatioMediumBouncy,
+//                stiffness = Spring.StiffnessMedium
+//            )
+//        ) + slideInVertically(
+//            initialOffsetY = { -80 },
+//            animationSpec = tween(150)
+//        ),
+//        exit = fadeOut(
+//            animationSpec = tween(180)
+////        ) + scaleOut(
+////            targetScale = 0.9f,
+////            animationSpec = tween(180)
+////        ) + slideOutVertically(
+////            targetOffsetY  = {+80 },
+////            animationSpec = tween(450)
+//        )
+//    ) {
 
     if (popupMessage != null) {
         Surface(
@@ -303,7 +303,7 @@ fun ShowSignIn(navControler: NavController,viewMode : databaseVM,authVM: loginVM
         }
     }
     }
- }
+// }
 
 @Composable
 fun surface(

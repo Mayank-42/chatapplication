@@ -343,6 +343,16 @@ class MsgVM(
                         println("===================================================")
                     }
             }
+            launch{
+                realtimeRepo.typingEventFlow().collect { event ->
+
+                    if (event.conversation_id == activeConversationId) {
+                        println(
+                            "TYPING: user=${event.user_id}, typing=${event.is_typing}"
+                        )
+                    }
+                }
+            }
 
             // ----------------------------------------------------
             // SUBSCRIBE
@@ -351,6 +361,8 @@ class MsgVM(
             realtimeRepo.subscribeMessages()
             println("REALTIME: ABOUT TO SUBSCRIBE CONVERSATION CHANNEL")
             realtimeRepo.subscribeConversations()
+            println("REALTIME: ABOUT TO SUBSCRIBE Typing CHANNEL")
+            realtimeRepo.startTyping()
             println("REALTIME: ALL REALTIME SUBSCRIPTIONS STARTED")
         }
     }

@@ -259,10 +259,21 @@ fun profileScreen(
                     text = "@${currentUser?.username ?: "username"}",
                     color = ProfileGrey,
                     fontSize = 14.sp
-                )
+                )   
 
                 Spacer(modifier = Modifier.height(28.dp))
 
+//                Box(modifier=Modifier.fillMaxWidth().padding(end=10.dp), contentAlignment = Alignment.BottomEnd){
+//                    Text(
+//                        text="Edit",
+//                        fontSize = 17.sp,
+//                        color=ProfileBlue,
+//                        fontWeight = FontWeight.Medium,
+//                        letterSpacing = 0.5.sp,
+//                        modifier=Modifier.clickable{},
+//
+//                    )
+//                }
                 profileTile(
                     title = "Name",
                     content = currentUser?.name

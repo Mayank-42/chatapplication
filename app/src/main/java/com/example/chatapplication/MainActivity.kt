@@ -224,58 +224,31 @@ class MainActivity : ComponentActivity() {
                                 )
                         )
                     LaunchedEffect(Unit) {
-
                         networkMonitor.networkRestored.collect {
-
                             println("NETWORK SYNC: ================================")
                             println("NETWORK SYNC: INTERNET RESTORED")
                             println("NETWORK SYNC: SYNCING CONVERSATIONS")
-
                             // ------------------------------------------------
                             // WAIT for conversation synchronization to finish
                             // ------------------------------------------------
-
                             convoInfoVM.syncConversations()
-
                             println("NETWORK SYNC: CONVERSATIONS SYNC COMPLETE")
-
                             // ------------------------------------------------
                             // NOW read the updated conversation list
                             // ------------------------------------------------
-
                             val conversationIds =
-                                convoInfoVM.privateConversations.first()
-                                    .map {
-                                        it.conversationId
-                                    }
+                                convoInfoVM.privateConversations.first().map { it.conversationId }
 
-                            println(
-                                "NETWORK SYNC: CONVERSATION IDS = $conversationIds"
-                            )
-
+                            println("NETWORK SYNC: CONVERSATION IDS = $conversationIds")
                             // ------------------------------------------------
                             // SYNC ALL MESSAGES
                             // ------------------------------------------------
-
                             if (conversationIds.isNotEmpty()) {
-
-                                println(
-                                    "NETWORK SYNC: STARTING MESSAGE SYNC"
-                                )
-
-                                messageInfoVM.syncAllConversations(
-                                    conversationIds
-                                )
-
-                                println(
-                                    "NETWORK SYNC: MESSAGE SYNC COMPLETE"
-                                )
-
+                                println("NETWORK SYNC: STARTING MESSAGE SYNC")
+                                messageInfoVM.syncAllConversations(conversationIds)
+                                println("NETWORK SYNC: MESSAGE SYNC COMPLETE")
                             } else {
-
-                                println(
-                                    "NETWORK SYNC: NO CONVERSATIONS FOUND"
-                                )
+                                println("NETWORK SYNC: NO CONVERSATIONS FOUND")
                             }
                             println("NETWORK SYNC: ================================")
                         }
@@ -290,17 +263,61 @@ class MainActivity : ComponentActivity() {
                         )
 
                     LaunchedEffect(Unit) {
-                        println("========== TIME DEBUG ==========")
-                        println("ANDROID INSTANT = ${java.time.Instant.now()}")
-                        println("ANDROID EPOCH = ${System.currentTimeMillis() / 1000}")
-                        println("================================")
+                        println("APP START: AUTHENTICATED")
+                        // -----------------------------------------
+                        // 1. Try to refresh the session
+                        // -----------------------------------------
+                        try {
+                            val refreshToken =
+                                tokenManager.getRefreshToken()
 
+                            if (!refreshToken.isNullOrBlank()) {
+                                println("AUTH REFRESH: STARTING")
+
+                                val response = authRepo.refreshToken(refreshToken)
+                                if (response.isSuccessful) {
+                                    response.body()?.let {
+                                        tokenManager.saveTokens(
+                                            it.access_token,
+                                            it.refresh_token
+                                        )
+                                        println("AUTH REFRESH: SUCCESS")
+                                    }
+                                } else {
+                                    println("AUTH REFRESH: FAILED ${response.code()}")
+                                }
+                            } else {
+                                println("AUTH REFRESH: NO REFRESH TOKEN")
+                            }
+                        } catch (e: Exception) {
+                            // No internet or server unavailable.
+                            // Keep using the local session.
+                            println("AUTH REFRESH: OFFLINE - ${e.message}")
+                        }
+                        // -----------------------------------------
+                        // 2. Start realtime
+                        // -----------------------------------------
                         convoInfoVM.startConversationRealtime()
                         convoInfoVM.startPresence()
+                        // -----------------------------------------
+                        // 3. Sync conversations
+                        // -----------------------------------------
                         convoInfoVM.syncConversations()
-                        val conversationIds = convoInfoVM.privateConversations.first().map { it.conversationId }
-                        messageInfoVM.syncAllConversations(conversationIds)
+                        // -----------------------------------------
+                        // 4. Sync messages
+                        // -----------------------------------------
+                        val conversationIds =
+                            convoInfoVM.privateConversations.first().map { it.conversationId }
+                        if (conversationIds.isNotEmpty()) {
+                            messageInfoVM.syncAllConversations(conversationIds)
+                        }
+                        // -----------------------------------------
+                        // 5. Start message realtime
+                        // -----------------------------------------
                         messageInfoVM.startRealtime()
+                        // -----------------------------------------
+                        // 6. Load company users
+                        // -----------------------------------------
                         userInfovm.getCompanyUsers()
                     }
 

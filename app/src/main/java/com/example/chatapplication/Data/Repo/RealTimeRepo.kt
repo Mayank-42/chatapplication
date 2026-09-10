@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.Repo
 
 import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.presenceDataFlow
@@ -9,6 +10,8 @@ import io.github.jan.supabase.realtime.track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import io.github.jan.supabase.realtime.broadcast
+
 
 
 import kotlinx.serialization.Serializable
@@ -17,6 +20,13 @@ import kotlinx.serialization.Serializable
 data class PresenceState(
     val user_id: String
 )
+@Serializable
+data class TypingEvent(
+        val user_id:String,
+        val conversation_id:String,
+        val is_typing:Boolean
+        )
+
 class RealTimeRepo {
 
     private val messageChannel =
@@ -30,6 +40,14 @@ class RealTimeRepo {
 
     private val _onlineUsers =
         MutableStateFlow<Set<String>>(emptySet())
+
+    private val typingChannel =
+        SupaBaseClient.supabase.channel("typing-realtime")
+
+    private val typingFlow =
+        typingChannel.broadcastFlow<TypingEvent>(
+            event = "typing"
+        )
 
 
     // Register the postgres flows BEFORE subscribing/joining the channels.
@@ -75,6 +93,8 @@ class RealTimeRepo {
     private var conversationMemberSubscribed = false
     private var conversationChannelSubscribed = false
 
+    private var typeChanelSubscribe =false
+
 
     fun messageInsertFlow(): Flow<PostgresAction.Insert> {
         println("REALTIME: RETURNING MESSAGE FLOW")
@@ -102,6 +122,27 @@ class RealTimeRepo {
         return conversationDeleteFlow
     }
 
+    suspend fun sendTyping(userId: String, conversationId: String, isTyping: Boolean
+    ) {
+        typingChannel.broadcast(
+            event = "typing",
+            message  = TypingEvent(
+                user_id = userId,
+                conversation_id = conversationId,
+                is_typing = isTyping
+            )
+        )
+    }
+    fun typingEventFlow(): Flow<TypingEvent> {
+        println("REALTIME: RETURNING TYPING FLOW")
+        return typingFlow
+    }
+
+    suspend fun startTyping(){
+        if(typeChanelSubscribe) return
+        typingChannel.subscribe(blockUntilSubscribed = true)
+        typeChanelSubscribe=true
+    }
 
     suspend fun subscribeMessages() {
         if (messageSubscribed) {

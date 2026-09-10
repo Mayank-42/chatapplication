@@ -396,13 +396,10 @@
             // ---------------------------------------------------------
 
             leadingIcon = {
-
                 Box {
-
                     // NORMAL ICON
                     Box(
-                        modifier = Modifier
-                            .size(40.dp),
+                        modifier = Modifier.size(40.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         icon()

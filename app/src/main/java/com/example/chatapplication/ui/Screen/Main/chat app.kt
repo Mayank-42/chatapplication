@@ -51,6 +51,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -119,52 +120,33 @@ fun chatScreen(
         200.dp.toPx()
     }
 
-    var hasNavigated by remember {
-        mutableStateOf(false)
-    }
+    var hasNavigated by remember { mutableStateOf(false) }
+
+    var isTyping by rememberSaveable{mutableStateOf(false)}
 
     LaunchedEffect(conversationId) {
         try {
             println("CHAT SCREEN: conversationId = $conversationId")
-
             currentUserId = tokenManager.getUserId() ?: ""
+            println("CHAT SCREEN: currentUserId = $currentUserId")
 
-            println(
-                "CHAT SCREEN: currentUserId = $currentUserId"
-            )
-
-            msg.insertingLocaly(
-                conversationId
-            )
+            msg.insertingLocaly(conversationId)
 
             if (currentUserId.isNotBlank()) {
-                msg.markMessagesAsRead(
-                    conversationId,
-                    currentUserId
-                )
+                msg.markMessagesAsRead(conversationId, currentUserId)
             }
 
             val conversation = convo.getConversationById(conversationId)
 
             if (conversation != null) {
-                receiverName =
-                    conversation.name ?: ""
+                receiverName = conversation.name ?: ""
 
-                receiverImage =
-                    conversation.Image
-
+                receiverImage = conversation.Image
 
                  receiverId = conversation.receiver_id
 
-
-
-                println(
-                    "CHAT HEADER NAME = ${conversation.name}"
-                )
-
-                println(
-                    "CHAT HEADER IMAGE = ${conversation.Image}"
-                )
+                println("CHAT HEADER NAME = ${conversation.name}")
+                println("CHAT HEADER IMAGE = ${conversation.Image}")
             }
 
         } catch (e: Exception) {
@@ -323,12 +305,24 @@ fun chatScreen(
                     }
                 }
             }
+            if(isTyping){
+                Box(modifier=Modifier.size(30.dp).background(Color.LightGray)){
+                    Text(
+                        text="...",
+                        fontSize = 30.sp,
+                        color=Color.Black,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+            }
 
             ChatInputBar(
                 text = textingg,
-
-                onTextChange = { textingg = it },
-
+                onTextChange = { textingg = it; if (it.isNotBlank()) {
+                    // typing started
+                } else {
+                    // typing stopped
+                } },
                 onSend = {
                     if (textingg.isNotBlank()) {
                         msg.storeMsg(conversationId, textingg)
