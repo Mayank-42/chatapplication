@@ -90,7 +90,7 @@ fun chatScreen(
 
 ) {
 
-
+    val otherUserTyping by msg.otherUserTyping.collectAsState()
 
     var currentUserId by rememberSaveable {
         mutableStateOf("")
@@ -156,6 +156,8 @@ fun chatScreen(
 
             e.printStackTrace()
         }
+        msg.setActiveConversation(conversationId)
+
     }
 
     val onlineUsers by realTime.onlineUsers.collectAsState()
@@ -259,16 +261,9 @@ fun chatScreen(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-
                     reverseLayout = true,
-
                     contentPadding =
-                        PaddingValues(
-                            top = 12.dp,
-                            bottom = 12.dp,
-                            start = 10.dp,
-                            end = 10.dp
-                        ),
+                        PaddingValues(top = 12.dp, bottom = 12.dp, start = 10.dp, end = 10.dp),
 
                     verticalArrangement = Arrangement.spacedBy(8.dp,Alignment.Bottom)
                 ) {
@@ -305,7 +300,7 @@ fun chatScreen(
                     }
                 }
             }
-            if(isTyping){
+            if(otherUserTyping){
                 Box(modifier=Modifier.size(30.dp).background(Color.LightGray)){
                     Text(
                         text="...",
@@ -320,11 +315,23 @@ fun chatScreen(
                 text = textingg,
                 onTextChange = { textingg = it; if (it.isNotBlank()) {
                     // typing started
+                    msg.sendTyping(
+                        conversationId,
+                        true
+                    )
                 } else {
                     // typing stopped
+                    msg.sendTyping(
+                        conversationId = conversationId,
+                        isTyping = false
+                    )
                 } },
                 onSend = {
                     if (textingg.isNotBlank()) {
+                        msg.sendTyping(
+                            conversationId = conversationId,
+                            isTyping = false
+                        )
                         msg.storeMsg(conversationId, textingg)
                         textingg = ""
                     }

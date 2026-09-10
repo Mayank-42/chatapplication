@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +18,8 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.contentOrNull
@@ -37,6 +41,15 @@ class MsgVM(
     private var activeConversationId: String? = null
 
     var localmsgList by mutableStateOf<List<WholeMessageResponse>>(emptyList())
+
+    private val _otherUserTyping = MutableStateFlow(false)
+
+    val otherUserTyping: StateFlow<Boolean>
+        get() = _otherUserTyping
+
+
+
+
 
 
     // ============================================================
@@ -344,12 +357,13 @@ class MsgVM(
                     }
             }
             launch{
+                var currentUserId =tokenManager.getUserId()
                 realtimeRepo.typingEventFlow().collect { event ->
 
-                    if (event.conversation_id == activeConversationId) {
-                        println(
-                            "TYPING: user=${event.user_id}, typing=${event.is_typing}"
-                        )
+                    if (event.conversation_id == activeConversationId &&
+                        event.user_id != currentUserId) {
+                        _otherUserTyping.value = event.is_typing
+                        println("TYPING: user=${event.user_id}, typing=${event.is_typing}")
                     }
                 }
             }
@@ -593,6 +607,30 @@ class MsgVM(
             conversationId = conversationId,
             myUserId = myUserId
         )
+    }
+
+    fun setActiveConversation(conversationId: String) {
+        activeConversationId = conversationId
+    }
+
+    fun sendTyping(
+        conversationId: String,
+        isTyping: Boolean
+    ) {
+        viewModelScope.launch {
+            val currentUserId = tokenManager.getUserId()
+
+            if (currentUserId.isNullOrBlank()) {
+                println("TYPING: USER ID IS EMPTY")
+                return@launch
+            }
+
+            realtimeRepo.sendTyping(
+                userId = currentUserId,
+                conversationId = conversationId,
+                isTyping = isTyping
+            )
+        }
     }
     // ============================================================
     // VIEWMODEL FACTORY
