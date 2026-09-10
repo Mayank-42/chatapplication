@@ -301,36 +301,58 @@ fun chatScreen(
                 }
             }
             if(otherUserTyping){
-                Box(modifier=Modifier.size(30.dp).background(Color.LightGray)){
-                    Text(
-                        text="...",
-                        fontSize = 30.sp,
-                        color=Color.Black,
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                Box(
+                    modifier = Modifier
+                        .padding(
+                            start = 12.dp,
+                            bottom = 8.dp
+                        )
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color(0xFFF1F1F5))
+                        .padding(
+                            horizontal = 14.dp,
+                            vertical = 9.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "typing",
+                            fontSize = 13.sp,
+                            fontStyle = FontStyle.Italic,
+                            color = Color(0xFF77777D),
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .size(5.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF8A8A91))
+                            )
+                        }
+                    }
                 }
             }
 
             ChatInputBar(
                 text = textingg,
-                onTextChange = { textingg = it; if (it.isNotBlank()) {
-                    // typing started
-                    msg.sendTyping(
-                        conversationId,
-                        true
-                    )
-                } else {
-                    // typing stopped
-                    msg.sendTyping(
+                onTextChange = { textingg = it;
+                    msg.onTypingChanged(
                         conversationId = conversationId,
-                        isTyping = false
+                        hasText = it.isNotBlank()
                     )
-                } },
+                    // typing started
+                   },
                 onSend = {
                     if (textingg.isNotBlank()) {
-                        msg.sendTyping(
-                            conversationId = conversationId,
-                            isTyping = false
+                        msg.onTypingChanged(
+                             conversationId,
+                             false
                         )
                         msg.storeMsg(conversationId, textingg)
                         textingg = ""

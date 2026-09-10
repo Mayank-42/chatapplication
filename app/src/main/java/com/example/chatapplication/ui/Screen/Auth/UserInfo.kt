@@ -1,5 +1,6 @@
 package com.example.chatapplication.ui.Screen.Auth
 
+import android.R.attr.singleLine
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
@@ -24,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -95,6 +97,10 @@ fun UserInfo(
     }
 
     val scrollState = rememberScrollState()
+
+    var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     // =========================================================
     // SIGN UP FUNCTION
@@ -243,7 +249,8 @@ fun UserInfo(
                         )
                     },
 
-                    isMandatory = true
+                    isMandatory = true,
+                    isExpanded = {expanded=false}
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
@@ -256,6 +263,10 @@ fun UserInfo(
                     role = role,
                     onRoleChange = {
                         role = it
+                    },
+                    expanded = expanded,
+                    onExpandedChange = {
+                        expanded = it
                     }
                 )
 
@@ -289,7 +300,8 @@ fun UserInfo(
                         )
                     },
 
-                    isMandatory = true
+                    isMandatory = true,
+                    isExpanded = {expanded=false}
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -414,15 +426,20 @@ fun userInfoField(
     showPrefix: Boolean = false,
     imeAction: ImeAction = ImeAction.Default,
     onImeAction: () -> Unit = {},
-    isMandatory: Boolean = false
+    isMandatory: Boolean = false,
+    isExpanded:()->Unit
 ) {
 
     OutlinedTextField(
 
         modifier = Modifier
             .fillMaxWidth()
-            .height(65.dp),
-
+            .height(65.dp)
+            .onFocusChanged {
+                if (it.isFocused) {
+                    isExpanded()
+                }
+            },
         value = value,
 
         onValueChange = {
@@ -536,12 +553,14 @@ fun userInfoField(
 @Composable
 fun roleDropBox(
     role: String,
-    onRoleChange: (String) -> Unit
+    onRoleChange: (String) -> Unit,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit
 ) {
 
-    var expanded by rememberSaveable {
-        mutableStateOf(false)
-    }
+//    var expanded by rememberSaveable {
+//        mutableStateOf(false)
+//    }
 
     // Small arrow rotation animation
     val arrowRotation by animateFloatAsState(
@@ -562,7 +581,7 @@ fun roleDropBox(
                 .fillMaxWidth()
                 .height(65.dp)
                 .clickable {
-                    expanded = !expanded
+                    onExpandedChange(!expanded)
                 },
 
             color = Color.White,
@@ -647,7 +666,7 @@ fun roleDropBox(
                                 onRoleChange(
                                     "Principal Engineer"
                                 )
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
 
@@ -657,7 +676,7 @@ fun roleDropBox(
                                 onRoleChange(
                                     "Manager"
                                 )
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
 
@@ -667,7 +686,7 @@ fun roleDropBox(
                                 onRoleChange(
                                     "SDE"
                                 )
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
 
@@ -675,7 +694,7 @@ fun roleDropBox(
                             role = "QA",
                             onClick = {
                                 onRoleChange("QA")
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
 
@@ -683,7 +702,7 @@ fun roleDropBox(
                             role = "Product Manager",
                             onClick = {
                                 onRoleChange("Product Manager")
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
 
@@ -691,7 +710,7 @@ fun roleDropBox(
                             role = "Intern",
                             onClick = {
                                 onRoleChange("Intern")
-                                expanded = false
+                                onExpandedChange(!expanded)
                             }
                         )
                     }

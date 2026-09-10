@@ -17,6 +17,8 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +48,9 @@ class MsgVM(
 
     val otherUserTyping: StateFlow<Boolean>
         get() = _otherUserTyping
+
+    private var typingJob: Job? = null
+    private var currentlyTyping = false
 
 
 
@@ -629,6 +634,58 @@ class MsgVM(
                 userId = currentUserId,
                 conversationId = conversationId,
                 isTyping = isTyping
+            )
+        }
+    }
+    fun onTypingChanged(
+        conversationId: String,
+        hasText: Boolean
+    ) {
+        typingJob?.cancel()
+
+        if (!hasText) {
+            if (currentlyTyping) {
+                currentlyTyping = false
+
+                viewModelScope.launch {
+                    val userId = tokenManager.getUserId() ?: return@launch
+
+                    realtimeRepo.sendTyping(
+                        userId = userId,
+                        conversationId = conversationId,
+                        isTyping = false
+                    )
+                }
+            }
+
+            return
+        }
+
+        if (!currentlyTyping) {
+            currentlyTyping = true
+
+            viewModelScope.launch {
+                val userId = tokenManager.getUserId() ?: return@launch
+
+                realtimeRepo.sendTyping(
+                    userId = userId,
+                    conversationId = conversationId,
+                    isTyping = true
+                )
+            }
+        }
+
+        typingJob = viewModelScope.launch {
+            delay(1000)
+
+            currentlyTyping = false
+
+            val userId = tokenManager.getUserId() ?: return@launch
+
+            realtimeRepo.sendTyping(
+                userId = userId,
+                conversationId = conversationId,
+                isTyping = false
             )
         }
     }

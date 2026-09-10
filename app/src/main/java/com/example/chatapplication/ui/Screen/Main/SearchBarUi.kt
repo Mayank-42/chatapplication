@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -79,8 +80,10 @@ fun SearchBarPage(
     userEsist: UserInfo
 ) {
 
-    var userName by rememberSaveable {
-        mutableStateOf("")
+    var userName by rememberSaveable(
+        stateSaver = TextFieldValue.Saver
+    ) {
+        mutableStateOf(TextFieldValue(""))
     }
 
     var isSearched by rememberSaveable {
@@ -108,7 +111,7 @@ fun SearchBarPage(
     LaunchedEffect(userName) {
 
         // Clear previous results when search is empty
-        if (userName.isBlank()) {
+        if (userName.text.isBlank()) {
             isSearched = false
             return@LaunchedEffect
         }
@@ -116,9 +119,9 @@ fun SearchBarPage(
         // Wait until user stops typing
         delay(300)
 
-        if (userName.isNotBlank()) {
+        if (userName.text.isNotBlank()) {
 
-            userEsist.isExsist(userName)
+            userEsist.isExsist(userName.text)
 
             isSearched = true
         }
@@ -250,9 +253,9 @@ fun SearchBarPage(
                             keyboardActions = KeyboardActions(
                                 onSearch = {
 
-                                    if (userName.isNotBlank()) {
+                                    if (userName.text.isNotBlank()) {
 
-                                        userEsist.isExsist(userName)
+                                        userEsist.isExsist(userName.text)
 
                                         isSearched = true
                                     }
