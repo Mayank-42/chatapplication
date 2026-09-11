@@ -175,8 +175,6 @@ fun profileScreen(
                 .background(ProfileBlack)
                 .padding(paddingValues)
         ) {
-
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -211,11 +209,8 @@ fun profileScreen(
                             modifier =
                                 Modifier
                                     .size(48.dp)
-                                    .align(
-                                        Alignment.BottomEnd
-                                    )
+                                    .align(Alignment.BottomEnd)
                                     .clickable {
-
                                         imagePicker.launch(
                                             PickVisualMediaRequest(
                                                 ActivityResultContracts
@@ -252,9 +247,7 @@ fun profileScreen(
                     fontSize = 27.sp,
                     fontWeight = FontWeight.Bold
                 )
-
                 Spacer(modifier = Modifier.height(2.dp))
-
                 Text(
                     text = "@${currentUser?.username ?: "username"}",
                     color = ProfileGrey,

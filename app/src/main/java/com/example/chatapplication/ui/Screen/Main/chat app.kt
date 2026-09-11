@@ -1,12 +1,26 @@
 package com.example.chatapplication.ui.Screen.Main
 
+import android.Manifest
+import android.R.attr.contentDescription
+import android.R.attr.maxLines
+import android.R.attr.text
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.os.Build
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,19 +36,29 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicNone
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,19 +69,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.chatapplication.Data.Repo.RealTimeRepo
@@ -68,6 +102,8 @@ import com.example.chatapplication.Data.Viewmodel.databaseVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.ui.Screen.GroupChat.formatMessageTime
 import io.ktor.client.utils.EmptyContent.status
+import io.ktor.http.parseAndSortContentTypeHeader
+import kotlinx.coroutines.flow.callbackFlow
 
 private val ChatBlack = Color(0xFF000000)
 private val ChatWhite = Color(0xFFFFFFFF)
@@ -91,6 +127,9 @@ fun chatScreen(
 ) {
 
     val otherUserTyping by msg.otherUserTyping.collectAsState()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
 
     var currentUserId by rememberSaveable {
         mutableStateOf("")
@@ -122,7 +161,9 @@ fun chatScreen(
 
     var hasNavigated by remember { mutableStateOf(false) }
 
-    var isTyping by rememberSaveable{mutableStateOf(false)}
+    var openSpeachBox by rememberSaveable{mutableStateOf(false)}
+
+    var bottomSpeachBox by rememberSaveable{mutableStateOf(false)}
 
     LaunchedEffect(conversationId) {
         try {
@@ -226,7 +267,11 @@ fun chatScreen(
     ) {
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(
+                    if (openSpeachBox) 18.dp else 0.dp
+                )
         ) {
 
             ChatHeader(
@@ -246,8 +291,9 @@ fun chatScreen(
                 },
                 nav,
                 receiverId,
-                isOnline
-
+                isOnline,
+//                openSpeachBox={openSpeachBox=true}
+                openBotoumMic ={bottomSpeachBox=true}
 
             )
 
@@ -357,8 +403,43 @@ fun chatScreen(
                         msg.storeMsg(conversationId, textingg)
                         textingg = ""
                     }
-                }
+                },
+                bottomSpeachBox,
+                focusRequester.requestFocus()
             )
+        if(bottomSpeachBox){
+            ShowMicOnChatScreen(
+                openBotoumMic = {
+                    bottomSpeachBox=false
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                },
+                    onSpeechText = { speechText ->
+                        textingg = speechText
+                    }
+            )
+        }
+        }
+        if (openSpeachBox) {
+
+            Box(
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+            ) {
+
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(
+//                            Color.Black.copy(alpha = 0.20f)
+//                        )
+//                )
+
+                ShowMicPage(
+                    closeSpeachBox = {
+                        openSpeachBox = false
+                    }
+                )
+            }
         }
     }
 }
@@ -371,7 +452,9 @@ private fun ChatHeader(
     onBackClick: () -> Unit,
     nav: NavController,
     reciver:String,
-    isOnline:Boolean
+    isOnline:Boolean,
+//    openSpeachBox:()->Unit,
+    openBotoumMic: () -> Unit
 
 ) {
     Surface(
@@ -449,6 +532,22 @@ private fun ChatHeader(
                     )
                 }
             }
+            Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd){
+                IconButton(
+                    onClick ={
+//                        openSpeachBox()
+                        openBotoumMic()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MicNone,
+                        contentDescription = null,
+                        tint=ChatWhite,
+                        modifier=Modifier.size(30.dp)
+                    )
+                }
+            }
+
         }
     }
 }
@@ -1107,8 +1206,28 @@ private fun ReceivedMessageBubble(
 private fun ChatInputBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onSend: () -> Unit
+    onSend: () -> Unit,
+    isOpened: Boolean=true,
+    focusRequester: FocusRequester
 ) {
+
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = text,
+                selection = TextRange(text.length)
+            )
+        )
+    }
+    LaunchedEffect(text) {
+        if (text != textFieldValue.text) {
+
+            textFieldValue = TextFieldValue(
+                text = text,
+                selection = TextRange(text.length)
+            )
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -1140,10 +1259,15 @@ private fun ChatInputBar(
             ) {
 
                 TextField(
-                    value = text,
+                    value = textFieldValue,
+                    onValueChange = { newValue ->
 
-                    onValueChange = onTextChange,
+                        textFieldValue = newValue
 
+                        onTextChange(newValue.text)
+                    },
+//                    readOnly = if(isOpened) !isEditing  else isEditing,
+                    readOnly =  isOpened,
                     placeholder = {
                         Text(
                             text = "Write a message...",
@@ -1169,6 +1293,8 @@ private fun ChatInputBar(
                     modifier =
                         Modifier
                             .fillMaxWidth().padding(end = 58.dp)
+//                                modifier = Modifier
+                                .focusRequester(focusRequester)
                 )
 
                 Button(
@@ -1203,4 +1329,341 @@ private fun ChatInputBar(
             }
         }
     }
+}
+@Composable
+fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
+    var scrole= rememberScrollState()
+    val context = LocalContext.current
+    var SelectedLanguage by rememberSaveable {mutableStateOf<String?>("") }
+    var isSelected by rememberSaveable {mutableStateOf(false)}
+    var isIconSelected by rememberSaveable {mutableStateOf(false)}
+
+    var previousSpeechText by rememberSaveable { mutableStateOf("") }
+
+    var audioLevel by rememberSaveable{mutableStateOf(0f)}
+
+    var language: MutableMap<String,String> = mutableMapOf(
+        "Hindi" to "hi-IN",
+        "Bengali" to "bn-IN",
+        "Gujarati" to "gu-IN",
+        "Kannada" to "kn-IN",
+        "Malayalam" to "ml-IN",
+        "Marathi" to "mr-IN",
+        "Tamil" to "ta-IN",
+        "Telugu" to "te-IN",
+        "Urdu" to "ur-IN",
+        "Punjabi" to "pa-IN"
+    )
+
+    val microphonePermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) {
+                isIconSelected = true
+            }
+        }
+
+    var speachRecogniser= remember {SpeechRecognizer.createSpeechRecognizer(context)}
+
+    var recognizerListner =remember {
+        object : RecognitionListener{
+            override fun onBeginningOfSpeech() {
+            }
+
+            override fun onBufferReceived(buffer: ByteArray?) {
+            }
+
+            override fun onEndOfSpeech() {
+                isIconSelected=false
+            }
+
+            override fun onError(error: Int) {
+            }
+
+            override fun onEvent(eventType: Int, params: Bundle?) {
+            }
+
+            override fun onPartialResults(partialResults: Bundle?) {
+
+                val matches = partialResults?.getStringArrayList(
+                    SpeechRecognizer.RESULTS_RECOGNITION
+                )
+                if (!matches.isNullOrEmpty()) {
+                    val partialText = matches[0]
+
+                    val combinedText =
+                        if (previousSpeechText.isBlank()) {
+                            partialText
+                        } else {
+                            "$previousSpeechText $partialText"
+                        }
+                    onSpeechText(combinedText)
+                    println("SPEECH PARTIAL: $combinedText")
+                }
+            }
+
+            override fun onReadyForSpeech(params: Bundle?) {
+
+            }
+
+            override fun onResults(results: Bundle?) {
+
+                val matches = results?.getStringArrayList(
+                    SpeechRecognizer.RESULTS_RECOGNITION
+                )
+
+                if (!matches.isNullOrEmpty()) {
+                    val newText = matches[0]
+                    previousSpeechText = if (previousSpeechText.isBlank()) newText else "$previousSpeechText $newText"
+
+                    onSpeechText(previousSpeechText)
+                    println("SPEECH FINAL: $previousSpeechText")
+                }
+            }
+
+            override fun onRmsChanged(rmsdB: Float) {
+                audioLevel = ((rmsdB + 2f) / 12f)
+                    .coerceIn(0f, 1f)
+            }
+        }
+    }
+
+    fun startRecognisation(){
+        speachRecogniser.setRecognitionListener(recognizerListner)
+
+        var intent=Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            .apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE,SelectedLanguage)
+
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true)
+
+        }
+                speachRecogniser.startListening(intent)
+    }
+
+        Box(modifier=Modifier.height(220.dp)
+            .fillMaxWidth()
+            .background(Color.White)
+        ) {
+            Column(){
+                Spacer(modifier=Modifier.height(10.dp))
+                Row(modifier=Modifier.horizontalScroll(scrole)){
+                    Text(
+                        text="English",
+//                        color=Color.White,
+                        modifier=Modifier
+                            .clickable{SelectedLanguage=language.get("English") ;isSelected=false}
+                                .clip(RoundedCornerShape(20.dp))
+                                .background( if(isSelected)Color.Transparent else ChatBlue)
+                            .padding(3.dp)
+
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Hindi",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Hindi")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(isSelected&&SelectedLanguage==language.get("Hindi"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Bengali ",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Bengali")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(isSelected&&SelectedLanguage==language.get("Bengali"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Gujarati ",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Gujarati")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Gujarati"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Kannada",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Kannada")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Kannada"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Malayalam",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Malayalam")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Malayalam"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Marathi",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage= language.get("Marathi")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Marathi"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Tamil ",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Tamil")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Tamil"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Telugu ",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Telugu")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Telugu"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Urdu",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Urdu")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Urdu"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                    Spacer(modifier=Modifier.width(2.dp))
+                    Text(
+                        text="Punjabi",
+                        modifier=Modifier
+                            .clickable{
+                                SelectedLanguage=language.get("Punjabi")
+                                isSelected=true
+                            }
+                            .clip(RoundedCornerShape(20.dp))
+                            .background( if(SelectedLanguage==language.get("Punjabi"))ChatBlue else Color.Transparent)
+                            .padding(3.dp)
+                    )
+                }
+                //Mic button
+                Box(modifier=Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally){
+
+                    IconButton(onClick = {
+                        if (
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.RECORD_AUDIO
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            if (isIconSelected) {
+                                speachRecogniser.stopListening()
+                                isIconSelected = false
+                            } else {
+                                isIconSelected = true
+                                startRecognisation()
+                            }
+                        } else {
+                            microphonePermissionLauncher.launch(
+                                Manifest.permission.RECORD_AUDIO
+                            )
+                        }
+                                         },
+                        modifier=Modifier.size(80.dp)
+                    ){
+                        if (isIconSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Mic,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .scale(1f + audioLevel * 0.2f)
+                                    .clip(CircleShape)
+                                    .border(1.dp, Color.Transparent, CircleShape)
+                                    .background(Color.Red),
+                            )
+
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.MicOff,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .clip(CircleShape)
+                                    .border(1.dp, Color.Transparent, CircleShape)
+                                    .background(Color.Red),
+
+                                )
+                        }
+                    }
+                        Text(
+                            text="Tap on Mic to speak"
+                        )
+                        Box(modifier=Modifier
+                            .fillMaxWidth()
+                            .padding(end=20.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ){
+                            TextButton(onClick = {
+                                openBotoumMic()
+                            }
+                            ){
+                                Text(
+                                    text="Done",
+                                    fontWeight = FontWeight.SemiBold,
+                                    color=ChatBlue
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+//}
+
+//}
+@Preview(showBackground = true)
+@Composable
+fun showww(){
+    ShowMicOnChatScreen({},{})
 }

@@ -259,4 +259,20 @@ class RealTimeRepo {
                 _onlineUsers.value = users
             }
     }
+    suspend fun unsubscribePresence() {
+
+        if (!presenceSubscribed) {
+            return
+        }
+
+        println("PRESENCE: UNSUBSCRIBING")
+
+        presenceChannel.untrack()
+        presenceChannel.unsubscribe()
+
+        presenceSubscribed = false
+        _onlineUsers.value = emptySet()
+
+        println("PRESENCE: UNSUBSCRIBED")
+    }
 }

@@ -335,6 +335,7 @@ class MainActivity : ComponentActivity() {
                                     messageInfoVM.stopRealtime()
                                     convoInfoVM.stopConversationRealtime()
                                     convoInfoVM.clearLocalConversations()
+                                    convoInfoVM.stopPresence()
                                     userId = ""
                                     authState = ChekUserState.unAuthenticated
                                 },
@@ -397,6 +398,7 @@ class MainActivity : ComponentActivity() {
                                         messageInfoVM.stopRealtime()
                                         convoInfoVM.stopConversationRealtime()
                                         convoInfoVM.clearLocalConversations()
+                                        convoInfoVM.stopPresence()
                                         userId = ""
                                         authState = ChekUserState.unAuthenticated
                                     }
@@ -416,6 +418,7 @@ class MainActivity : ComponentActivity() {
                                     messageInfoVM.stopRealtime()
                                     convoInfoVM.stopConversationRealtime()
                                     convoInfoVM.clearLocalConversations()
+                                    convoInfoVM.stopPresence()
                                     userId = ""
                                     authState = ChekUserState.unAuthenticated
                                 }

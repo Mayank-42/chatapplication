@@ -12,6 +12,7 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.CinversationId
 import com.example.chatapplication.Data.network.request.conversationIdRequest
 import io.github.jan.supabase.realtime.RealtimeChannel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,6 +30,7 @@ class convoVM(
     var gettingConvoInfo= repo.getingConvoInfo
 
     private var conversationRealtimeStarted = false
+    private var presenceObserverJob: Job? = null
 
     val onlineUsers = realTimeRepo.onlineUsers
 
@@ -109,7 +111,9 @@ fun startConversationRealtime() {
 
                 println("PRESENCE: STARTING FOR USER = $userId")
 
-                launch {
+                presenceObserverJob?.cancel()
+
+                presenceObserverJob = launch {
                     try {
                         realTimeRepo.observePresence()
                     } catch (e: Exception) {
@@ -124,6 +128,25 @@ fun startConversationRealtime() {
 
             } catch (e: Exception) {
                 println("PRESENCE START ERROR = ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+    fun stopPresence() {
+        viewModelScope.launch {
+            try {
+
+                println("PRESENCE: STOPPING")
+
+                presenceObserverJob?.cancel()
+                presenceObserverJob = null
+
+                realTimeRepo.unsubscribePresence()
+
+                println("PRESENCE: STOPPED")
+
+            } catch (e: Exception) {
+                println("PRESENCE STOP ERROR = ${e.message}")
                 e.printStackTrace()
             }
         }
