@@ -39,6 +39,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -85,6 +87,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
@@ -293,7 +296,7 @@ fun chatScreen(
                 receiverId,
                 isOnline,
 //                openSpeachBox={openSpeachBox=true}
-                openBotoumMic ={bottomSpeachBox=true}
+//                openBotoumMic ={bottomSpeachBox=true}
 
             )
 
@@ -405,7 +408,10 @@ fun chatScreen(
                     }
                 },
                 bottomSpeachBox,
-                focusRequester.requestFocus()
+                focusRequester,
+                onMic={
+                    bottomSpeachBox=true
+                }
             )
         if(bottomSpeachBox){
             ShowMicOnChatScreen(
@@ -454,7 +460,7 @@ private fun ChatHeader(
     reciver:String,
     isOnline:Boolean,
 //    openSpeachBox:()->Unit,
-    openBotoumMic: () -> Unit
+
 
 ) {
     Surface(
@@ -532,21 +538,7 @@ private fun ChatHeader(
                     )
                 }
             }
-            Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd){
-                IconButton(
-                    onClick ={
-//                        openSpeachBox()
-                        openBotoumMic()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MicNone,
-                        contentDescription = null,
-                        tint=ChatWhite,
-                        modifier=Modifier.size(30.dp)
-                    )
-                }
-            }
+
 
         }
     }
@@ -1208,8 +1200,11 @@ private fun ChatInputBar(
     onTextChange: (String) -> Unit,
     onSend: () -> Unit,
     isOpened: Boolean=true,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
+    onMic:()->Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     var textFieldValue by remember {
         mutableStateOf(
@@ -1274,6 +1269,16 @@ private fun ChatInputBar(
                             color = Color.Gray
                         )
                     },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+                    ),
 
 //                    singleLine = false,
                    maxLines = 8,
@@ -1296,35 +1301,66 @@ private fun ChatInputBar(
 //                                modifier = Modifier
                                 .focusRequester(focusRequester)
                 )
+                if(text.isNotBlank()) {
+                    Button(
+                        onClick = onSend,
 
-                Button(
-                    onClick = onSend,
-
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 6.dp, bottom = 6.dp)
-                            .size(48.dp),
-
-                    shape = CircleShape,
-
-                    contentPadding = PaddingValues(0.dp),
-
-                    colors = ButtonDefaults.buttonColors(containerColor = ChatBlue)
-                ) {
-
-                    Icon(
-                        imageVector =
-                            Icons.Default.Send,
-
-                        contentDescription =
-                            "Send",
-
-                        tint =
-                            ChatWhite,
                         modifier =
-                            Modifier.size(21.dp)
-                    )
+                            Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 6.dp, bottom = 6.dp)
+                                .size(48.dp),
+
+                        shape = CircleShape,
+
+                        contentPadding = PaddingValues(0.dp),
+
+                        colors = ButtonDefaults.buttonColors(containerColor = ChatBlue)
+                    ) {
+
+                        Icon(
+                            imageVector =
+                                Icons.Default.Send,
+
+                            contentDescription =
+                                "Send",
+
+                            tint =
+                                ChatWhite,
+                            modifier =
+                                Modifier.size(21.dp)
+                        )
+                    }
+                }else{
+                    Button(
+                        onClick = onMic,
+
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 6.dp, bottom = 6.dp)
+                                .size(48.dp),
+
+                        shape = CircleShape,
+
+                        contentPadding = PaddingValues(0.dp),
+
+                        colors = ButtonDefaults.buttonColors(containerColor = ChatBlue)
+                    ) {
+
+                        Icon(
+                            imageVector =
+                                Icons.Default.Mic,
+
+                            contentDescription =
+                                "Mic",
+
+                            tint =
+                                ChatWhite,
+                            modifier =
+                                Modifier.size(21.dp)
+                        )
+                    }
                 }
             }
         }
@@ -1343,6 +1379,7 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
     var audioLevel by rememberSaveable{mutableStateOf(0f)}
 
     var language: MutableMap<String,String> = mutableMapOf(
+        "English" to "En-IN",
         "Hindi" to "hi-IN",
         "Bengali" to "bn-IN",
         "Gujarati" to "gu-IN",
@@ -1450,137 +1487,58 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
         ) {
             Column(){
                 Spacer(modifier=Modifier.height(10.dp))
-                Row(modifier=Modifier.horizontalScroll(scrole)){
-                    Text(
-                        text="English",
-//                        color=Color.White,
-                        modifier=Modifier
-                            .clickable{SelectedLanguage=language.get("English") ;isSelected=false}
-                                .clip(RoundedCornerShape(20.dp))
-                                .background( if(isSelected)Color.Transparent else ChatBlue)
-                            .padding(3.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(scrole)
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Hindi",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Hindi")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(isSelected&&SelectedLanguage==language.get("Hindi"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Bengali ",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Bengali")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(isSelected&&SelectedLanguage==language.get("Bengali"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Gujarati ",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Gujarati")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Gujarati"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Kannada",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Kannada")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Kannada"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Malayalam",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Malayalam")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Malayalam"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Marathi",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage= language.get("Marathi")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Marathi"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Tamil ",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Tamil")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Tamil"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Telugu ",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Telugu")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Telugu"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Urdu",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Urdu")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Urdu"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
-                    Spacer(modifier=Modifier.width(2.dp))
-                    Text(
-                        text="Punjabi",
-                        modifier=Modifier
-                            .clickable{
-                                SelectedLanguage=language.get("Punjabi")
-                                isSelected=true
-                            }
-                            .clip(RoundedCornerShape(20.dp))
-                            .background( if(SelectedLanguage==language.get("Punjabi"))ChatBlue else Color.Transparent)
-                            .padding(3.dp)
-                    )
+                    language.forEach { (languageName, languageCode) ->
+
+                        val isCurrentLanguage = SelectedLanguage == languageCode
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(
+                                    if (isCurrentLanguage)
+                                        ChatBlue
+                                    else
+                                        Color.Transparent
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isCurrentLanguage)
+                                        ChatBlue
+                                    else
+                                        Color.LightGray,
+                                    shape = RoundedCornerShape(50.dp)
+                                )
+                                .clickable {
+                                    SelectedLanguage = languageCode
+                                }
+                                .padding(
+                                    horizontal = 14.dp,
+                                    vertical = 8.dp
+                                )
+                        ) {
+                            Text(
+                                text = languageName,
+                                color = if (isCurrentLanguage)
+                                    Color.White
+                                else
+                                    Color.DarkGray,
+                                fontSize = 14.sp,
+                                fontWeight = if (isCurrentLanguage)
+                                    FontWeight.SemiBold
+                                else
+                                    FontWeight.Normal
+                            )
+                        }
+                    }
                 }
                 //Mic button
                 Box(modifier=Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
