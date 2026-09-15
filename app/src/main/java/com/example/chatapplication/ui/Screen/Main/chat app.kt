@@ -1370,7 +1370,7 @@ private fun ChatInputBar(
 fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
     var scrole= rememberScrollState()
     val context = LocalContext.current
-    var SelectedLanguage by rememberSaveable {mutableStateOf<String?>("") }
+    var SelectedLanguage by rememberSaveable {mutableStateOf<String?>("En-IN") }
     var isSelected by rememberSaveable {mutableStateOf(false)}
     var isIconSelected by rememberSaveable {mutableStateOf(false)}
 
@@ -1392,7 +1392,7 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
         "Punjabi" to "pa-IN"
     )
 
-    val microphonePermissionLauncher = rememberLauncherForActivityResult(
+        val microphonePermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
         ) { granted ->
             if (granted) {
@@ -1430,6 +1430,7 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
 
                     val combinedText =
                         if (previousSpeechText.isBlank()) {
+
                             partialText
                         } else {
                             "$previousSpeechText $partialText"
