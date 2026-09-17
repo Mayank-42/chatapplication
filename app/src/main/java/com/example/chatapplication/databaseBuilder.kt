@@ -5,8 +5,9 @@ import android.app.Application
 import androidx.room3.Room
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.local.dataBaseLocal
+import dagger.hilt.android.HiltAndroidApp
 
-
+@HiltAndroidApp
 class dataBaseBuilder : Application() {
 
     val database: dataBaseLocal by lazy {

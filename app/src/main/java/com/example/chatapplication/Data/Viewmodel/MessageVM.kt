@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.room3.Insert
 import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.RealTimeRepo
 import com.example.chatapplication.Data.Repo.convoInfoRepo
@@ -17,6 +18,7 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.network.response.WholeMessageResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -28,9 +30,10 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.Instant
 import java.util.UUID
+import javax.inject.Inject
 
-
-class MsgVM(
+@HiltViewModel
+class MsgVM @Inject constructor(
     private val gettingmsg: MessageRepo,
     private val realtimeRepo: RealTimeRepo,
     private val dbrepo: reposatory,
@@ -51,10 +54,6 @@ class MsgVM(
 
     private var typingJob: Job? = null
     private var currentlyTyping = false
-
-
-
-
 
 
     // ============================================================
@@ -245,7 +244,7 @@ class MsgVM(
 
                 realtimeRepo
                     .messageUpdateFlow()
-                    .collect{ event ->
+                    .collect { event ->
 
                         println("========== REALTIME MESSAGE UPDATE ==========")
                         println("REALTIME: MESSAGE UPDATE RECEIVED")
@@ -361,12 +360,13 @@ class MsgVM(
                         println("===================================================")
                     }
             }
-            launch{
-                var currentUserId =tokenManager.getUserId()
+            launch {
+                var currentUserId = tokenManager.getUserId()
                 realtimeRepo.typingEventFlow().collect { event ->
 
                     if (event.conversation_id == activeConversationId &&
-                        event.user_id != currentUserId) {
+                        event.user_id != currentUserId
+                    ) {
                         _otherUserTyping.value = event.is_typing
                         println("TYPING: user=${event.user_id}, typing=${event.is_typing}")
                     }
@@ -385,6 +385,7 @@ class MsgVM(
             println("REALTIME: ALL REALTIME SUBSCRIPTIONS STARTED")
         }
     }
+
     // ============================================================
     // LOAD MESSAGES FROM SERVER
     // ============================================================
@@ -449,6 +450,7 @@ class MsgVM(
             }
         }
     }
+
     // ============================================================
     // MARK LOCAL MESSAGES AS READ
     // ============================================================
@@ -477,11 +479,13 @@ class MsgVM(
             }
         }
     }
+
     // ============================================================
     // SEND MESSAGE
     // ============================================================
     @RequiresApi(Build.VERSION_CODES.O)
-    fun storeMsg(conversationId: String,message: String
+    fun storeMsg(
+        conversationId: String, message: String
     ) {
         println("STORE MSG: FUNCTION CALLED")
         println("STORE MSG: conversationId = $conversationId")
@@ -637,6 +641,7 @@ class MsgVM(
             )
         }
     }
+
     fun onTypingChanged(
         conversationId: String,
         hasText: Boolean
@@ -689,52 +694,53 @@ class MsgVM(
             )
         }
     }
+}
     // ============================================================
     // VIEWMODEL FACTORY
     // ============================================================
 
-    class MsgVMFactory(
-
-        private val messageRepo: MessageRepo,
-
-        private val realtimeRepo: RealTimeRepo,
-
-        private val roomRepo: reposatory,
-
-        private val tokenManager: TokenManager,
-
-        private val convoRepo: convoInfoRepo
-
-    ) : ViewModelProvider.Factory {
-
-        override fun <T : ViewModel> create(
-            modelClass: Class<T>
-        ): T {
-
-            if (
-                modelClass.isAssignableFrom(
-                    MsgVM::class.java
-                )
-            ) {
-
-                return MsgVM(
-
-                    messageRepo,
-
-                    realtimeRepo,
-
-                    roomRepo,
-
-                    tokenManager,
-
-                    convoRepo
-
-                ) as T
-            }
-
-            throw IllegalArgumentException(
-                "Unknown ViewModel class"
-            )
-        }
-    }
-}
+//    class MsgVMFactory(
+//
+//        private val messageRepo: MessageRepo,
+//
+//        private val realtimeRepo: RealTimeRepo,
+//
+//        private val roomRepo: reposatory,
+//
+//        private val tokenManager: TokenManager,
+//
+//        private val convoRepo: convoInfoRepo
+//
+//    ) : ViewModelProvider.Factory {
+//
+//        override fun <T : ViewModel> create(
+//            modelClass: Class<T>
+//        ): T {
+//
+//            if (
+//                modelClass.isAssignableFrom(
+//                    MsgVM::class.java
+//                )
+//            ) {
+//
+//                return MsgVM(
+//
+//                    messageRepo,
+//
+//                    realtimeRepo,
+//
+//                    roomRepo,
+//
+//                    tokenManager,
+//
+//                    convoRepo
+//
+//                ) as T
+//            }
+//
+//            throw IllegalArgumentException(
+//                "Unknown ViewModel class"
+//            )
+//        }
+//    }
+//}

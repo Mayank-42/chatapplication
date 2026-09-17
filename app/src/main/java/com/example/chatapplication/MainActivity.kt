@@ -64,10 +64,12 @@ import com.example.chatapplication.ui.Screen.Main.SettingPage
 import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import retrofit2.Retrofit
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var networkMonitor: NetworkMonitor
     @RequiresApi(Build.VERSION_CODES.O)
@@ -209,17 +211,19 @@ class MainActivity : ComponentActivity() {
                         )
 
 
-                    val messageInfoVM: MsgVM =
-                        viewModel(
-                            factory =
-                                MsgVM.MsgVMFactory(
-                                    messageInfoRepo,
-                                    realtimeRepo,
-                                    repo,
-                                    tokenManager,
-                                    convoRepo
-                                )
-                        )
+//                    val messageInfoVM: MsgVM =
+//                        viewModel(
+//                            factory =
+//                                MsgVM.MsgVMFactory(
+//                                    messageInfoRepo,
+//                                    realtimeRepo,
+//                                    repo,
+//                                    tokenManager,
+//                                    convoRepo
+//                                )
+//                        )
+                    val messageInfoVM: MsgVM = hiltViewModel()
+
                     LaunchedEffect(Unit) {
                         networkMonitor.networkRestored.collect {
                             println("NETWORK SYNC: ================================")
