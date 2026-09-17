@@ -10,8 +10,11 @@ import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognitionListener
+import android.speech.RecognitionSupport
+import android.speech.RecognitionSupportCallback
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -1415,6 +1418,7 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
             }
 
             override fun onError(error: Int) {
+                Log.d("SPEECH_ERROR", "Error code = $error")
             }
 
             override fun onEvent(eventType: Int, params: Bundle?) {
@@ -1479,8 +1483,39 @@ fun ShowMicOnChatScreen(openBotoumMic:()->Unit,onSpeechText: (String) -> Unit){
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true)
 
         }
+
                 speachRecogniser.startListening(intent)
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//
+//            speachRecogniser.checkRecognitionSupport(
+//                intent,
+//                context.mainExecutor,
+//                object : RecognitionSupportCallback {
+//
+//                    override fun onSupportResult(
+//                        result: RecognitionSupport
+//                    ) {
+//                        Log.d(
+//                            "LANGUAGE_SUPPORT",
+//                            "Recognition support = $result"
+//                        )
+//                    }
+//
+//                    override fun onError(error: Int) {
+//                        Log.d(
+//                            "LANGUAGE_SUPPORT",
+//                            "Support check error = $error"
+//                        )
+//                    }
+//                }
+//            )
+//        }
     }
+
+//    val isOnDeviceAvailable =
+//        SpeechRecognizer.isOnDeviceRecognitionAvailable(context)
+//    Log.d("SPEECH_DEVICE", "On-device available = $isOnDeviceAvailable")
 
         Box(modifier=Modifier.height(220.dp)
             .fillMaxWidth()

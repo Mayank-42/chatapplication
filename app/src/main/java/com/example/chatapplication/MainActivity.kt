@@ -180,10 +180,7 @@ class MainActivity : ComponentActivity() {
 
                     var save: GroupChatVM =
                         viewModel(
-                            factory =
-                                GroupChatVMfacrory(
-                                    GroupRepo
-                                )
+                            factory = GroupChatVMfacrory(GroupRepo)
                         )
 
                     val realtimeRepo =  application.realtimeRepo
