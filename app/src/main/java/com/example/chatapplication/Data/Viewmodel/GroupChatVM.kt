@@ -13,9 +13,12 @@ import com.example.chatapplication.Data.local.tables.GroupInfo
 import com.example.chatapplication.Data.local.tables.groupMember
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.response.getGroupInfoResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GroupChatVM(
+@HiltViewModel
+class GroupChatVM @Inject constructor(
     var reposatory: GroupRepo
 ): ViewModel(){
 

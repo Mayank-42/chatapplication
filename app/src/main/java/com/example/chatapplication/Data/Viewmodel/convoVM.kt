@@ -11,6 +11,7 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.CinversationId
 import com.example.chatapplication.Data.network.request.conversationIdRequest
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -18,8 +19,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonPrimitive
+import javax.inject.Inject
 
-class convoVM(
+@HiltViewModel
+class convoVM @Inject constructor(
     private var repo: convoInfoRepo,
     private var token: TokenManager,
     private var messageRepo: reposatory,

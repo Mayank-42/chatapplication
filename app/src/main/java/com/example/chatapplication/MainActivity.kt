@@ -65,6 +65,7 @@ import com.example.chatapplication.ui.Screen.Main.chatScreen
 import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -94,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 application.database.dataBaseCall()
             )
 
-            var viewModel: databaseVM = viewModel(factory = dataBaseVMfacrory(repo))
+            var viewModel: databaseVM = hiltViewModel()
 
             var authRepo = AuthReposatory(AuthRetroFitClient.AuthApiService)
 
@@ -180,10 +181,12 @@ class MainActivity : ComponentActivity() {
                             application.database.ConvoInfo()
                         )
 
-                    var save: GroupChatVM =
-                        viewModel(
-                            factory = GroupChatVMfacrory(GroupRepo)
-                        )
+//                    var save: GroupChatVM =
+//                        viewModel(
+//                            factory = GroupChatVMfacrory(GroupRepo)
+//                        )
+                    var save: GroupChatVM = hiltViewModel()
+
 
                     val realtimeRepo =  application.realtimeRepo
 
@@ -198,30 +201,20 @@ class MainActivity : ComponentActivity() {
                             retroFitClient.apiService,
                             application.database.dataBaseCall()
                         )
-                    val convoInfoVM: convoVM =
-                        viewModel(
-                            factory =
-                                ConvoVMFactory(
-                                    convoRepo,
-                                    tokenManager,
-                                    repo,
-                                    messageInfoRepo,
-                                    realtimeRepo
-                                )
-                        )
-
-
-//                    val messageInfoVM: MsgVM =
+//                    val convoInfoVM: convoVM =
 //                        viewModel(
 //                            factory =
-//                                MsgVM.MsgVMFactory(
-//                                    messageInfoRepo,
-//                                    realtimeRepo,
-//                                    repo,
+//                                ConvoVMFactory(
+//                                    convoRepo,
 //                                    tokenManager,
-//                                    convoRepo
+//                                    repo,
+//                                    messageInfoRepo,
+//                                    realtimeRepo
 //                                )
 //                        )
+                    val convoInfoVM: convoVM = hiltViewModel()
+
+
                     val messageInfoVM: MsgVM = hiltViewModel()
 
                     LaunchedEffect(Unit) {
@@ -257,11 +250,13 @@ class MainActivity : ComponentActivity() {
                     val userInfoRepo =
                         UserInfoReposatory(retroFitClient.apiService, SupaBaseClient.supabase)
 
-                    val userInfovm: UserInfo =
-                        viewModel(
-                            key = "UserInfo-$userId",
-                            factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
-                        )
+//                    val userInfovm: UserInfo =
+//                        viewModel(
+//                            key = "UserInfo-$userId",
+//                            factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
+//                        )
+                    val userInfovm: UserInfo = hiltViewModel()
+
 
                     LaunchedEffect(Unit) {
                         println("APP START: AUTHENTICATED")

@@ -44,6 +44,7 @@ android {
 dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(platform(libs.supabase.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.kotlinx.serialization.json)

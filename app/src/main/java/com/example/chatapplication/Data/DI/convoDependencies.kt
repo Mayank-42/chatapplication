@@ -1,7 +1,6 @@
 package com.example.chatapplication.Data.DI
 
 import android.content.Context
-import androidx.datastore.preferences.protobuf.Api
 import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.Repo.MessageRepo
@@ -17,11 +16,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object Dependecies {
+object convoDependencies {
 
     @Provides
     @Singleton
@@ -30,12 +30,37 @@ object Dependecies {
     ): ApiService{
         return task.apiService
     }
+
+    @Provides
+    @Singleton
+    fun provideTokenManger(
+        @ApplicationContext context: Context
+    ): TokenManager{
+        return TokenManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConversationId(
+        task: conversationId,
+        apiTask: ApiService
+    ): convoInfoRepo {
+        return convoInfoRepo(task,apiTask)
+    }
+
     @Provides
     @Singleton
     fun provideOperation(
         task: dataBaseLocal
     ): operation {
         return task.dataBaseCall()
+    }
+    @Provides
+    @Singleton
+    fun provideReposatory(
+        task: operation
+    ): reposatory {
+        return reposatory(task)
     }
 
     @Provides
@@ -51,28 +76,6 @@ object Dependecies {
     @Singleton
     fun provideRealTimeRepo(): RealTimeRepo {
         return RealTimeRepo()
-    }
-    @Provides
-    @Singleton
-    fun provideReposatory(
-        task: operation
-    ): reposatory {
-        return reposatory(task)
-    }
-    @Provides
-    @Singleton
-    fun provideTokenManger(
-        @ApplicationContext context: Context
-    ): TokenManager{
-        return TokenManager(context)
-    }
-    @Provides
-    @Singleton
-    fun provideConversationId(
-        task: conversationId,
-        apiTask: ApiService
-    ): convoInfoRepo {
-        return convoInfoRepo(task,apiTask)
     }
 
 }

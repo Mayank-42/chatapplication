@@ -7,11 +7,14 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.local.tables.MessageInfo
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.Data.local.tables.userLoginInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.jvm.java
 
-class databaseVM( var reposatory: reposatory): ViewModel() {
+@HiltViewModel
+class databaseVM @Inject constructor(var reposatory: reposatory): ViewModel() {
 
     var getallValue: Flow<List<MessageInfo>> = reposatory.getAllValue
 

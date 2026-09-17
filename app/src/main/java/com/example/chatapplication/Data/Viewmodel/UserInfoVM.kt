@@ -15,11 +15,14 @@ import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.collections.emptyList
 import kotlin.jvm.java
 
-class UserInfo(
+@HiltViewModel
+class UserInfo @Inject constructor(
     private val infovm: UserInfoReposatory,
     private val messageRepo: MessageRepo
 ): ViewModel() {
