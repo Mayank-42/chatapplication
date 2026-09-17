@@ -19,13 +19,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object userDependecies {
 
-    @Provides
-    @Singleton
-    fun provideApiService(
-        retroTask: retroFitClient
-    ): ApiService{
-        return retroTask.apiService
-    }
+//    @Provides
+//    @Singleton
+//    fun provideApiService(
+//        retroTask: retroFitClient
+//    ): ApiService{
+//        return retroTask.apiService
+//    }
 
     @Provides
     @Singleton

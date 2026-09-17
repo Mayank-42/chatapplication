@@ -55,22 +55,22 @@ object convoDependencies {
 //    ): operation {
 //        return task.dataBaseCall()
 //    }
-    @Provides
-    @Singleton
-    fun provideReposatory(
-        task: operation
-    ): reposatory {
-        return reposatory(task)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideReposatory(
+//        task: operation
+//    ): reposatory {
+//        return reposatory(task)
+//    }
 
-    @Provides
-    @Singleton
-    fun provideMsgRepo(
-        task: operation,
-        apiTask: ApiService
-    ): MessageRepo{
-        return MessageRepo(apiTask,task)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideMsgRepo(
+//        task: operation,
+//        apiTask: ApiService
+//    ): MessageRepo{
+//        return MessageRepo(apiTask,task)
+//    }
 
 //    @Provides
 //    @Singleton

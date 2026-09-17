@@ -23,13 +23,13 @@ object groupDependencies {
    ): GroupOperation {
        return gDBtask.Groupcall()
    }
-    @Provides
-    @Singleton
-    fun provideApiService(
-        retroTask: retroFitClient
-    ): ApiService{
-        return retroTask.apiService
-    }
+//    @Provides
+//    @Singleton
+//    fun provideApiService(
+//        retroTask: retroFitClient
+//    ): ApiService{
+//        return retroTask.apiService
+//    }
 //    @Provides
 //    @Singleton
 //    fun provideConversationId(
