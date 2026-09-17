@@ -13,18 +13,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object dbDependecies {
 
-    @Provides
-    @Singleton
-    fun provideOperation(
-        dbTask: dataBaseLocal
-    ): operation {
-        return dbTask.dataBaseCall()
-    }
-    @Provides
-    @Singleton
-    fun provideRepo(
-        task: operation
-    ): reposatory {
-            return reposatory(task)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideOperation(
+//        dbTask: dataBaseLocal
+//    ): operation {
+//        return dbTask.dataBaseCall()
+//    }
+//    @Provides
+//    @Singleton
+//    fun provideRepo(
+//        task: operation
+//    ): reposatory {
+//            return reposatory(task)
+//    }
 }

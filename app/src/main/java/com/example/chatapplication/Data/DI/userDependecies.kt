@@ -35,16 +35,16 @@ object userDependecies {
     ): UserInfoReposatory{
         return UserInfoReposatory(task,retroSupa)
     }
+//    @Provides
+//    @Singleton
+//    fun provideOperation(
+//        locaDB: dataBaseLocal
+//    ): operation {
+//        return locaDB.dataBaseCall()
+//    }
     @Provides
     @Singleton
-    fun provideOperation(
-        locaDB: dataBaseLocal
-    ): operation {
-        return locaDB.dataBaseCall()
-    }
-    @Provides
-    @Singleton
-    fun provideUserVM(
+    fun provideUserRepo(
         userRepo:UserInfoReposatory,
         msgTask: MessageRepo
     ):UserInfo{

@@ -30,13 +30,13 @@ object groupDependencies {
     ): ApiService{
         return retroTask.apiService
     }
-    @Provides
-    @Singleton
-    fun provideConversationId(
-        convoTask: dataBaseLocal
-    ): conversationId {
-        return convoTask.ConvoInfo()
-    }
+//    @Provides
+//    @Singleton
+//    fun provideConversationId(
+//        convoTask: dataBaseLocal
+//    ): conversationId {
+//        return convoTask.ConvoInfo()
+//    }
     @Provides
     @Singleton
     fun provideGroupRepo(
