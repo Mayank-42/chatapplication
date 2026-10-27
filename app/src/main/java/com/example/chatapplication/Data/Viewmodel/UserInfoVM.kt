@@ -157,25 +157,25 @@ fun getinfo() {
     }
 
 }
-class UserInfoFactory(
-    private val repository: UserInfoReposatory,
-    private val messageRepo: MessageRepo
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(
-        modelClass: Class<T>
-    ): T {
-
-        if (modelClass == UserInfo::class.java) {
-
-            @Suppress("UNCHECKED_CAST")
-
-            return UserInfo(
-                repository,
-                messageRepo
-            ) as T
-        }
-
-        throw IllegalArgumentException("Unknown ViewModel")
-    }
-}
+//class UserInfoFactory(
+//    private val repository: UserInfoReposatory,
+//    private val messageRepo: MessageRepo
+//) : ViewModelProvider.Factory {
+//
+//    override fun <T : ViewModel> create(
+//        modelClass: Class<T>
+//    ): T {
+//
+//        if (modelClass == UserInfo::class.java) {
+//
+//            @Suppress("UNCHECKED_CAST")
+//
+//            return UserInfo(
+//                repository,
+//                messageRepo
+//            ) as T
+//        }
+//
+//        throw IllegalArgumentException("Unknown ViewModel")
+//    }
+//}

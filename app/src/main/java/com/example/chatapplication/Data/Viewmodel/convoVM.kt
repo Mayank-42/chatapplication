@@ -270,28 +270,28 @@ suspend fun syncConversations() {
         }
     }
 }
-class ConvoVMFactory(
-    private val repo: convoInfoRepo,
-    private val tokenManager: TokenManager,
-    private var messageRepo: reposatory,
-    private var msgRepo: MessageRepo,
-    private var realTimeRepo: RealTimeRepo
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(
-        modelClass: Class<T>
-    ): T {
-        if (modelClass.isAssignableFrom(convoVM::class.java)) {
-
-            return convoVM(
-                repo,
-                tokenManager,
-                messageRepo,
-                msgRepo,
-                realTimeRepo
-            ) as T
-        }
-        throw IllegalArgumentException(
-            "Unknown ViewModel class"
-        )
-    }
-}
+//class ConvoVMFactory(
+//    private val repo: convoInfoRepo,
+//    private val tokenManager: TokenManager,
+//    private var messageRepo: reposatory,
+//    private var msgRepo: MessageRepo,
+//    private var realTimeRepo: RealTimeRepo
+//) : ViewModelProvider.Factory {
+//    override fun <T : ViewModel> create(
+//        modelClass: Class<T>
+//    ): T {
+//        if (modelClass.isAssignableFrom(convoVM::class.java)) {
+//
+//            return convoVM(
+//                repo,
+//                tokenManager,
+//                messageRepo,
+//                msgRepo,
+//                realTimeRepo
+//            ) as T
+//        }
+//        throw IllegalArgumentException(
+//            "Unknown ViewModel class"
+//        )
+//    }
+//}

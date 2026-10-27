@@ -7,6 +7,7 @@ import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.local.dataBaseLocal
 import com.example.chatapplication.Data.network.ApiService
+import com.example.chatapplication.Data.network.clients.SupaBaseClient
 import com.example.chatapplication.Data.network.clients.retroFitClient
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object userDependecies {
+
+    @Provides
+    @Singleton
+    fun provideSupabaseClient(): SupabaseClient {
+        return SupaBaseClient.supabase
+    }
 
 //    @Provides
 //    @Singleton

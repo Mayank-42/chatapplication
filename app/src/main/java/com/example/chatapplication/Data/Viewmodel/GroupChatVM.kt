@@ -112,17 +112,17 @@ class GroupChatVM @Inject constructor(
 
 
 
-class GroupChatVMfacrory(
-    private val repository: GroupRepo,
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
-        if (modelClass.isAssignableFrom(GroupChatVM::class.java)) {
-            return GroupChatVM(repository) as T
-        }
-
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+//class GroupChatVMfacrory(
+//    private val repository: GroupRepo,
+//) : ViewModelProvider.Factory {
+//
+//    @Suppress("UNCHECKED_CAST")
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//
+//        if (modelClass.isAssignableFrom(GroupChatVM::class.java)) {
+//            return GroupChatVM(repository) as T
+//        }
+//
+//        throw IllegalArgumentException("Unknown ViewModel class")
+//    }
+//}

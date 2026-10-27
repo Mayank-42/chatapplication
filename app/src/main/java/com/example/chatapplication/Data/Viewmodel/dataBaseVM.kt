@@ -61,17 +61,17 @@ class databaseVM @Inject constructor(var reposatory: reposatory): ViewModel() {
     }
 
 }
-class dataBaseVMfacrory(
-    private val repository: reposatory
-) : ViewModelProvider.Factory {
-
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
-        if (modelClass.isAssignableFrom(databaseVM::class.java)) {
-            return databaseVM(repository) as T
-        }
-
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+//class dataBaseVMfacrory(
+//    private val repository: reposatory
+//) : ViewModelProvider.Factory {
+//
+//    @Suppress("UNCHECKED_CAST")
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//
+//        if (modelClass.isAssignableFrom(databaseVM::class.java)) {
+//            return databaseVM(repository) as T
+//        }
+//
+//        throw IllegalArgumentException("Unknown ViewModel class")
+//    }
+//}

@@ -19,29 +19,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontVariation.Setting
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.Repo.AuthReposatory
-import com.example.chatapplication.Data.Repo.GroupRepo
-import com.example.chatapplication.Data.Repo.MessageRepo
-import com.example.chatapplication.Data.Repo.RealTimeRepo
-import com.example.chatapplication.Data.Repo.UserInfoReposatory
-import com.example.chatapplication.Data.Repo.convoInfoRepo
-import com.example.chatapplication.Data.Viewmodel.dataBaseVMfacrory
 import com.example.chatapplication.Data.Viewmodel.databaseVM
-import com.example.chatapplication.Data.Repo.reposatory
 import com.example.chatapplication.Data.Viewmodel.AuthViewModelFactory
-import com.example.chatapplication.Data.Viewmodel.ConvoVMFactory
 import com.example.chatapplication.Data.Viewmodel.GroupChatVM
-import com.example.chatapplication.Data.Viewmodel.GroupChatVMfacrory
 import com.example.chatapplication.Data.Viewmodel.MsgVM
 import com.example.chatapplication.Data.Viewmodel.UserInfo
-import com.example.chatapplication.Data.Viewmodel.UserInfoFactory
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.Viewmodel.loginVM
 import com.example.chatapplication.Data.local.TokenManager
@@ -66,10 +54,7 @@ import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
-import retrofit2.Retrofit
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var networkMonitor: NetworkMonitor
@@ -83,51 +68,35 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-
             val now = java.time.Instant.now()
 
             var userId by rememberSaveable { mutableStateOf("") }
 
             var application = application as dataBaseBuilder
             retroFitClient.initialize(applicationContext)
-
-            var repo = reposatory(
-                application.database.dataBaseCall()
-            )
+            
 
             var viewModel: databaseVM = hiltViewModel()
 
             var authRepo = AuthReposatory(AuthRetroFitClient.AuthApiService)
 
             var authVM: loginVM = viewModel(
-                factory = AuthViewModelFactory(
-                    authRepo,
-                    tokenManager
-                )
+                factory = AuthViewModelFactory(authRepo, tokenManager)
             )
 
-            var authState by rememberSaveable {
-                mutableStateOf(
-                    ChekUserState.cheking
-                )
-            }
+            var authState by rememberSaveable { mutableStateOf(ChekUserState.cheking) }
 
             LaunchedEffect(Unit) {
-
                 println("AUTH FLOW: CHECKING LOCAL SESSION")
 
                 val accessToken = tokenManager.getAccessToken()
 
                 if (accessToken.isNullOrBlank()) {
-
                     println("AUTH FLOW: NO LOCAL SESSION")
-
                     authState = ChekUserState.unAuthenticated
 
                 } else {
-
                     println("AUTH FLOW: LOCAL ACCESS TOKEN FOUND")
-
                     // Initialize Supabase using the locally stored token.
                     // This does not require an internet connection.
                     SupaBaseClient.initialize(tokenManager)
@@ -139,31 +108,21 @@ class MainActivity : ComponentActivity() {
                     println("AUTH FLOW: LOCAL USER ID = $localUserId")
 
                     if (!localUserId.isNullOrBlank()) {
-
                         userId = localUserId
-
                         println("AUTH FLOW: LOCAL SESSION READY")
-
                         authState = ChekUserState.authenticated
-
                     } else {
-
                         println("AUTH FLOW: INVALID LOCAL SESSION")
-
                         tokenManager.clearTokens()
-
                         authState = ChekUserState.unAuthenticated
                     }
                 }
             }
 
-            val navController =
-                rememberNavController()
+            val navController = rememberNavController()
 
             when (authState) {
-
                 ChekUserState.cheking -> {
-
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -171,50 +130,12 @@ class MainActivity : ComponentActivity() {
                         CircularProgressIndicator()
                     }
                 }
-
                 ChekUserState.authenticated -> {
 
-                    var GroupRepo =
-                        GroupRepo(
-                            application.database.Groupcall(),
-                            retroFitClient.apiService,
-                            application.database.ConvoInfo()
-                        )
 
-//                    var save: GroupChatVM =
-//                        viewModel(
-//                            factory = GroupChatVMfacrory(GroupRepo)
-//                        )
                     var save: GroupChatVM = hiltViewModel()
-
-
                     val realtimeRepo =  application.realtimeRepo
-
-                    val convoRepo =
-                        convoInfoRepo(
-                            application.database.ConvoInfo(),
-                            retroFitClient.apiService
-                        )
-
-                    val messageInfoRepo =
-                        MessageRepo(
-                            retroFitClient.apiService,
-                            application.database.dataBaseCall()
-                        )
-//                    val convoInfoVM: convoVM =
-//                        viewModel(
-//                            factory =
-//                                ConvoVMFactory(
-//                                    convoRepo,
-//                                    tokenManager,
-//                                    repo,
-//                                    messageInfoRepo,
-//                                    realtimeRepo
-//                                )
-//                        )
                     val convoInfoVM: convoVM = hiltViewModel()
-
-
                     val messageInfoVM: MsgVM = hiltViewModel()
 
                     LaunchedEffect(Unit) {
@@ -247,14 +168,7 @@ class MainActivity : ComponentActivity() {
                             println("NETWORK SYNC: ================================")
                         }
                     }
-                    val userInfoRepo =
-                        UserInfoReposatory(retroFitClient.apiService, SupaBaseClient.supabase)
 
-//                    val userInfovm: UserInfo =
-//                        viewModel(
-//                            key = "UserInfo-$userId",
-//                            factory = UserInfoFactory(userInfoRepo, messageInfoRepo)
-//                        )
                     val userInfovm: UserInfo = hiltViewModel()
 
 
@@ -264,8 +178,7 @@ class MainActivity : ComponentActivity() {
                         // 1. Try to refresh the session
                         // -----------------------------------------
                         try {
-                            val refreshToken =
-                                tokenManager.getRefreshToken()
+                            val refreshToken = tokenManager.getRefreshToken()
 
                             if (!refreshToken.isNullOrBlank()) {
                                 println("AUTH REFRESH: STARTING")
@@ -316,7 +229,6 @@ class MainActivity : ComponentActivity() {
                         // -----------------------------------------
                         userInfovm.getCompanyUsers()
                     }
-
                     NavHost(
                         navController = navController,
                         startDestination = "Home"
@@ -365,7 +277,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("SearchBarPage") {
-
                             SearchBarPage(
                                 navController,
                                 userInfovm
@@ -480,24 +391,18 @@ class MainActivity : ComponentActivity() {
                 }
 
                 ChekUserState.unAuthenticated -> {
-
                     NavHost(
                         navController = navController,
                         startDestination = "SignIn"
                     ) {
-
                         composable("SignIn") {
                             ShowSignIn(
                                 navController,
                                 viewModel,
                                 authVM,
-
                                 onLoginSuccess = { id ->
-
                                     userId = id
-
-                                    authState =
-                                        ChekUserState.authenticated
+                                    authState = ChekUserState.authenticated
                                 }
                             )
                         }
@@ -509,9 +414,7 @@ class MainActivity : ComponentActivity() {
                             UserInfo(navController, viewModel, authVM,
 
                                 onLoginSuccess = {
-
-                                    authState =
-                                        ChekUserState.authenticated
+                                    authState = ChekUserState.authenticated
                                 }
                             )
                         }
@@ -532,7 +435,6 @@ fun Greeting(
         modifier = modifier
     )
 }
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {

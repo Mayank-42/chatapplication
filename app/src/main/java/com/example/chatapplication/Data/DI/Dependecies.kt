@@ -2,6 +2,7 @@ package com.example.chatapplication.Data.DI
 
 import android.content.Context
 import androidx.datastore.preferences.protobuf.Api
+import androidx.room3.Room
 import com.example.chatapplication.Data.DAO.conversationId
 import com.example.chatapplication.Data.DAO.operation
 import com.example.chatapplication.Data.Repo.MessageRepo
@@ -19,9 +20,32 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+
+
+
 @Module
 @InstallIn(SingletonComponent::class)
 object Dependecies {
+
+    @Provides
+    @Singleton
+    fun providesDBlocall(
+        @ApplicationContext context: Context
+    ):dataBaseLocal{
+        return Room.databaseBuilder(
+            context,
+            dataBaseLocal::class.java,
+            "chatAPP DataBase"
+        ).build()
+    }
+    @Provides
+    @Singleton
+    fun provideRetroFitClient(
+        @ApplicationContext context: Context
+    ): retroFitClient {
+        retroFitClient.initialize(context)
+        return retroFitClient
+    }
 
     @Provides
     @Singleton
