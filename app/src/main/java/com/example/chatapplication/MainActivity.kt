@@ -54,6 +54,7 @@ import com.example.chatapplication.ui.Screen.Main.profileScreen
 import com.example.chatapplication.ui.theme.ChatApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.chatapplication.Data.FireBase.fireBaseToken
 import kotlinx.coroutines.flow.first
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
         val tokenManager = TokenManager(this)
         networkMonitor = NetworkMonitor(this)
         networkMonitor.start()
+        fireBaseToken().fetchToken()
 
         enableEdgeToEdge()
         setContent {
