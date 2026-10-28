@@ -13,6 +13,7 @@ import com.example.chatapplication.Data.Repo.MessageRepo
 import com.example.chatapplication.Data.Repo.UserInfoReposatory
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
+import com.example.chatapplication.Data.network.request.fcmTokenRequest
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -156,6 +157,11 @@ fun getinfo() {
         }
     }
 
+    fun addFmcToken(fmc:fcmTokenRequest){
+        viewModelScope.launch{
+            infovm.addFcmToken(fmc)
+        }
+    }
 }
 //class UserInfoFactory(
 //    private val repository: UserInfoReposatory,

@@ -10,6 +10,7 @@ import com.example.chatapplication.Data.network.request.RefreshTokenRequest
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
 import com.example.chatapplication.Data.network.request.conversationIdRequest
 import com.example.chatapplication.Data.network.request.deleteGroupRequest
+import com.example.chatapplication.Data.network.request.fcmTokenRequest
 import com.example.chatapplication.Data.network.request.getGroupInfo
 import com.example.chatapplication.Data.network.request.getOneConversation
 import com.example.chatapplication.Data.network.request.loginRequest
@@ -109,5 +110,10 @@ suspend fun getConvoInfo(
     suspend fun deletingGroup(
         @Body request: deleteGroupRequest
     ):Response<Unit>
+
+    @POST("rpc/device_tokens")
+    suspend fun addFcmToken(
+        @Body request: fcmTokenRequest
+    ): Response<Unit>
 
 }

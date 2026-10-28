@@ -1,10 +1,14 @@
 package com.example.chatapplication.Data.FireBase
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.google.firebase.messaging.FirebaseMessaging
 
 class fireBaseToken {
-    fun fetchToken(){
+    var token =""
+    fun fetchToken():String{
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task->
                 if (!task.isSuccessful) {
@@ -15,11 +19,12 @@ class fireBaseToken {
                     )
                     return@addOnCompleteListener
                 }
-                val token = task.result
+                token = task.result
 
                 Log.d("FCM", "Registration token received")
                 Log.d("FCM", token)
             }
+        return token
 
     }
 }

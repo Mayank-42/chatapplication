@@ -3,6 +3,7 @@ package com.example.chatapplication.Data.Repo
 
 import com.example.chatapplication.Data.network.ApiService
 import com.example.chatapplication.Data.network.request.UserNameExistRequest
+import com.example.chatapplication.Data.network.request.fcmTokenRequest
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.Data.network.response.UserNameExistResponse
 import io.github.jan.supabase.SupabaseClient
@@ -47,5 +48,9 @@ class UserInfoReposatory(
                     eq("id", id)
                 }
             }
+    }
+    suspend fun addFcmToken(fcm: fcmTokenRequest){
+        userInfoRepo.addFcmToken(fcm)
+
     }
 }

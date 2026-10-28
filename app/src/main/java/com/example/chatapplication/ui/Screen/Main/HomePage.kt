@@ -73,10 +73,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.example.chatapplication.Data.FireBase.fireBaseToken
 import com.example.chatapplication.Data.Viewmodel.UserInfo
 import com.example.chatapplication.Data.Viewmodel.convoVM
 import com.example.chatapplication.Data.local.TokenManager
 import com.example.chatapplication.Data.local.tables.userInfo
+import com.example.chatapplication.Data.network.request.fcmTokenRequest
 import com.example.chatapplication.Data.network.response.TakingUsernameResponse
 import com.example.chatapplication.ui.Screen.HomeBottomNavigation
 import kotlinx.coroutines.launch
@@ -118,6 +120,8 @@ fun HomeScreen(
 
     val scope = rememberCoroutineScope()
 
+    val FcmToken=fireBaseToken().fetchToken()
+
 
     // ========================================================
     // EXISTING LOGIC
@@ -136,6 +140,9 @@ fun HomeScreen(
     LaunchedEffect(Unit) { userinfoo.getinfo() }
 
     val LogedInUser = userinfoo.userInfo.firstOrNull{it.id==id}
+
+    userinfoo.addFmcToken(fcmTokenRequest(id,FcmToken))
+
 
 
     // ========================================================
