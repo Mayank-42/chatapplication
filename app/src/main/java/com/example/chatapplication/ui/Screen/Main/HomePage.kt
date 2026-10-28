@@ -122,9 +122,10 @@ fun HomeScreen(
 
     var FcmToken by rememberSaveable() {mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-         FcmToken = fireBaseToken().fetchToken()
-    }
+        LaunchedEffect(Unit) {
+            FcmToken = fireBaseToken().getFcmToken() ?: ""
+        }
+
 
 
     // ========================================================
@@ -145,7 +146,7 @@ fun HomeScreen(
 
     val LogedInUser = userinfoo.userInfo.firstOrNull{it.id==id}
 
-    userinfoo.addFmcToken(fcmTokenRequest(id,FcmToken))
+    userinfoo.addFmcToken(fcmTokenRequest(FcmToken))
 
 
 

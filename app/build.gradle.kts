@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(platform(libs.firebase.bom))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
     implementation(libs.firebase.messaging)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

@@ -66,7 +66,9 @@ class MainActivity : ComponentActivity() {
         val tokenManager = TokenManager(this)
         networkMonitor = NetworkMonitor(this)
         networkMonitor.start()
-        fireBaseToken().fetchToken()
+//        LaunchedEffect(Unit) {
+//            fireBaseToken().fetchToken()
+//        }
 
         enableEdgeToEdge()
         setContent {
