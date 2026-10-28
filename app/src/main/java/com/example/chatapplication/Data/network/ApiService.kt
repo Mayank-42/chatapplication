@@ -111,7 +111,7 @@ suspend fun getConvoInfo(
         @Body request: deleteGroupRequest
     ):Response<Unit>
 
-    @POST("rpc/device_tokens")
+    @POST("rpc/register_device_token")
     suspend fun addFcmToken(
         @Body request: fcmTokenRequest
     ): Response<Unit>

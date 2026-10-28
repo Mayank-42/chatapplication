@@ -8,7 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 
 class fireBaseToken {
     var token =""
-    fun fetchToken():String{
+    suspend fun fetchToken():String{
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task->
                 if (!task.isSuccessful) {

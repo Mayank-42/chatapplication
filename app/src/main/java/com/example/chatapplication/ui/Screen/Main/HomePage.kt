@@ -120,7 +120,11 @@ fun HomeScreen(
 
     val scope = rememberCoroutineScope()
 
-    val FcmToken=fireBaseToken().fetchToken()
+    var FcmToken by rememberSaveable() {mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+         FcmToken = fireBaseToken().fetchToken()
+    }
 
 
     // ========================================================
